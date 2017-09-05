@@ -13,12 +13,13 @@ export default{
 
     },
     actions: {
-        async get_article_data({ rootState, commit }, type) {
+        async get_article_data({ rootState, commit }, {type, page}) {
             let params = {
                 'userid': rootState.login.user.userid
             }
             params.type = type
-            let res = await fetch('GET', 'article', params)
+            params.page = page
+            let res = await fetch('GET', 'list', params)
             return res
         }
     }

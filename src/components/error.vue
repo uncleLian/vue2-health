@@ -1,6 +1,6 @@
 <template>
     <div class="error" v-if='visible' @click.stop="reload">
-        <i class="el-icon-circle-cross"></i>请求错误，点击重新加载
+        <slot><i class="el-icon-circle-cross"></i>请求错误，点击重新加载</slot>
     </div>
 </template>
 <script>

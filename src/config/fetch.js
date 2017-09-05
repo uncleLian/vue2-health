@@ -1,16 +1,16 @@
 import axios from 'axios'
 import qs from 'qs'
-const baseUrl = 'http://api.toutiaojk.com/e/extend/jkh/'
-const ajaxPhp = {
+axios.defaults.baseURL = 'http://api.toutiaojk.com/e/extend/jkh/'
+const ajaxPHP = {
     login: 'Logincc.php',
-    article: 'List.php',
+    list: 'List.php',
     edit: 'Edit.php',
     uploadFile: 'upload_file.php'
 }
 export var fetch = async(type = 'POST', url = '', data = {}) => {
     let result
     type = type.toUpperCase()
-    url = baseUrl + ajaxPhp[url]
+    url = ajaxPHP[url]
 
     if (type === 'GET') {
         await axios.get(url, { params: data })

@@ -1,20 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+// 一级页面
 import login from '@/page/login/login'
+import preview from '@/page/preview/preview'
 import index from '@/page/index/index'
-// publish
+
+// 二级页面
 import publish from '@/page/index/children/publish/publish'
-// home
+
 import home from '@/page/index/children/home/home'
-// aiticle
+
 import article from '@/page/index/children/article/article'
 import own from '@/page/index/children/article/children/own'
-// comment
+
 import comment from '@/page/index/children/comment/comment'
 import newestCom from '@/page/index/children/comment/children/newestCom'
 import articleCom from '@/page/index/children/comment/children/articleCom'
-// material
+
 import material from '@/page/index/children/material/material'
 import pic from '@/page/index/children/material/children/pic'
 
@@ -29,6 +32,10 @@ export default new Router({
         {
             path: '/login',
             component: login
+        },
+        {
+            path: '/preview_article',
+            component: preview
         },
         {
             path: '/index',
@@ -90,6 +97,5 @@ export default new Router({
                 }
             ]
         }
-
     ]
 })

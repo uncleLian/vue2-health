@@ -1,5 +1,5 @@
 import { fetch } from '@/config/fetch.js'
-import { setCache } from '@/config/cache.js'
+import { set_local_cache } from '@/config/cache.js'
 
 export default {
     namespaced: true,
@@ -21,7 +21,7 @@ export default {
         },
         set_user(state, val) {
             state.user = val
-            setCache('user', val)
+            set_local_cache('user', val)
         }
     },
     actions: {

@@ -5,7 +5,7 @@
 </template>
 <script>
 import '@/assets/css/reset.css'
-import { getCache } from '@/config/cache.js'
+import { get_local_cache } from '@/config/cache.js'
 import { mapMutations } from 'vuex'
 export default {
     methods: {
@@ -13,7 +13,7 @@ export default {
             'set_user'
         ]),
         get_cache() {
-            let user = JSON.parse(getCache('user'))
+            let user = JSON.parse(get_local_cache('user'))
             this.set_user(user)
         }
     },

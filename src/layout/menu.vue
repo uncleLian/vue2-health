@@ -16,10 +16,6 @@
             <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
             <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
             <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
         </el-menu>
     </div>
 </template>

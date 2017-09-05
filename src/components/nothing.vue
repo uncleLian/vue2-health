@@ -1,6 +1,6 @@
 <template>
-    <div class="loading" v-if='visible'>
-        <slot><i class="el-icon-loading"></i>数据加载中...</slot>    
+    <div class="nothing" v-if='visible'>
+        <slot>没有符合条件的文章</slot>
     </div>
 </template>
 <script>
@@ -11,15 +11,13 @@ export default {
 }
 </script>
 <style scoped lang='stylus'>
-.loading {
+.nothing {
     width: 100%;
     height: 50px;
     line-height: 50px;
     text-align: center;
-    color: #20a0ff;
+    color: #999;
     font-size: 14px;
-    i {
-        margin-right: 5px;
-    }
+    margin: 15px 0;
 }
 </style>

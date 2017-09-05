@@ -19,12 +19,16 @@ Vue.component('my-footer', myFooter)
 Vue.component('my-header', myHeader)
 Vue.component('my-menu', myMenu)
 // layout
-import myList from '@/components/list'
+import articleList from '@/components/articleList'
+import commentList from '@/components/commentList'
 import myLoading from '@/components/loading'
 import myError from '@/components/error'
-Vue.component('my-list', myList)
+import myNothing from '@/components/nothing'
+Vue.component('article-list', articleList)
+Vue.component('comment-list', commentList)
 Vue.component('my-loading', myLoading)
 Vue.component('my-error', myError)
+Vue.component('my-nothing', myNothing)
 // component
 
 /* eslint-disable no-new */
