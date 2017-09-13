@@ -1,8 +1,8 @@
 <template>
     <div id="comment">
         <el-tabs class='tab_main' v-model='activeName'>
-            <el-tab-pane label="最新评论" name="newestCom"></el-tab-pane>
-            <el-tab-pane label="文章评论" name="articleCom"></el-tab-pane>
+            <el-tab-pane label="最新评论" name="newest"></el-tab-pane>
+            <el-tab-pane label="文章评论" name="articles"></el-tab-pane>
         </el-tabs>
         <router-view></router-view>
     </div>
@@ -11,15 +11,15 @@
 export default {
     data() {
         return {
-            activeName: 'newestCom'
+            activeName: 'newest'
         }
     },
     computed: {
         tabActive() {
             let activeRoute = this.$route.path
             let routerArr = [
-                'newestCom',
-                'articleCom'
+                'newest',
+                'articles'
             ]
             for (var i = 0; i < routerArr.length; i++) {
                 if (activeRoute.includes(routerArr[i])) {

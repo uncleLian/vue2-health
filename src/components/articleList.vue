@@ -2,17 +2,17 @@
     <div class="article-list" v-if="itemJson">
         <el-row class='article-item' v-for="(item,index) in itemJson" :key="index" :class="{'unpassed': item.state === '4'}">
             <el-col class='pic' :span='4'>
-                <router-link :to="`/preview_article?id=${item.id}`" target="_blank">
+                <a :href="previewURL(item)" target="_blank">
             		<img :src="item.titlepic">
                     <!-- 视频标识 -->
                     <div class="playRound" v-if="item.playonlineurl">
                         <div class="playSan"></div>
                     </div>
-            	</router-link>
+            	</a>
             </el-col>
             <el-col class='content' :span='20'>
                 <!-- title -->
-                <router-link class="title" :to="`/preview_article?id=${item.id}`" target="_blank">{{item.title}}</router-link>
+                <a class="title" :href="previewURL(item)" target="_blank">{{item.title}}</a>
                 <!-- 已发表 / 草稿 / 撤回 -->
                 <template v-if="item.state != '4'">                    
                     <div class="abstruct">
@@ -34,7 +34,7 @@
                     <div class="action">
                         <el-button icon="edit" type="text">修改</el-button>
                         <el-button icon="share" type="text">转发</el-button>
-                        <el-button icon="delete" type="text" @click.stop="deleteArticle">删除</el-button>            
+                        <el-button icon="delete" type="text" @click.stop="deleteArticle(item,index)">删除</el-button>            
                     </div>
                 </template>
                 <!-- 未通过 -->
@@ -44,7 +44,7 @@
                         <el-tooltip effect="dark" content="内容不适合收录，禁止修改" placement="bottom">
                              <el-button icon="edit" type="text" class="disabled">修改</el-button>
                         </el-tooltip>                        
-                        <el-button icon="delete" type="text" @click.stop="deleteArticle">删除</el-button>
+                        <el-button icon="delete" type="text" @click.stop="deleteArticle(item,index)">删除</el-button>
                     </div>
                 </template>
             </el-col>
@@ -52,19 +52,45 @@
     </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 export default {
     props: {
         'itemJson': Array
     },
     methods: {
-        deleteArticle() {
+        ...mapActions('publish', [
+            'post_article_data'
+        ]),
+        // 预览URL
+        previewURL(item) {
+            if (item.state === '1') {
+                return `http://m.toutiaojk.com/#/detail?classid=${item.classid}&id=${item.id}&datafrom=${item.datafrom}`
+            } else if (item.state === '2') {
+                return `/preview_article?id=${item.id}`
+            }
+        },
+        // 删除文章
+        deleteArticle(item, index) {
+            console.log(index)
             this.$confirm('此操作将永久删除这篇文章, 是否继续?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'
             })
             .then(() => {
-              this.$message.success('删除成功!')
+                let params = {
+                    type: 'del',
+                    id: item.id,
+                    datafrom: item.datafrom
+                }
+                this.post_article_data(params)
+                .then(res => {
+                    this.$emit('delete', index) // 告诉父组件 我删除了哪个item
+                    this.$message.success('删除成功!')
+                })
+                .catch(err => {
+                    console.log('删除失败', err)
+                })
             })
             .catch(() => {
             })

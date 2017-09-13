@@ -15,8 +15,8 @@ import article from '@/page/index/children/article/article'
 import own from '@/page/index/children/article/children/own'
 
 import comment from '@/page/index/children/comment/comment'
-import newestCom from '@/page/index/children/comment/children/newestCom'
-import articleCom from '@/page/index/children/comment/children/articleCom'
+import newest from '@/page/index/children/comment/children/newest'
+import articles from '@/page/index/children/comment/children/articles'
 
 import material from '@/page/index/children/material/material'
 import pic from '@/page/index/children/material/children/pic'
@@ -69,15 +69,15 @@ export default new Router({
                     children: [
                         {
                             path: '',
-                            redirect: 'newestCom'
+                            redirect: 'newest'
                         },
                         {
-                            path: 'newestCom',
-                            component: newestCom
+                            path: 'newest',
+                            component: newest
                         },
                         {
-                            path: 'articleCom',
-                            component: articleCom
+                            path: 'articles',
+                            component: articles
                         }
                     ]
                 },

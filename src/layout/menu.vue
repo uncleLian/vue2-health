@@ -71,5 +71,9 @@ export default {
     .el-submenu .el-menu {
         background: #fff !important;
     }
+    .el-menu-item.is-active{
+        background: #20A0FF;
+        color: #fff;
+    }
 }
 </style>

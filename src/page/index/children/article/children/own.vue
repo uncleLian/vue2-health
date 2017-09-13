@@ -12,7 +12,7 @@
             <my-error :visible="error" :reload="get_article"></my-error>
             <my-nothing :visible="nothing && !loading && !error"></my-nothing>
             <!-- list -->
-            <article-list :itemJson="itemJson" v-if="!loading && !error && !nothing"></article-list>
+            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"  @delete="deleteArticle"></article-list>
             <!-- /list -->
             <template v-if="itemJson && itemJson.length > 0">
                 <my-loading :visible="more_loading"></my-loading>
@@ -125,6 +125,9 @@ export default {
                     }
                 }, 10)
             })
+        },
+        deleteArticle(index) {
+            this.itemJson.splice(index, 1)
         }
     },
     watch: {
@@ -144,8 +147,9 @@ export default {
 </script>
 <style scoped lang='stylus'>
 #own {
+    padding-top: 20px;
     .own_content {
-        width: 100%;
+        padding-top: 15px;
     }
 }
 </style>

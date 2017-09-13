@@ -23,7 +23,7 @@
                     </el-checkbox>
                     <a href="###" class="forget">忘记密码</a>
                 </div>
-                <el-input class="login_btn" type="submit" :value="value" />
+                <el-input class="login_btn" type="submit" :value="登录" />
             </el-form>
             <!-- otherLogin -->
             <div slot="footer" class="footer">
@@ -50,15 +50,6 @@ export default {
                 id: '',
                 password: '',
                 agree: true
-            }
-        }
-    },
-    computed: {
-        value() {
-            if (this.loading) {
-                return '登录中...'
-            } else {
-                return '登录'
             }
         }
     },

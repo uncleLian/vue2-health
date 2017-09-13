@@ -29,6 +29,7 @@ export default {
 </script>
 <style scoped lang='stylus'>
 #pic {
+  padding-top: 20px;
   .pic_content {
     width: 100%;
   }

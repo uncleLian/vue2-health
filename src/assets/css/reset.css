@@ -69,19 +69,24 @@ body{
 img{
     vertical-align: top;
 }
-.tab_main >.el-tabs__header{
-    padding: 10px 24px 0;
-            font-size: 14px;
+#index .el-tabs__header{
+    margin-bottom: 0;
 }
-.tab_main .el-tabs__item{
+#index .tab_main >.el-tabs__header{
+    padding: 10px 24px 0;
+    font-size: 14px;
+}
+#index .tab_main .el-tabs__item{
     font-size: 16px;
 }
-.tab_main .el-tabs__active-bar{
+#index .tab_main .el-tabs__active-bar{
     height: 2px;
 }
-.tab_sub .el-tabs__header{
-    padding: 0 24px;
-}
-.el-tabs__active-bar{
+#index .el-tabs__active-bar{
     transition: none !important;
 }
+#index .tab_sub .el-tabs__header{
+    padding: 0 24px;
+}
+
+
