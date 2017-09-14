@@ -1,5 +1,5 @@
 <template>
-    <div id='publish'>
+    <div id='publish' v-loading="loading" element-loading-text="发表中...">
 
         <div class="write">
             <!-- title -->
@@ -79,8 +79,15 @@
 
         <!-- control -->
         <div class="control">
-            <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('publish')">发表</el-button>
-            <el-button class='draft_btn' type='danger' size='large' @click.stop="verify('draft')">存草稿</el-button>
+            <template v-if="id">
+                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('edit')">发表</el-button>
+                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
+            </template>
+            <template v-else>
+                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('new')">发表</el-button>
+                <el-button class='draft_btn' type='danger' size='large' @click.stop="verify('draft')">存草稿</el-button>
+            </template>    
+            
         </div>
 
         <!-- 上传图片 -->
@@ -110,6 +117,7 @@
                 <el-button type="primary" @click="selectComplete">确 定</el-button>
             </div>
         </el-dialog>
+
     </div>
 </template>
 <script>
@@ -117,13 +125,14 @@ import { mapActions } from 'vuex'
 export default {
     data() {
         return {
+            id: null,
             title: '',  // 标题
             content: '', // 正文
             fileList: [], // 上传的图片数组
             classid: '',    // 标签
             cover_mode: 1,  // 封面模式：单图 / 三图
             contentImages: [], // 正文图片
-            clickIndex: null,
+            clickIndex: '',
             selectImages: [], // 选择图片
             coverImages: [], // 封面图片
             upload_picture_dialog: false,  // 上传图片dialog
@@ -139,7 +148,8 @@ export default {
                         userOnly: true
                     }
                 }
-            }
+            },
+            loading: false
         }
     },
     computed: {
@@ -149,8 +159,34 @@ export default {
     },
     methods: {
         ...mapActions('publish', [
+            'get_article_data',
             'post_article_data'
         ]),
+        init() {
+            this.id = this.$route.query.id
+            if (this.id) {
+                this.get_article_data(this.id)
+                .then(res => {
+                    if (res.data) {
+                        let item = res.data
+                        this.title = item.title
+                        this.content = item.newstext
+                        this.classid = item.classid
+                        if (item.titlepic3) {
+                            this.cover_mode = 3
+                            this.coverImages[1] = item.titlepic2
+                            this.coverImages[2] = item.titlepic3
+                        }
+                        if (item.titlepic) {
+                            this.coverImages[0] = item.titlepic
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+            }
+        },
         // 上传图片前检查格式、大小
         handleFormat(file) {
             const isImg = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
@@ -213,14 +249,18 @@ export default {
             }
             this.clearSelectFiles()
         },
-        publish(state) {
+        publish(state, type = 'new') {
+            this.loading = true
             let params = {
-                'type': 'new',
+                'type': type,
                 'title': this.title,
                 'newstext': this.content,
                 'titlepic': this.coverImages[0],
                 'classid': this.classid,
                 'state': state
+            }
+            if (this.id) {
+                params.id = this.id
             }
             if (this.cover_mode === 3) {
                 params.titlepic2 = this.coverImages[1]
@@ -228,19 +268,28 @@ export default {
             }
             this.post_article_data(params)
                 .then(res => {
+                    this.loading = false
                     if (res.code === 1 && res.data) {
-                        this.$message.success('发表成功!')
+                        this.$notify.success('操作成功')
+                        this.$router.push('/index/article/own')
                     } else {
-                        this.$message.error('出现错误，请重新发表')
+                        this.$notify.error('出现错误，请重新尝试')
                     }
                 })
                 .catch(err => {
                     console.log(err)
-                    this.$message.error('出现错误，请重新发表')
+                    this.loading = false
+                    this.$notify.error('出现错误，请重新尝试')
                 })
         },
         verify(type) {
-            if (type === 'publish') {
+            if (type === 'draft') {
+                if (!this.title) {
+                    this.$message.error('标题不能为空')
+                } else {
+                    this.publish(2)
+                }
+            } else {
                 if (!this.title) {
                     this.$message.error('标题不能为空')
                 } else if (this.title.length < 5) {
@@ -262,17 +311,18 @@ export default {
                         type: 'info'
                     }).then(() => {
                         // 发表
-                        this.publish(1)
+                        if (type === 'new') {
+                            this.publish(3)
+                        } else if (type === 'edit') {
+                            this.publish(3, 'edit')
+                        }
                     })
-                }
-            } else if (type === 'draft') {
-                if (!this.title) {
-                    this.$message.error('标题不能为空')
-                } else {
-                    this.publish(2)
                 }
             }
         }
+    },
+    created() {
+        this.init()
     }
 }
 </script>
@@ -315,8 +365,9 @@ export default {
         }
         .body {
             width: 100%;
+            overflow: hidden;
             .quill-editor {
-                min-height: 600px;
+                height: 600px;
                 .ql-toolbar.ql-snow {
                     border: none;
                     background: #eee;
@@ -438,12 +489,12 @@ export default {
             width: 140px;
             line-height: 1;
         }
-        .draft_btn{
+        .draft_btn,.cancle_btn{
             background-color: #f1f1f1;
             color: #a4a4a4;
             border-color: #f1f1f1;
         }
-        .draft_btn:hover{
+        .draft_btn:hover,.cancle_btn:hover{
             background-color: #e4e4e4;
             color: #989898;
             border-color: #e4e4e4;

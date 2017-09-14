@@ -23,7 +23,7 @@
                     </el-checkbox>
                     <a href="###" class="forget">忘记密码</a>
                 </div>
-                <el-input class="login_btn" type="submit" :value="登录" />
+                <el-input class="login_btn" type="submit" value="登录" />
             </el-form>
             <!-- otherLogin -->
             <div slot="footer" class="footer">

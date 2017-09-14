@@ -61,7 +61,7 @@ html,body{
     background: #f4f5f6;
 }
 body{
-    font-family: helvetica,Arial,"Hiragino Sans GB","Microsoft YaHei",simsun;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
     font-size: 14px;
     line-height: 1.2;
     color: #595959;

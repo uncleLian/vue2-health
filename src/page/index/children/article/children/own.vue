@@ -12,7 +12,7 @@
             <my-error :visible="error" :reload="get_article"></my-error>
             <my-nothing :visible="nothing && !loading && !error"></my-nothing>
             <!-- list -->
-            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"  @delete="deleteArticle"></article-list>
+            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"  @edit="editArticle" @delete="deleteArticle"></article-list>
             <!-- /list -->
             <template v-if="itemJson && itemJson.length > 0">
                 <my-loading :visible="more_loading"></my-loading>
@@ -23,7 +23,7 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 export default {
     data() {
         return {
@@ -46,7 +46,13 @@ export default {
     },
     methods: {
         ...mapActions('article', [
-            'get_article_data'
+            'get_articleList_data'
+        ]),
+        ...mapMutations('publish', [
+            'set_publishData'
+        ]),
+        ...mapActions('publish', [
+            'post_article_data'
         ]),
         init() {
             this.nothing = false
@@ -63,7 +69,7 @@ export default {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
-            this.get_article_data(params)
+            this.get_articleList_data(params)
                 .then(res => {
                     if (res && res.code === 1 && res.data) {
                         this.itemJson = res.data
@@ -89,7 +95,7 @@ export default {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
-            this.get_article_data(params)
+            this.get_articleList_data(params)
             .then(res => {
                 if (res && res.code === 1 && res.data) {
                     this.itemJson.push(...res.data)
@@ -126,8 +132,33 @@ export default {
                 }, 10)
             })
         },
-        deleteArticle(index) {
-            this.itemJson.splice(index, 1)
+        editArticle(item) {
+            this.$router.push(`/index/publish?id=${item.id}`)
+        },
+        deleteArticle(val) {
+            this.$confirm('此操作将永久删除这篇文章, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            })
+            .then(() => {
+                let params = {
+                    type: 'del',
+                    id: val.item.id,
+                    datafrom: val.item.datafrom
+                }
+                this.post_article_data(params)
+                .then(res => {
+                    this.itemJson.splice(val.index, 1)
+                    this.$notify.success('删除成功!')
+                })
+                .catch(err => {
+                    console.log('删除失败', err)
+                    this.$notify.error('删除失败!')
+                })
+            })
+            .catch(() => {
+            })
         }
     },
     watch: {

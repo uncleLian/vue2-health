@@ -13,7 +13,7 @@ export default{
 
     },
     actions: {
-        async get_article_data({ rootState, commit }, {type, page}) {
+        async get_articleList_data({ rootState, commit }, {type, page}) {
             let params = {
                 'userid': rootState.login.user.userid
             }

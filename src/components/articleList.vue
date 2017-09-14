@@ -32,9 +32,9 @@
                         <span v-else>收藏 0</span>
                     </div>
                     <div class="action">
-                        <el-button icon="edit" type="text">修改</el-button>
+                        <el-button icon="edit" type="text" @click="editItem(item)">修改</el-button>
                         <el-button icon="share" type="text">转发</el-button>
-                        <el-button icon="delete" type="text" @click.stop="deleteArticle(item,index)">删除</el-button>            
+                        <el-button icon="delete" type="text" @click="deleteItem(item,index)">删除</el-button>            
                     </div>
                 </template>
                 <!-- 未通过 -->
@@ -44,7 +44,7 @@
                         <el-tooltip effect="dark" content="内容不适合收录，禁止修改" placement="bottom">
                              <el-button icon="edit" type="text" class="disabled">修改</el-button>
                         </el-tooltip>                        
-                        <el-button icon="delete" type="text" @click.stop="deleteArticle(item,index)">删除</el-button>
+                        <el-button icon="delete" type="text" @click="deleteItem(item,index)">删除</el-button>
                     </div>
                 </template>
             </el-col>
@@ -52,15 +52,11 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
 export default {
     props: {
         'itemJson': Array
     },
     methods: {
-        ...mapActions('publish', [
-            'post_article_data'
-        ]),
         // 预览URL
         previewURL(item) {
             if (item.state === '1') {
@@ -69,31 +65,11 @@ export default {
                 return `/preview_article?id=${item.id}`
             }
         },
-        // 删除文章
-        deleteArticle(item, index) {
-            console.log(index)
-            this.$confirm('此操作将永久删除这篇文章, 是否继续?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            })
-            .then(() => {
-                let params = {
-                    type: 'del',
-                    id: item.id,
-                    datafrom: item.datafrom
-                }
-                this.post_article_data(params)
-                .then(res => {
-                    this.$emit('delete', index) // 告诉父组件 我删除了哪个item
-                    this.$message.success('删除成功!')
-                })
-                .catch(err => {
-                    console.log('删除失败', err)
-                })
-            })
-            .catch(() => {
-            })
+        editItem(item) {
+            this.$emit('edit', item)
+        },
+        deleteItem(item, index) {
+            this.$emit('delete', {'item': item, 'index': index})
         }
     }
 }
