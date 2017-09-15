@@ -16,7 +16,7 @@ export default {
     height: 50px;
     line-height: 50px;
     text-align: center;
-    color: #20a0ff;
+    color: #60a3f5;
     font-size: 14px;
     i {
         margin-right: 5px;

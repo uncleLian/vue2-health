@@ -2,20 +2,18 @@
     <div id="menu">
         <el-menu :default-active="activeName" :router="true" :default-openeds="['manage']"> 
             <!-- home -->
-            <el-menu-item index="/index/home"><i class="el-icon-message"></i>主页</el-menu-item>
+            <el-menu-item index="/index/home"><i class="el-icon-fa-home el-icon-fa-lg"></i>主页</el-menu-item>
             <el-submenu index="manage">
-                <template slot="title"><i class="el-icon-message"></i>管理</template>
+                <template slot="title"><i class="el-icon-fa-cube el-icon-fa-lg"></i>管理</template>
                 <!-- article -->
                 <el-menu-item index="/index/article">内容管理</el-menu-item>
                 <el-menu-item index="/index/comment">评论管理</el-menu-item>
                 <el-menu-item index="/index/material">素材管理</el-menu-item>
             </el-submenu>
             <!-- count -->
-            <el-menu-item index="/index/count"><i class="el-icon-menu"></i>统计</el-menu-item>
+            <el-menu-item index="/index/count"><i class="el-icon-fa-bar-chart el-icon-fa-lg"></i>统计</el-menu-item>
             <!-- setting -->
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
-            <el-menu-item index="/index/setting"><i class="el-icon-setting"></i>设置</el-menu-item>
+            <el-menu-item index="/index/setting"><i class="el-icon-fa-cog el-icon-fa-lg"></i>设置</el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -61,6 +59,9 @@ export default {
     min-height: inherit;
     background: #fff;
     font-size: 14px;
+    i{
+        color: #999 !important;
+    }
     .el-menu {
         background: #fff;
     }
@@ -72,8 +73,11 @@ export default {
         background: #fff !important;
     }
     .el-menu-item.is-active{
-        background: #20A0FF;
+        background: #ed4040;
         color: #fff;
+        i{
+            color: #fff!important;
+        }
     }
 }
 </style>

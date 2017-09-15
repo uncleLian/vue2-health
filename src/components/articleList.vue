@@ -61,8 +61,8 @@ export default {
         previewURL(item) {
             if (item.state === '1') {
                 return `http://m.toutiaojk.com/#/detail?classid=${item.classid}&id=${item.id}&datafrom=${item.datafrom}`
-            } else if (item.state === '2') {
-                return `/preview_article?id=${item.id}`
+            } else {
+                return `#/preview_article?id=${item.id}`
             }
         },
         editItem(item) {

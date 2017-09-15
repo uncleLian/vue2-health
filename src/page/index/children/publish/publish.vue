@@ -81,13 +81,12 @@
         <div class="control">
             <template v-if="id">
                 <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('edit')">发表</el-button>
-                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
             <template v-else>
                 <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('new')">发表</el-button>
                 <el-button class='draft_btn' type='danger' size='large' @click.stop="verify('draft')">存草稿</el-button>
             </template>    
-            
+            <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
         </div>
 
         <!-- 上传图片 -->
@@ -99,8 +98,8 @@
                 <img width="100%" :src="dialogImageUrl">
             </el-dialog>
             <div slot="footer">
-                <el-button @click.stop="clearUploadFiles">取 消</el-button>
-                <el-button type="primary" @click="uploadComplete">确 定</el-button>
+                <el-button class="cancle_btn" @click.stop="clearUploadFiles">取 消</el-button>
+                <el-button type="danger" @click="uploadComplete">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -113,8 +112,8 @@
                 </div>
             </el-radio-group>
             <div slot="footer">
-                <el-button @click.stop="clearSelectFiles">取 消</el-button>
-                <el-button type="primary" @click="selectComplete">确 定</el-button>
+                <el-button class="cancle_btn" @click.stop="clearSelectFiles">取 消</el-button>
+                <el-button type="danger" @click="selectComplete">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -158,7 +157,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('publish', [
+        ...mapActions([
             'get_article_data',
             'post_article_data'
         ]),
@@ -283,6 +282,7 @@ export default {
                 })
         },
         verify(type) {
+            // 草稿
             if (type === 'draft') {
                 if (!this.title) {
                     this.$message.error('标题不能为空')
@@ -483,7 +483,7 @@ export default {
     }
     .control {
         padding-left: 122px;
-        margin-bottom: 30px;
+        margin-bottom: 50px;
         button{
             font-size: 16px;
             width: 140px;
@@ -592,10 +592,21 @@ export default {
     }
 }
 #publish {
+    .cancle_btn{
+        background-color: #f1f1f1;
+        color: #a4a4a4;
+        border-color: #f1f1f1;
+    }
+    .cancle_btn:hover{
+        background-color: #e4e4e4;
+        color: #989898;
+        border-color: #e4e4e4;
+    }
     .el-dialog.el-dialog--small{
         min-height: 400px;
         .el-dialog__title{
             color: #f85959;
+            font-weight: 400;
         }
         .el-dialog__body{
             max-height: 380px;

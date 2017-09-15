@@ -27,8 +27,8 @@
                 <!-- action -->
                 <div class="comment-action clearfix">
                     <div class="comment-action-left">
-                        <div class="comment-action-item"><i class="fa fa-thumbs-up"></i> 0</div>
-                        <div class="comment-action-item"><i class="fa fa-commenting"></i> 0</div>
+                        <div class="comment-action-item"><i class="el-icon-fa-thumbs-up"></i> 0</div>
+                        <div class="comment-action-item"><i class="el-icon-fa-commenting"></i> 0</div>
                     </div>
                     <div class="comment-action-right">
                         <div class="comment-action-item"><a>推荐</a></div>

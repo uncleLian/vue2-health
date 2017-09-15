@@ -13,7 +13,7 @@
             <my-nothing :visible="nothing && !loading && !error"></my-nothing>
             <!-- list -->
             <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"  @edit="editArticle" @delete="deleteArticle"></article-list>
-            <!-- /list -->
+
             <template v-if="itemJson && itemJson.length > 0">
                 <my-loading :visible="more_loading"></my-loading>
                 <my-error :visible="more_error" :reload="get_article_more"></my-error>
@@ -23,7 +23,7 @@
     </div>
 </template>
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
     data() {
         return {
@@ -45,14 +45,9 @@ export default {
         }
     },
     methods: {
-        ...mapActions('article', [
+        ...mapActions([
+            'post_article_data',
             'get_articleList_data'
-        ]),
-        ...mapMutations('publish', [
-            'set_publishData'
-        ]),
-        ...mapActions('publish', [
-            'post_article_data'
         ]),
         init() {
             this.nothing = false

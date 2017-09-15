@@ -8,7 +8,7 @@ Vue.config.productionTip = false
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-import 'font-awesome/css/font-awesome.css'
+import '@/assets/css/icon.less'
 import VueQuillEditor from 'vue-quill-editor'
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
