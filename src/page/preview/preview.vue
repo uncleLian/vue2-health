@@ -19,7 +19,7 @@
                 <h1 class="article_title">{{json.title}}</h1>
                 <div class="article_sub">
                     <span>{{json.befrom}}</span>
-                    <span>{{json.newstime}}</span>
+                    <span>{{json.time}}</span>
                 </div>
                 <div class="article_content" v-html="json.newstext"></div>
             </article>

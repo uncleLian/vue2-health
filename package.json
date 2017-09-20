@@ -15,8 +15,9 @@
     "element-ui": "^1.4.2",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
+    "js-cookie": "^2.1.4",
     "vue": "^2.4.2",
-    "vue-quill-editor": "^2.3.0",
+    "vue-quill-editor": "^2.3.2",
     "vue-router": "^2.7.0",
     "vuex": "^2.3.1"
   },

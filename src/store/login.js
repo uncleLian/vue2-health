@@ -1,11 +1,10 @@
-import { fetch } from '@/config/fetch.js'
-import { set_local_cache } from '@/config/cache.js'
-
+import { fetch } from '@/utils/fetch.js'
 export default {
     namespaced: true,
     state: {
         login: '',
-        user: ''
+        user: '',
+        token: ''
     },
     getters: {
         login: state => {
@@ -21,11 +20,13 @@ export default {
         },
         set_user(state, val) {
             state.user = val
-            set_local_cache('user', val)
+        },
+        set_token(state, val) {
+            state.token = val
         }
     },
     actions: {
-        async get_login_data(params) {
+        async get_login_data({ commit }, params) {
             let res = fetch('POST', 'login', params)
             return res
         }

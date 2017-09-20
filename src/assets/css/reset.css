@@ -69,27 +69,6 @@ body{
 img{
     vertical-align: top;
 }
-.el-tabs__item.is-active{
-    color: #ed4040 !important;
-}
-.el-tabs__active-bar{
-    background-color: #ed4040 !important;
-}
-.el-radio__input.is-checked .el-radio__inner{
-    border-color: #FF4949 !important;
-    background: #FF4949 !important;
-}
-.el-radio__inner:hover{
-    border-color: #FF4949 !important;
-}
-.el-radio-button__orig-radio:checked+.el-radio-button__inner {
-    color: #fff !important;
-    border-color: #FF4949 !important;
-    background: #FF4949 !important;
-}
-.el-radio-button__inner:hover {
-    color: #FF4949 !important;
-}
 
 #index .el-tabs__header{
     margin-bottom: 0;

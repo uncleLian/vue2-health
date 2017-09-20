@@ -65,12 +65,14 @@ export default {
     .el-menu {
         background: #fff;
     }
-    .el-submenu .el-menu-item {
-        padding: 0 45px !important;
-        min-width: 180px;
-    }
-    .el-submenu .el-menu {
-        background: #fff !important;
+    .el-submenu {
+        .el-menu {
+            background: #fff !important;
+        }
+        .el-menu-item {
+            padding: 0 45px !important;
+            min-width: 180px;
+        }
     }
     .el-menu-item.is-active{
         background: #ed4040;

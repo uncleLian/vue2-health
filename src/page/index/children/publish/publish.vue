@@ -365,9 +365,7 @@ export default {
         }
         .body {
             width: 100%;
-            overflow: hidden;
             .quill-editor {
-                height: 600px;
                 .ql-toolbar.ql-snow {
                     border: none;
                     background: #eee;
@@ -376,6 +374,7 @@ export default {
                     border-bottom: 1px solid #e9e9e9 !important;
                 }
                 .ql-container {
+                    height: 600px;
                     font-size: 16px;
                     color: #5D5D5D;
                     border: none;

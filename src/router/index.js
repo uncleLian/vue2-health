@@ -23,7 +23,7 @@ import pic from '@/page/index/children/material/children/pic'
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
     routes: [
         {
             path: '',
@@ -40,6 +40,7 @@ export default new Router({
         {
             path: '/index',
             component: index,
+            meta: { requiresAuth: true },
             children: [
                 {
                     path: 'publish',
@@ -99,3 +100,25 @@ export default new Router({
         }
     ]
 })
+
+// router.beforeEach((to, from, next) => {
+//     console.log('判断是否登录')
+//   if (to.matched.some(record => record.meta.requiresAuth)) {
+//     console.log('要登录')
+//     let login = false
+//     if (!login) {
+//       next({
+//         path: '/login',
+//         query: { redirect: to.fullPath }
+//       })
+//     } else {
+//         console.log('已登录')
+//       next()
+//     }
+//   } else {
+//     console.log('不用登录')
+//     next() // 确保一定要调用 next()
+//   }
+// })
+
+export default router

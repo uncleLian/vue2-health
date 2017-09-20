@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { fetch } from '@/config/fetch.js'
+import { fetch } from '@/utils/fetch.js'
 // import { getCache, setCache, get_local_cache, set_local_cache } from '@/config/cache.js'
 import login_module from './login.js'
 

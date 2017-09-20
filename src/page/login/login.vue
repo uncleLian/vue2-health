@@ -11,16 +11,10 @@
         <el-dialog class='login_box' title="登录" :visible.sync="dialogFormVisible">
             <!-- form -->
             <el-form :model="form" @submit.native.prevent="verify">
-                <el-form-item>
-                    <el-input v-model="form.id" placeholder="邮箱/手机号" auto-complete='off' />
-                </el-form-item>
-                <el-form-item>
-                    <el-input v-model="form.password" placeholder="密码" auto-complete='off' type="password" />
-                </el-form-item>
+                <el-form-item><el-input v-model="form.id" placeholder="邮箱/手机号" auto-complete='off' /></el-form-item>
+                <el-form-item><el-input v-model="form.password" placeholder="密码" auto-complete='off' type="password" /></el-form-item>
                 <div class="agree_item">
-                    <el-checkbox v-model="form.agree">
-                        我已阅读并同意<a href="###">用户协议和隐私条款</a>
-                    </el-checkbox>
+                    <el-checkbox v-model="form.agree">我已阅读并同意<a href="###">用户协议和隐私条款</a></el-checkbox>
                     <a href="###" class="forget">忘记密码</a>
                 </div>
                 <el-input class="login_btn" type="submit" value="登录" />
@@ -28,12 +22,8 @@
             <!-- otherLogin -->
             <div slot="footer" class="footer">
                 <ul class="otherLogin">
-                    <li class="wx">
-                        <span>微信</span>
-                    </li>
-                    <li class="qq">
-                        <span>QQ</span>
-                    </li>
+                    <li class="wx" @click="login"><span>微信</span></li>
+                    <li class="qq"><span>QQ</span></li>
                 </ul>
             </div>
         </el-dialog>
@@ -41,11 +31,11 @@
 </template>
 <script>
 import { mapMutations, mapActions } from 'vuex'
+import Cookies from 'js-cookie'
 export default {
     data() {
         return {
-            dialogFormVisible: false,
-            loading: false,
+            dialogFormVisible: false, // 登录框
             form: {
                 id: '',
                 password: '',
@@ -56,38 +46,37 @@ export default {
     methods: {
         ...mapMutations('login', [
             'set_login',
-            'set_user'
+            'set_user',
+            'set_token'
         ]),
         ...mapActions('login', [
             'get_login_data'
         ]),
-        errorMsg(text) {
-            this.$message({
-                showClose: true,
-                message: text,
-                type: 'error'
-            })
-        },
         login() {
-            this.loading = true
             let params = {
-                id: this.form.id,
-                password: this.form.password
+                'type': 'check',
+                'userid': 'oqKkTv6XI_iDnYha-1VYKbtsvbYw'
             }
             this.get_login_data(params)
-                .then(res => {
-                    if (res) {
-                        this.set_login('wx')
-                        this.set_user(res)
-                    } else {
-                        this.errorMsg('您输入的账号或密码不匹配')
+            .then(res => {
+                if (res.checked === '1') {
+                    let res = {
+                        userid: 'oqKkTv6XI_iDnYha-1VYKbtsvbYw',
+                        nickname: '小郑',
+                        headimgurl: 'http://wx.qlogo.cn/mmopen/2IWjic7SiaU1Zctuxl3SG5PHv38RExvPYWC7OkicOrfMZzB2Y84icaOfFVJsjBEPJqbtha2PpJJ38cCpXqff3PRn4n3ZlZzOs2Bic/0'
                     }
-                    this.loading = false
-                })
-                .catch(err => {
-                    this.loading = false
-                    console.log(err)
-                })
+                    let token = 'lian123' + new Date()
+                    this.set_token(token)
+                    Cookies.set('Token', token)
+                    this.set_login('wx')
+                    this.set_user(res)
+                    this.$router.push('/index/home')
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                this.$message.error('微信登录出错')
+            })
         },
         verify() {
             if (this.form.id && this.form.password && this.form.agree) {
@@ -98,17 +87,21 @@ export default {
                         nickname: '小郑',
                         headimgurl: 'http://wx.qlogo.cn/mmopen/2IWjic7SiaU1Zctuxl3SG5PHv38RExvPYWC7OkicOrfMZzB2Y84icaOfFVJsjBEPJqbtha2PpJJ38cCpXqff3PRn4n3ZlZzOs2Bic/0'
                     }
+                    let token = 'lian123' + new Date()
+                    this.set_token(token)
+                    Cookies.set('Token', token)
                     this.set_login('wx')
                     this.set_user(res)
                     this.$router.push('/index/home')
                 } else {
-                    this.loading = false
-                    this.errorMsg('您输入的账号或密码不匹配')
+                    this.$message.error('您输入的账号或密码不匹配')
                 }
-            } else if (!this.form.id && !this.form.password) {
-                this.errorMsg('您输入的信息不完整')
+            } else if (!this.form.id) {
+                this.$message.error('请输入账号')
+            } else if (!this.form.password) {
+                this.$message.error('请输入密码')
             } else if (!this.form.agree) {
-                this.errorMsg('需要阅读并同意用户协议和隐私条款')
+                this.$message.error('请阅读并同意用户协议和隐私条款')
             }
         }
     }

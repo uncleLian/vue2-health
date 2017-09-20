@@ -5,7 +5,7 @@
 </template>
 <script>
 import '@/assets/css/reset.css'
-import { get_local_cache } from '@/config/cache.js'
+import { get_local_cache } from '@/utils/cache.js'
 import { mapMutations } from 'vuex'
 export default {
     methods: {
@@ -18,7 +18,7 @@ export default {
         }
     },
     created() {
-        this.get_cache()
+        // this.get_cache()
     }
 }
 </script>
