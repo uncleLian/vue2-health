@@ -1,6 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
-axios.defaults.baseURL = 'http://api.toutiaojk.com/e/extend/jkh/'
+axios.defaults.baseURL = 'http://api.toutiaojk.com:8181/e/extend/jkh/'
 const ajaxPHP = {
     login: 'Logincc.php',
     list: 'List.php',

@@ -1,6 +1,9 @@
 <template>
-    <div id='publish' v-loading="loading" element-loading-text="发表中...">
-
+    <div id='publish' v-loading="loading" element-loading-text="加载中...">
+        <div class="recovery" v-if="draft">
+            已从草稿中恢复
+            <el-button type="text" class="cancle" @click.stop="removeDraft">撤销</el-button>
+        </div>
         <div class="write">
             <!-- title -->
             <div class="title">
@@ -79,14 +82,17 @@
 
         <!-- control -->
         <div class="control">
-            <template v-if="id">
-                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('edit')">发表</el-button>
+            <!-- 修改 -->
+            <template v-if="$route.query.id && this.json && this.json.state !== '2'">
+                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('publish')">发表</el-button>
+                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
+            <!-- 新建 -->
             <template v-else>
-                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('new')">发表</el-button>
+                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('publish')">发表</el-button>
                 <el-button class='draft_btn' type='danger' size='large' @click.stop="verify('draft')">存草稿</el-button>
-            </template>    
-            <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
+            </template>
         </div>
 
         <!-- 上传图片 -->
@@ -120,24 +126,29 @@
     </div>
 </template>
 <script>
+import { get_local_cache, set_local_cache, remove_local_cache } from '@/utils/cache.js'
 import { mapActions } from 'vuex'
 export default {
     data() {
         return {
-            id: null,
+            json: null, // 修改的文章数据
             title: '',  // 标题
             content: '', // 正文
             fileList: [], // 上传的图片数组
-            classid: '',    // 标签
             cover_mode: 1,  // 封面模式：单图 / 三图
             contentImages: [], // 正文图片
             clickIndex: '',
             selectImages: [], // 选择图片
             coverImages: [], // 封面图片
+            classid: '',    // 标签
+            draft: false,
             upload_picture_dialog: false,  // 上传图片dialog
             select_picture_dialog: false,   // 选中图片dialog
             preView_dialog: false, // 图片预览
             dialogImageUrl: '', // 预览图片地址
+            loading: false,
+            isRequest: false,   // 是否请求了
+            isChange: false,        // 是否修改了
             editorOption: { // 富文本编辑器配置
                 modules: {
                     toolbar: '#toolbar',
@@ -147,13 +158,27 @@ export default {
                         userOnly: true
                     }
                 }
-            },
-            loading: false
+            }
+        }
+    },
+    watch: {
+        article (val, old) {
+            this.isChange = true
+            if (this.isRequest) {
+                this.isChange = false
+                this.isRequest = false
+            }
+            if (this.isChange) {
+                this.saveDraft()
+            }
         }
     },
     computed: {
         editor() {
             return this.$refs.myQuillEditor.quill
+        },
+        article(val) {
+            return this.title + this.content + this.coverImages + this.classid
         }
     },
     methods: {
@@ -161,30 +186,66 @@ export default {
             'get_article_data',
             'post_article_data'
         ]),
-        init() {
-            this.id = this.$route.query.id
-            if (this.id) {
-                this.get_article_data(this.id)
-                .then(res => {
-                    if (res.data) {
-                        let item = res.data
-                        this.title = item.title
-                        this.content = item.newstext
-                        this.classid = item.classid
-                        if (item.titlepic3) {
-                            this.cover_mode = 3
-                            this.coverImages[1] = item.titlepic2
-                            this.coverImages[2] = item.titlepic3
-                        }
-                        if (item.titlepic) {
-                            this.coverImages[0] = item.titlepic
-                        }
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
+        async init() {
+            let id = this.$route.query.id
+            let draft = JSON.parse(get_local_cache('draft'))
+            if (id) {
+                await this.get_article()
+                if (draft && draft.id === id && (draft.title || draft.content)) {
+                    this.title = draft.title
+                    this.content = draft.content
+                    this.draft = true
+                }
+            } else if (draft && !draft.id && (draft.title || draft.content)) {
+                this.title = draft.title
+                this.content = draft.content
+                this.draft = true
             }
+        },
+        async get_article() {
+            this.loading = true
+            await this.get_article_data(this.$route.query.id)
+            .then(res => {
+                if (res.data) {
+                    this.isRequest = true
+                    this.json = res.data
+                    this.title = this.json.title
+                    this.content = this.json.newstext
+                    this.classid = this.json.classid
+                    if (this.json.titlepic) {
+                        this.coverImages[0] = this.json.titlepic
+                    }
+                    if (this.json.titlepic3) {
+                        this.cover_mode = 3
+                        this.coverImages[1] = this.json.titlepic2
+                        this.coverImages[2] = this.json.titlepic3
+                    }
+                }
+                this.loading = false
+            })
+            .catch(err => {
+                this.loading = false
+                this.$message.error('获取数据失败，请重新尝试')
+                console.log(err)
+            })
+        },
+        saveDraft() {
+            let id = this.$route.query.id
+            let data = {
+                id: id,
+                title: this.title,
+                content: this.content
+            }
+            set_local_cache('draft', data)
+        },
+        removeDraft() {
+            if (this.$route.query.id) {
+                this.get_article()
+            } else {
+                this.title = this.content = ''
+            }
+            remove_local_cache('draft')
+            this.draft = false
         },
         // 上传图片前检查格式、大小
         handleFormat(file) {
@@ -248,18 +309,52 @@ export default {
             }
             this.clearSelectFiles()
         },
-        publish(state, type = 'new') {
+        allRule() {
+            if (!this.title) {
+                this.$message.error('标题不能为空')
+            } else if (this.title.length < 5) {
+                this.$message.error('标题长度不能低于5个字')
+            } else if (this.title.length > 30) {
+                this.$message.error('标题长度不能超过30个字')
+            } else if (!this.content) {
+                this.$message.error('正文不能为空')
+            } else if (!this.coverImages.length > 0) {
+                this.$message.error('封面图片不能为空')
+            } else if (this.cover_mode === 3 && this.coverImages.length < 3) {
+                this.$message.error('封面图片不能少于3张')
+            } else if (!this.classid) {
+                this.$message.error('标签不能为空')
+            } else {
+                return true
+            }
+        },
+        onlyTitleRule() {
+            if (!this.title) {
+                this.$message.error('标题不能为空')
+            } else if (this.title.length < 5) {
+                this.$message.error('标题长度不能低于5个字')
+            } else if (this.title.length > 30) {
+                this.$message.error('标题长度不能超过30个字')
+            } else {
+                return true
+            }
+        },
+        publish(type, state) {
             this.loading = true
+            this.title = this.title.replace(/\s/gi, '')
+            this.content = this.content.replace(/\s/gi, '')
             let params = {
                 'type': type,
+                'state': state,
                 'title': this.title,
                 'newstext': this.content,
-                'titlepic': this.coverImages[0],
-                'classid': this.classid,
-                'state': state
+                'classid': this.classid
             }
-            if (this.id) {
-                params.id = this.id
+            if (this.json) {
+                params.id = this.json.id
+            }
+            if (this.coverImages[0]) {
+                params.titlepic = this.coverImages[0]
             }
             if (this.cover_mode === 3) {
                 params.titlepic2 = this.coverImages[1]
@@ -268,9 +363,11 @@ export default {
             this.post_article_data(params)
                 .then(res => {
                     this.loading = false
-                    if (res.code === 1 && res.data) {
+                    if (res.data) {
+                        this.isChange = false
+                        remove_local_cache('draft')
                         this.$notify.success('操作成功')
-                        this.$router.push('/index/article/own')
+                        this.$router.push({name: 'own'})
                     } else {
                         this.$notify.error('出现错误，请重新尝试')
                     }
@@ -281,54 +378,75 @@ export default {
                     this.$notify.error('出现错误，请重新尝试')
                 })
         },
-        verify(type) {
-            // 草稿
-            if (type === 'draft') {
-                if (!this.title) {
-                    this.$message.error('标题不能为空')
-                } else {
-                    this.publish(2)
+        verify(btnType) {
+            let type
+            let state
+            this.json ? type = 'edit' : type = 'new'
+            if (btnType === 'draft') {
+                state = '2'
+                if (this.onlyTitleRule()) {
+                    this.publish(type, state)
                 }
-            } else {
-                if (!this.title) {
-                    this.$message.error('标题不能为空')
-                } else if (this.title.length < 5) {
-                    this.$message.error('标题长度不能低于5个字')
-                } else if (this.title.length > 30) {
-                    this.$message.error('标题长度不能超过30个字')
-                } else if (!this.content) {
-                    this.$message.error('正文不能为空')
-                } else if (!this.coverImages.length > 0) {
-                    this.$message.error('封面图片不能为空')
-                } else if (this.cover_mode === 3 && this.coverImages.length < 3) {
-                    this.$message.error('封面图片不能少于3张')
-                } else if (!this.classid) {
-                    this.$message.error('标签不能为空')
-                } else {
+            }
+            if (btnType === 'publish') {
+                state = '3'
+                if (this.allRule()) {
                     this.$confirm('确定发表文章？', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'info'
                     }).then(() => {
-                        // 发表
-                        if (type === 'new') {
-                            this.publish(3)
-                        } else if (type === 'edit') {
-                            this.publish(3, 'edit')
-                        }
+                        this.publish(type, state)
                     })
                 }
             }
+        },
+        listenFreshClose(e) {
+            e.returnValue = '您将离开页面，可能会丢失正在编辑的内容'
         }
     },
-    created() {
+    mounted() {
         this.init()
+        window.addEventListener('beforeunload', this.listenFreshClose)
+    },
+    beforeRouteLeave (to, from, next) {
+        window.removeEventListener('beforeunload', this.listenFreshClose)
+        if (this.isChange && (this.title || this.content)) {
+            this.$confirm('要离开本页面吗？系统将可能不会保存你做的更改', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            })
+            .then(() => {
+                next()
+            })
+            .catch(() => {
+                next(false)
+            })
+        } else {
+            next()
+        }
     }
 }
 </script>
 <style lang='stylus'>
 #publish {
     padding: 20px 24px;
+    .recovery{
+        background: rgba(254,133,0,0.95);
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 10px;
+        animation: slideDown 5s ease;
+        height: 0px;
+        line-height: 40px;
+        padding: 0 15px;
+        overflow: hidden;
+        .cancle{
+            color: #4d7dd2;
+            margin-left: 8px;
+        }
+    }
     .write {
         position: relative;
         border: 1px solid #e9e9e9;
@@ -624,6 +742,18 @@ export default {
             max-height: 250px;
             margin-bottom: 0;        
         }
+    }
+}
+
+@keyframes slideDown {
+    6%{
+        height: 40px;
+    }
+    94% {
+        height: 40px;
+    }
+    100% {
+        height: 0;
     }
 }
 </style>

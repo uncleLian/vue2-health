@@ -1,12 +1,12 @@
 <template>
     <header id="header" class="">
         <div class="header_wrap">
-            <a class="logo">头条号</a>
+            <router-link class="logo" to="/index/home">头条号</router-link>
             <div class="right">
                 <router-link to="/index/publish">
                     <el-button type="danger" class="publish_btn">发表</el-button>
                 </router-link>
-                <el-dropdown class="user" @command="handleCommand">
+                <el-dropdown class="user" @command="handleCommand" menu-align='start'>
                     <div class="userinfo">
                         <img :src="user.headimgurl" alt="">
                         <span class="el-dropdown-link">{{user.nickname}}</span>

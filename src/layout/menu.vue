@@ -21,7 +21,7 @@
 export default {
     data() {
         return {
-            activeName: 'home'
+            activeName: '/index/home'
         }
     },
     computed: {
@@ -38,6 +38,7 @@ export default {
                     return routerArr[i]
                 }
             }
+            return ''
         }
     },
     watch: {
@@ -59,6 +60,7 @@ export default {
     min-height: inherit;
     background: #fff;
     font-size: 14px;
+    user-select: none;
     i{
         color: #999 !important;
     }

@@ -69,7 +69,9 @@ body{
 img{
     vertical-align: top;
 }
-
+#index .el-tabs{
+    user-select: none;
+}
 #index .el-tabs__header{
     margin-bottom: 0;
 }
@@ -89,5 +91,3 @@ img{
 #index .tab_sub .el-tabs__header{
     padding: 0 24px;
 }
-
-

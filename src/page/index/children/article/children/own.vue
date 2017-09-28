@@ -11,8 +11,9 @@
             <my-loading :visible="loading"></my-loading>
             <my-error :visible="error" :reload="get_article"></my-error>
             <my-nothing :visible="nothing && !loading && !error"></my-nothing>
+
             <!-- list -->
-            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"  @edit="editArticle" @delete="deleteArticle"></article-list>
+            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"></article-list>
 
             <template v-if="itemJson && itemJson.length > 0">
                 <my-loading :visible="more_loading"></my-loading>
@@ -41,30 +42,31 @@ export default {
             nothing: false,
             more_loading: false,
             more_error: false,
-            more_nothing: false
+            more_nothing: false,
+            location: false
         }
     },
     methods: {
         ...mapActions([
-            'post_article_data',
             'get_articleList_data'
         ]),
-        init() {
+        async init() {
+            await this.get_article()
+            this.scrollPosition()
+        },
+        async get_article() {
             this.nothing = false
             this.error = false
             this.more_loading = false
             this.more_nothing = false
             this.more_error = false
-        },
-        get_article() {
-            this.init()
             this.loading = true
             this.page[this.activeName] = 1
             let params = {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
-            this.get_articleList_data(params)
+            await this.get_articleList_data(params)
                 .then(res => {
                     if (res && res.code === 1 && res.data) {
                         this.itemJson = res.data
@@ -121,39 +123,17 @@ export default {
                     let footerHeight = $('#footer').height()
                     let isBottom = scrollTop + windowHeight >= documentHeight - footerHeight
                     let isInit = this.itemJson.length > 0 && !this.more_loading && !this.more_error && !this.more_nothing
-                    if (isBottom && isInit) {
+                    if (isBottom && isInit && this.page[this.activeName] >= 2) {
                         this.get_article_more()
                     }
                 }, 10)
             })
         },
-        editArticle(item) {
-            this.$router.push(`/index/publish?id=${item.id}`)
-        },
-        deleteArticle(val) {
-            this.$confirm('此操作将永久删除这篇文章, 是否继续?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            })
-            .then(() => {
-                let params = {
-                    type: 'del',
-                    id: val.item.id,
-                    datafrom: val.item.datafrom
-                }
-                this.post_article_data(params)
-                .then(res => {
-                    this.itemJson.splice(val.index, 1)
-                    this.$notify.success('删除成功!')
-                })
-                .catch(err => {
-                    console.log('删除失败', err)
-                    this.$notify.error('删除失败!')
-                })
-            })
-            .catch(() => {
-            })
+        scrollPosition() {
+            if (this.$route.meta.position) {
+                $(window).scrollTop(this.$route.meta.position.y)
+                this.$route.meta.position.y = 0
+            }
         }
     },
     watch: {
@@ -164,9 +144,7 @@ export default {
         }
     },
     created() {
-        this.get_article()
-    },
-    mounted() {
+        this.init()
         this.listenScroll()
     }
 }

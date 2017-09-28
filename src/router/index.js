@@ -2,55 +2,70 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // 一级页面
-import login from '@/page/login/login'
-import preview from '@/page/preview/preview'
-import index from '@/page/index/index'
+const login = () => import('@/page/login/login')
+const preview = () => import('@/page/preview/preview')
+const index = () => import('@/page/index/index')
 
 // 二级页面
-import publish from '@/page/index/children/publish/publish'
+const publish = () => import('@/page/index/children/publish/publish')
 
-import home from '@/page/index/children/home/home'
+const home = () => import('@/page/index/children/home/home')
 
-import article from '@/page/index/children/article/article'
-import own from '@/page/index/children/article/children/own'
+const article = () => import('@/page/index/children/article/article')
+const own = () => import('@/page/index/children/article/children/own')
 
-import comment from '@/page/index/children/comment/comment'
-import newest from '@/page/index/children/comment/children/newest'
-import articles from '@/page/index/children/comment/children/articles'
+const comment = () => import('@/page/index/children/comment/comment')
+const newest = () => import('@/page/index/children/comment/children/newest')
+const articles = () => import('@/page/index/children/comment/children/articles')
 
-import material from '@/page/index/children/material/material'
-import pic from '@/page/index/children/material/children/pic'
+const material = () => import('@/page/index/children/material/material')
+const pic = () => import('@/page/index/children/material/children/pic')
 
 Vue.use(Router)
 
 let router = new Router({
+    mode: 'history',
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            to.meta.position = savedPosition
+            return savedPosition
+        } else {
+            return { x: 0, y: 0 }
+        }
+    },
     routes: [
         {
             path: '',
             redirect: '/login'
         },
         {
+            name: 'login',
             path: '/login',
             component: login
         },
         {
+            name: 'preview',
             path: '/preview_article',
             component: preview
         },
         {
+            name: 'index',
             path: '/index',
             component: index,
             meta: { requiresAuth: true },
             children: [
                 {
+                    name: 'publish',
                     path: 'publish',
                     component: publish
                 },
                 {
+                    name: 'home',
                     path: 'home',
                     component: home
                 },
                 {
+                    name: 'article',
                     path: 'article',
                     component: article,
                     children: [
@@ -59,6 +74,7 @@ let router = new Router({
                             redirect: 'own'
                         },
                         {
+                            name: 'own',
                             path: 'own',
                             component: own
                         }
