@@ -36,7 +36,7 @@ let router = new Router({
     routes: [
         {
             path: '',
-            redirect: '/login'
+            redirect: '/index'
         },
         {
             name: 'login',
@@ -46,11 +46,13 @@ let router = new Router({
         {
             name: 'preview',
             path: '/preview_article',
-            component: preview
+            component: preview,
+            meta: { requiresAuth: true }
         },
         {
             name: 'index',
             path: '/index',
+            redirect: '/index/home',
             component: index,
             meta: { requiresAuth: true },
             children: [
@@ -116,25 +118,5 @@ let router = new Router({
         }
     ]
 })
-
-// router.beforeEach((to, from, next) => {
-//     console.log('判断是否登录')
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     console.log('要登录')
-//     let login = false
-//     if (!login) {
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath }
-//       })
-//     } else {
-//         console.log('已登录')
-//       next()
-//     }
-//   } else {
-//     console.log('不用登录')
-//     next() // 确保一定要调用 next()
-//   }
-// })
 
 export default router

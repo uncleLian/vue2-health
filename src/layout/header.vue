@@ -21,6 +21,7 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import Cookies from 'js-cookie'
 export default {
     data() {
         return {
@@ -28,19 +29,20 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('login', [
+        ...mapGetters([
             'user'
         ])
     },
     methods: {
-        ...mapMutations('login', [
-            'set_login',
-            'set_user'
+        ...mapMutations([
+            'set_user',
+            'set_token'
         ]),
         handleCommand(command) {
             if (command === 'exit') {
-                this.set_login('')
                 this.set_user('')
+                this.set_token('')
+                Cookies.remove('Token')
                 this.$router.push('/login')
             }
         }

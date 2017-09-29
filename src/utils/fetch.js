@@ -5,7 +5,8 @@ const ajaxPHP = {
     login: 'Logincc.php',
     list: 'List.php',
     edit: 'Edit.php',
-    uploadFile: 'upload_file.php'
+    uploadFile: 'upload_file.php',
+    loginText: 'ecmsadmin.php'
 }
 export var fetch = async(type = 'POST', url = '', data = {}) => {
     let result
