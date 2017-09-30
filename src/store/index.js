@@ -32,40 +32,25 @@ const mutations = {
     },
     set_token(state, val) {
         state.token = val
-        Cookies.set('Token', val)
+        Cookies.set('Token', val, { expires: 7 })
     }
 }
 
 const actions = {
 
     // 获取登录数据
-    // async get_login_data({ commit }, params) {
-    //     return new Promise((resolve, reject) => {
-    //         fetch('POST', 'loginText', params)
-    //         .then(res => {
-    //             console.log('登录返回值：', res)
-    //             commit('set_token', new Date())
-    //             console.log('获取了token')
-    //             resolve()
-    //         })
-    //         .catch(err => {
-    //             reject(err)
-    //         })
-    //     })
-    // },
-
-    // 获取登录数据
     async get_login_data({ commit }, params) {
         return new Promise((resolve, reject) => {
             fetch('POST', 'login', params)
             .then(res => {
-                commit('set_token', new Date(), { expires: 30 })
-                console.log('获取了并设置了token值，有效期30天')
-                resolve()
-                // if (res.data) {
-                //     commit('set_token', res.data.token)
-                //     resolve()
-                // }
+                console.log('登录返回值：', res)
+                if (res.data) {
+                    commit('set_token', res.data.token)
+                    console.log('获取了并设置了token值，有效期7天')
+                    resolve()
+                } else {
+                    reject()
+                }
             })
             .catch(err => {
                 reject(err)
@@ -76,18 +61,21 @@ const actions = {
     // 获取用户数据
     async get_user_data({ getters, commit }, token) {
         let params = {
-            type: 'check',
+            enews: 'check',
             token: getters.token
         }
-        fetch('POST', 'login', params)
-        .then(res => {
-            if (res.data) {
-                commit('SET_TOKEN', response.data.token)
-                resolve()
-            }
-        })
-        .catch(err => {
-            reject(err)
+        return new Promise((resolve, reject) => {
+            fetch('POST', 'login', params)
+            .then(res => {
+                console.log('用户返回值：', res)
+                if (res.data) {
+                    commit('set_user', res.data)
+                    resolve()
+                }
+            })
+            .catch(err => {
+                reject(err)
+            })
         })
     },
 

@@ -53,20 +53,7 @@ router.beforeEach((to, from, next) => {
       } else {
         store.dispatch('get_user_data')
           .then(res => {
-            console.log('获取用户信息成功，正在进入路由')
-            let data = {
-              userid: 'oqKkTv6XI_iDnYha-1VYKbtsvbYw',
-              nickname: '小郑',
-              headimgurl: 'http://wx.qlogo.cn/mmopen/2IWjic7SiaU1Zctuxl3SG5PHv38RExvPYWC7OkicOrfMZzB2Y84icaOfFVJsjBEPJqbtha2PpJJ38cCpXqff3PRn4n3ZlZzOs2Bic/0'
-            }
-            store.commit('set_user', data)
-            console.log('获取用户信息成功，已commit')
             next()
-            // if (res.data) {
-            //   store.commit('set_user', res.data)
-            //   console.log('获取用户信息成功，已commit')
-            //   next()
-            // }
           })
       }
     }

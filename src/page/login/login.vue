@@ -53,19 +53,14 @@ export default {
         ]),
         login() {
             let params = {
-                type: 'login',
-                name: this.form.id,
-                password: this.form.password
+                enews: 'login',
+                username: this.form.id,
+                password: this.form.password,
+                equestion: 0
             }
-            // let params = {
-            //     enews: 'login',
-            //     username: this.form.id,
-            //     password: this.form.password,
-            //     equestion: 0
-            // }
             this.get_login_data(params)
                 .then(() => {
-                    console.log('登录成功，正在跳转页面')
+                    this.$message.success('登录成功')
                     this.$router.push('/index/home')
                 })
                 .catch(err => {
@@ -76,17 +71,6 @@ export default {
         verify() {
             if (this.form.id && this.form.password && this.form.agree) {
                 this.login()
-                // if (this.form.id === 'lian' && this.form.password === '123') {
-                //     let res = {
-                //         userid: 'oqKkTv6XI_iDnYha-1VYKbtsvbYw',
-                //         nickname: '小郑',
-                //         headimgurl: 'http://wx.qlogo.cn/mmopen/2IWjic7SiaU1Zctuxl3SG5PHv38RExvPYWC7OkicOrfMZzB2Y84icaOfFVJsjBEPJqbtha2PpJJ38cCpXqff3PRn4n3ZlZzOs2Bic/0'
-                //     }
-                //     this.set_user(res)
-                //     this.$router.push('/index/home')
-                // } else {
-                //     this.$message.error('您输入的账号或密码不匹配')
-                // }
             } else if (!this.form.id) {
                 this.$message.error('请输入账号')
             } else if (!this.form.password) {

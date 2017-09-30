@@ -23,11 +23,6 @@
 import { mapGetters, mapMutations } from 'vuex'
 import Cookies from 'js-cookie'
 export default {
-    data() {
-        return {
-
-        }
-    },
     computed: {
         ...mapGetters([
             'user'

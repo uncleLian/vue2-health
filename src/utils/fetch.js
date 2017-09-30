@@ -2,11 +2,10 @@ import axios from 'axios'
 import qs from 'qs'
 axios.defaults.baseURL = 'http://api.toutiaojk.com:8181/e/extend/jkh/'
 const ajaxPHP = {
-    login: 'Logincc.php',
     list: 'List.php',
     edit: 'Edit.php',
     uploadFile: 'upload_file.php',
-    loginText: 'ecmsadmin.php'
+    login: 'ecmsadmin.php'
 }
 export var fetch = async(type = 'POST', url = '', data = {}) => {
     let result
