@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { fetch } from '@/utils/fetch.js'
 import Cookies from 'js-cookie'
-// import { getCache, setCache, get_local_cache, set_local_cache } from '@/config/cache.js'
 
 Vue.use(Vuex)
 
@@ -33,6 +32,11 @@ const mutations = {
     set_token(state, val) {
         state.token = val
         Cookies.set('Token', val, { expires: 7 })
+    },
+    remove_token(state) {
+        state.user = ''
+        state.token = ''
+        Cookies.remove('Token')
     }
 }
 
@@ -43,10 +47,8 @@ const actions = {
         return new Promise((resolve, reject) => {
             fetch('POST', 'login', params)
             .then(res => {
-                console.log('登录返回值：', res)
-                if (res.data) {
+                if (res.data && res.data.token) {
                     commit('set_token', res.data.token)
-                    console.log('获取了并设置了token值，有效期7天')
                     resolve()
                 } else {
                     reject()
@@ -67,13 +69,16 @@ const actions = {
         return new Promise((resolve, reject) => {
             fetch('POST', 'login', params)
             .then(res => {
-                console.log('用户返回值：', res)
-                if (res.data) {
+                if (res.data && res.data.userid) {
                     commit('set_user', res.data)
                     resolve()
+                } else {
+                    commit('remove_token')
+                    reject()
                 }
             })
             .catch(err => {
+                commit('remove_token')
                 reject(err)
             })
         })

@@ -6,14 +6,17 @@ import router from './router'
 import store from './store'
 Vue.config.productionTip = false
 
+// 第三方库
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import '@/assets/css/icon.less'
 import VueQuillEditor from 'vue-quill-editor'
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 
-// layout
+// 自定义组件
 import myHeader from '@/layout/header'
 import myFooter from '@/layout/footer'
 import myMenu from '@/layout/menu'
@@ -21,7 +24,6 @@ Vue.component('my-footer', myFooter)
 Vue.component('my-header', myHeader)
 Vue.component('my-menu', myMenu)
 
-// component
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
 import myLoading from '@/components/loading'
@@ -33,41 +35,45 @@ Vue.component('my-loading', myLoading)
 Vue.component('my-error', myError)
 Vue.component('my-nothing', myNothing)
 
+// 全局路由判断
 router.beforeEach((to, from, next) => {
-  console.log('判断是否需要登录')
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log('要登录')
-    let token = store.getters.token
-    store.commit('set_token', token)
-    console.log('获取token值，验证是否已经登录过了')
-    if (!token) {
-      console.log('没有token值或已失效，需要重新登录')
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      console.log('有token值，已经登录，正在拉去用户信息')
-      if (store.getters.user.userid) {
-        next()
-      } else {
-        store.dispatch('get_user_data')
-          .then(res => {
-            next()
-          })
-      }
+    function ToLogin() {
+        next({
+            path: '/login',
+            query: { redirect: to.fullPath }
+        })
     }
-  } else {
-    console.log('不用登录')
-    next()
-  }
+    if (to.path === '/login' && store.getters.token) {
+        next('/')
+    } else if (to.matched.some(record => record.meta.login)) {
+        let token = store.getters.token
+        if (token) {
+            store.commit('set_token', token)
+            if (store.getters.user.userid) {
+                next()
+            } else {
+                store.dispatch('get_user_data')
+                .then(res => {
+                    next()
+                })
+                .catch(() => {
+                    window.alert('账号在别处登录，请重新登录')
+                    ToLogin()
+                })
+            }
+        } else {
+            ToLogin()
+        }
+    } else {
+        next()
+    }
 })
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  store,
-  template: '<App/>',
-  components: { App }
+    el: '#app',
+    router,
+    store,
+    template: '<App/>',
+    components: { App }
 })

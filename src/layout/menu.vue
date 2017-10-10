@@ -3,15 +3,18 @@
         <el-menu :default-active="activeName" :router="true" :default-openeds="['manage']"> 
             <!-- home -->
             <el-menu-item index="/index/home"><i class="el-icon-fa-home el-icon-fa-lg"></i>主页</el-menu-item>
+
+            <!-- manage -->
             <el-submenu index="manage">
                 <template slot="title"><i class="el-icon-fa-cube el-icon-fa-lg"></i>管理</template>
-                <!-- article -->
                 <el-menu-item index="/index/article">内容管理</el-menu-item>
                 <el-menu-item index="/index/comment">评论管理</el-menu-item>
                 <el-menu-item index="/index/material">素材管理</el-menu-item>
             </el-submenu>
+
             <!-- count -->
             <el-menu-item index="/index/count"><i class="el-icon-fa-bar-chart el-icon-fa-lg"></i>统计</el-menu-item>
+
             <!-- setting -->
             <el-menu-item index="/index/setting"><i class="el-icon-fa-cog el-icon-fa-lg"></i>设置</el-menu-item>
         </el-menu>
@@ -31,7 +34,9 @@ export default {
                 '/index/home',
                 '/index/article',
                 '/index/comment',
-                '/index/material'
+                '/index/material',
+                '/index/count',
+                '/index/setting'
             ]
             for (var i = 0; i < routerArr.length; i++) {
                 if (activeRoute.includes(routerArr[i])) {

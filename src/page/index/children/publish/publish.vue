@@ -7,12 +7,12 @@
         <div class="write">
             <!-- title -->
             <div class="title">
-                <input type='text' placeholder="标题 (5-30个字符)" v-model="title">
-                <div class="title_count"><span :class="{'error': title.length > 30}">{{title.length}}</span> / 30</div>
+                <input type='text' placeholder="标题 (5-30个字符)" v-model.trim="title">
+                <div class="title_count" :class="{'error': (title.length < 5 || title.length > 30) && title.length > 0}">{{title.length}} / 30</div>
             </div>
             <!-- content -->
             <div class="body">
-                <quill-editor v-model="content" ref="myQuillEditor" :options="editorOption">
+                <quill-editor v-model.trim="content" ref="myQuillEditor" :options="editorOption">
                     <div id="toolbar" slot="toolbar">
                         <div class="ql-formats">
                             <button class="ql-header" value="1" title="H1标题"></button>
@@ -31,6 +31,7 @@
                             <button class="undo" title="撤销" @click.stop="editor.history.undo()"></button>
                             <button class="redo" title="重做" @click.stop="editor.history.redo()"></button>
                         </div>
+                        <div class="draftSave" :class="{on : isSave}"></div>
                     </div>
                 </quill-editor>
             </div>
@@ -58,7 +59,6 @@
                             </div>
                         </template>
                     </div>
-
                     <!-- 提示 -->
                     <div class="cover_tip">优质的封面有利于推荐，请使用清晰度较高的图片，避免使用GIF、带大量文字的图片。</div>
                 </div>
@@ -148,7 +148,8 @@ export default {
             dialogImageUrl: '', // 预览图片地址
             loading: false,
             isRequest: false,   // 是否请求了
-            isChange: false,        // 是否修改了
+            isChange: false,    // 是否修改了
+            isSave: false,      // 是否保存了
             editorOption: { // 富文本编辑器配置
                 modules: {
                     toolbar: '#toolbar',
@@ -157,7 +158,8 @@ export default {
                         maxStack: 500,
                         userOnly: true
                     }
-                }
+                },
+                placeholder: ' '
             }
         }
     },
@@ -237,6 +239,11 @@ export default {
                 content: this.content
             }
             set_local_cache('draft', data)
+            this.isSave = true
+            let timer = setTimeout(() => {
+                this.isSave = false
+                clearTimeout(timer)
+            }, 1500)
         },
         removeDraft() {
             if (this.$route.query.id) {
@@ -342,7 +349,6 @@ export default {
         publish(type, state) {
             this.loading = true
             this.title = this.title.replace(/\s/gi, '')
-            this.content = this.content.replace(/\s/gi, '')
             let params = {
                 'type': type,
                 'state': state,
@@ -410,7 +416,6 @@ export default {
         window.addEventListener('beforeunload', this.listenFreshClose)
     },
     beforeRouteLeave (to, from, next) {
-        window.removeEventListener('beforeunload', this.listenFreshClose)
         if (this.isChange && (this.title || this.content)) {
             this.$confirm('要离开本页面吗？系统将可能不会保存你做的更改', '提示', {
               confirmButtonText: '确定',
@@ -419,12 +424,14 @@ export default {
             })
             .then(() => {
                 next()
+                window.removeEventListener('beforeunload', this.listenFreshClose)
             })
             .catch(() => {
                 next(false)
             })
         } else {
             next()
+            window.removeEventListener('beforeunload', this.listenFreshClose)
         }
     }
 }
@@ -465,6 +472,7 @@ export default {
                 font-size: 20px;
                 padding-left: 20px;
                 padding-right: 80px;
+                font-weight: 700;
             }
             .title_count {
                 position: absolute;
@@ -476,7 +484,7 @@ export default {
                 font-size: 14px;
                 padding: 0 10px;
                 text-align: right;
-                .error {
+                &.error {
                     color: #ff4949;
                 }
             }
@@ -528,6 +536,19 @@ export default {
                     display: block;
                     margin: 0 auto;
                     margin-bottom: 1em;
+                }
+            }
+            .draftSave{
+                float: right;
+                margin-top: 9px;
+                font-size: 13px;
+                color: #9e9e9e;
+                margin-right: 12px;
+                &:before{
+                    content: "已保存"
+                }
+                &.on:before{
+                    content: "保存中..."
                 }
             }
         }

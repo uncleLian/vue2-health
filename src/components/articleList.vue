@@ -42,7 +42,8 @@
                     <!-- 已发表 / 草稿 / 撤回 -->
                     <template v-else>
                         <div class="abstruct">
-                            <span class="passed" v-if="item.state === '1'">已发表</span>
+                            <a class="recommend" v-if="item.state === '0'">已推荐</a>
+                            <span class="passed" v-if="item.state === '0' || item.state === '1'">已发表</span>
                             <span class="auditing" v-if="item.state === '3'">审核中</span>
                             <span class="recall" v-if="item.state === '5'">已撤回</span>
                             <span class="time" v-if="item.newstime">{{item.newstime}}</span>
@@ -222,9 +223,18 @@ pic_height = 102px
                     font-size: 14px;
                     color: #777;
                 }
-                .time:before{
+                span:not(:last-child)::after{
                     content: "\FF65";
                     margin: 0 4px;
+                }
+                .recommend{
+                    display: inline-block;
+                    font-size: 12px;
+                    line-height: 18px;
+                    color: #60a3f5;
+                    border: 1px solid #60a3f5;
+                    padding: 2px 2px 0px;
+                    margin-right: 10px;
                 }
             }   
             .count{

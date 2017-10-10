@@ -11,7 +11,7 @@
         <el-dialog class='login_box' title="登录" :visible.sync="dialogFormVisible">
             <!-- form -->
             <el-form :model="form" @submit.native.prevent="verify">
-                <el-form-item><el-input v-model="form.id" placeholder="邮箱/手机号" auto-complete='off' /></el-form-item>
+                <el-form-item><el-input v-model="form.username" placeholder="邮箱/手机号" auto-complete='off' /></el-form-item>
                 <el-form-item><el-input v-model="form.password" placeholder="密码" auto-complete='off' type="password" /></el-form-item>
                 <div class="agree_item">
                     <el-checkbox v-model="form.agree">我已阅读并同意<a href="###">用户协议和隐私条款</a></el-checkbox>
@@ -22,7 +22,7 @@
             <!-- otherLogin -->
             <div slot="footer" class="footer">
                 <ul class="otherLogin">
-                    <li class="wx" @click="login"><span>微信</span></li>
+                    <li class="wx"><span>微信</span></li>
                     <li class="qq"><span>QQ</span></li>
                 </ul>
             </div>
@@ -30,48 +30,41 @@
     </div>
 </template>
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
     data() {
         return {
             dialogFormVisible: false, // 登录框
             form: {
-                id: '',
+                username: '',
                 password: '',
                 agree: true
             }
         }
     },
     methods: {
-        ...mapMutations([
-            'set_login',
-            'set_user',
-            'set_token'
-        ]),
         ...mapActions([
             'get_login_data'
         ]),
         login() {
             let params = {
                 enews: 'login',
-                username: this.form.id,
+                username: this.form.username,
                 password: this.form.password,
                 equestion: 0
             }
             this.get_login_data(params)
                 .then(() => {
-                    this.$message.success('登录成功')
-                    this.$router.push('/index/home')
+                    this.$route.query.redirect ? this.$router.push(this.$route.query.redirect) : this.$router.push('/index/home')
                 })
-                .catch(err => {
-                    console.log(err)
+                .catch(() => {
                     this.$message.error('账号密码错误')
                 })
         },
         verify() {
-            if (this.form.id && this.form.password && this.form.agree) {
+            if (this.form.username && this.form.password && this.form.agree) {
                 this.login()
-            } else if (!this.form.id) {
+            } else if (!this.form.username) {
                 this.$message.error('请输入账号')
             } else if (!this.form.password) {
                 this.$message.error('请输入密码')
