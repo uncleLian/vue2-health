@@ -82,12 +82,6 @@ export default{
 }
 </script>
 <style lang='stylus'>
-.el-select-dropdown__item.selected{
-    background-color: #ff4949;
-    &.hover{
-        background-color: #ff4949;
-    }
-}
 #preview{
     position: relative;
     width: 100%;

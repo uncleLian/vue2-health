@@ -57,6 +57,7 @@ export default {
 }
 </script>
 <style lang='stylus'>
+bgColor = #00939c
 #menu {
     position: relative;
     display: inline-block;
@@ -82,7 +83,7 @@ export default {
         }
     }
     .el-menu-item.is-active{
-        background: #ed4040;
+        background: bgColor;
         color: #fff;
         i{
             color: #fff!important;

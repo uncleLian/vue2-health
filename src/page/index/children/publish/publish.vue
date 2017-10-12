@@ -84,14 +84,14 @@
         <div class="control">
             <!-- 修改 -->
             <template v-if="$route.query.id && this.json && this.json.state !== '2'">
-                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('publish')">发表</el-button>
-                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
+                <el-button class='cancle_btn' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
             <!-- 新建 -->
             <template v-else>
-                <el-button class='publish_btn' type='danger' size='large' @click.stop="verify('publish')">发表</el-button>
-                <el-button class='draft_btn' type='danger' size='large' @click.stop="verify('draft')">存草稿</el-button>
-                <el-button class='cancle_btn' type='danger' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
+                <el-button class='draft_btn' type='primary' size='large' @click.stop="verify('draft')">存草稿</el-button>
+                <el-button class='cancle_btn' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
         </div>
 
@@ -105,7 +105,7 @@
             </el-dialog>
             <div slot="footer">
                 <el-button class="cancle_btn" @click.stop="clearUploadFiles">取 消</el-button>
-                <el-button type="danger" @click="uploadComplete">确 定</el-button>
+                <el-button type="primary" @click="uploadComplete">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -119,7 +119,7 @@
             </el-radio-group>
             <div slot="footer">
                 <el-button class="cancle_btn" @click.stop="clearSelectFiles">取 消</el-button>
-                <el-button type="danger" @click="selectComplete">确 定</el-button>
+                <el-button type="primary" @click="selectComplete">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -497,6 +497,9 @@ export default {
                     background: #eee;
                 }
                 .ql-toolbar {
+                    position: sticky;
+                    top: 0;
+                    z-index: 999;
                     border-bottom: 1px solid #e9e9e9 !important;
                 }
                 .ql-container {
@@ -743,7 +746,6 @@ export default {
     .el-dialog.el-dialog--small{
         min-height: 400px;
         .el-dialog__title{
-            color: #f85959;
             font-weight: 400;
         }
         .el-dialog__body{

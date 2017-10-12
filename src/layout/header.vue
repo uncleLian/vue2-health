@@ -4,7 +4,7 @@
             <router-link class="logo" to="/index/home">头条号</router-link>
             <div class="right">
                 <router-link to="/index/publish">
-                    <el-button type="danger" class="publish_btn">发表</el-button>
+                    <el-button type="primary" class="publish_btn">发表</el-button>
                 </router-link>
                 <el-dropdown class="user" @command="handleCommand" menu-align='start'>
                     <div class="userinfo">
@@ -42,11 +42,12 @@ export default {
     }
 }
 </script>
-<style scoped lang='stylus'>
+<style lang='stylus'>
+bgColor = #00939c
 #header {
     position: relative;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
-    border-top: 4px solid #ed4040;
+    border-top: 4px solid bgColor;
     height: 76px;
     background: #fff;
     min-width: 1138px;
@@ -63,7 +64,7 @@ export default {
             left: 0;
             width: 94px;
             height: 32px;
-            background: url(https://p1.pstatp.com/origin/28900002566381c65eb7)no-repeat;
+            background: url(../assets/img/logo.png)no-repeat;
             background-size: contain;
             transform: translateY(-50%);
         }

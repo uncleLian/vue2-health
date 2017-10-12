@@ -21,6 +21,6 @@ export default {
     }
 }
 </script>
-<style scoped lang='stylus'>
+<style lang='stylus'>
 #home {}
 </style>

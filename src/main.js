@@ -37,12 +37,6 @@ Vue.component('my-nothing', myNothing)
 
 // 全局路由判断
 router.beforeEach((to, from, next) => {
-    function ToLogin() {
-        next({
-            path: '/login',
-            query: { redirect: to.fullPath }
-        })
-    }
     if (to.path === '/login' && store.getters.token) {
         next('/')
     } else if (to.matched.some(record => record.meta.login)) {
@@ -58,11 +52,17 @@ router.beforeEach((to, from, next) => {
                 })
                 .catch(() => {
                     window.alert('账号在别处登录，请重新登录')
-                    ToLogin()
+                    next({
+                        path: '/login',
+                        query: { redirect: to.fullPath }
+                    })
                 })
             }
         } else {
-            ToLogin()
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath }
+            })
         }
     } else {
         next()

@@ -76,13 +76,16 @@ export default {
 }
 </script>
 <style lang='stylus'>
+bgColor = #00939c
+bgColor2 = #00838d
 #login {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: linear-gradient(#ff6e7c, #ff776d);
+    background: linear-gradient(bgColor, bgColor2);
     color: #333;
+    overflow: hidden;
     a:hover {
         color: #f85959 !important;
     }
@@ -133,9 +136,9 @@ export default {
                 margin-right: 40px;
             }
             .login_btn {
-                color: #ff635c;
+                color: bgColor;
                 background-color: #fff;
-                border: 1px solid #ff635c;
+                border: 1px solid bgColor;
             }
         }
     }
@@ -143,7 +146,7 @@ export default {
         a {
             display: inline-block;
             font-size: 12px;
-            color: #20a0ff;
+            color: bgColor;
         }
         .el-dialog {
             width: 340px;
@@ -170,7 +173,7 @@ export default {
                 }
                 input {
                     color: #fff;
-                    background: #f85959;
+                    background: bgColor;
                     border: none;
                     outline: none;
                     cursor: pointer;
@@ -208,19 +211,16 @@ export default {
 #login {
     filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr='#fe5d6c', endColorStr='#fd6155', gradientType='0');
 }
-
 #login:after {
     content: "";
     display: block;
     height: 100%;
     background: url(~@/assets/img/login_bg.png) repeat;
 }
-
-.otherLogin .wx {
+#login .otherLogin .wx {
     background: url(~@/assets/icon/icon_wx_pc.svg)no-repeat center center;
 }
-
-.otherLogin .qq {
+#login .otherLogin .qq {
     background: url(~@/assets/icon/icon_qq_pc.svg)no-repeat center center;
 }
 </style>

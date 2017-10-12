@@ -21,7 +21,7 @@ export default {
 }
 
 </script>
-<style scoped lang='stylus'>
+<style lang='stylus'>
 #newestCom {
   padding: 20px 24px;
   color: #222;

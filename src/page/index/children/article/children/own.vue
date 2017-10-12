@@ -149,7 +149,7 @@ export default {
     }
 }
 </script>
-<style scoped lang='stylus'>
+<style lang='stylus'>
 #own {
     padding-top: 20px;
     .own_content {

@@ -49,7 +49,7 @@ export default {
     }
 }
 </script>
-<style scoped lang='stylus'>
+<style lang='stylus'>
 .comment-list {
     position: relative;
     width: 100%;
