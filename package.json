@@ -14,7 +14,7 @@
     "axios": "^0.16.2",
     "babel-polyfill": "^6.26.0",
     "echarts": "^3.7.2",
-    "element-ui": "^1.4.2",
+    "element-ui": "^1.4.7",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "js-cookie": "^2.1.4",
