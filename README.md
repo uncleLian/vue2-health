@@ -1,36 +1,15 @@
-# health
+# vue2-health
 
-> A Vue.js project
+![image](https://img.shields.io/badge/vue-2.3.3-blue.svg)
+![image](https://img.shields.io/badge/element--ui-1.4.7-blue.svg)
 
-已完成的：
-	1、登录 && 退出登录 （初步）
-	2、富文本发表文章 && 上传图片 （初步）
-	3、评论列表 （初步）
-	4、文章预览
+#### 还在开发，敬请期待！
+> 你的 "Start" 是我最大的动力！🌹
 
-接下来需要做的：
-	1、文章预览 && 修改、转发、删除
-	2、图片模态框
-	3、文章评论 && 文章点赞、回复
-	4、素材管理
-	5、主页
-	6、统计
+#### 最终目标
 
+- 第一阶段：echo回声（移动端） —— [仓库地址](https://github.com/uncleLian/vue2-echo) —— [项目效果请戳这里](http://echo.liansixin.win)
 
-## Build Setup
+- 第二阶段：今日头条（移动端 & native app） —— 开源地址：正在完善，敬请期待！ —— [项目效果请戳这里](http://m.toutiaojk.com)
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+- 第三阶段：头条号（pc端） —— 开源地址：还在开发，敬请期待！
