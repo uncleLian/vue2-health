@@ -85,7 +85,7 @@ export default {
             'post_article_data'
         ]),
         previewURL(item) {
-            if (item.state === '1') {
+            if (item.state === '0' || item.state === '1') {
                 return `http://m.toutiaojk.com/#/detail?classid=${item.classid}&id=${item.id}&datafrom=${item.datafrom}`
             } else {
                 return `/preview_article?id=${item.id}`

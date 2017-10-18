@@ -42,8 +42,7 @@ export default {
             nothing: false,
             more_loading: false,
             more_error: false,
-            more_nothing: false,
-            location: false
+            more_nothing: false
         }
     },
     methods: {
@@ -60,15 +59,21 @@ export default {
             this.more_loading = false
             this.more_nothing = false
             this.more_error = false
+            this.page = {
+                all: 1,
+                passed: 1,
+                unpassed: 1,
+                draft: 1,
+                recall: 1
+            }
             this.loading = true
-            this.page[this.activeName] = 1
             let params = {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
             await this.get_articleList_data(params)
                 .then(res => {
-                    if (res && res.code === 1 && res.data) {
+                    if (res && res.data) {
                         this.itemJson = res.data
                         this.page[this.activeName]++
                     } else {
@@ -77,8 +82,7 @@ export default {
                     }
                     this.loading = false
                 })
-                .catch(err => {
-                    console.log('get_article', err)
+                .catch(() => {
                     this.itemJson = []
                     this.loading = false
                     this.error = true
@@ -94,7 +98,7 @@ export default {
             }
             this.get_articleList_data(params)
             .then(res => {
-                if (res && res.code === 1 && res.data) {
+                if (res && res.data) {
                     this.itemJson.push(...res.data)
                     this.page[this.activeName]++
                 } else {
@@ -102,32 +106,27 @@ export default {
                 }
                 this.more_loading = false
             })
-            .catch(err => {
-                console.log('get_article_more', err)
-                this.itemJson = []
+            .catch(() => {
                 this.more_loading = false
                 this.more_error = true
             })
         },
-        listenScroll() {
-            $(window).on('scroll', (ev) => {
-                ev.preventDefault()
-                let timeoutRef
-                if (timeoutRef) {
-                    clearTimeout(timeoutRef)
+        onScroll() {
+            let timeoutRef
+            if (timeoutRef) {
+                clearTimeout(timeoutRef)
+            }
+            timeoutRef = setTimeout(() => {
+                let scrollTop = $(window).scrollTop()
+                let windowHeight = $(window).height()
+                let documentHeight = $(document).height()
+                let footerHeight = $('#footer').height()
+                let isBottom = scrollTop + windowHeight >= documentHeight - footerHeight
+                let isInit = this.itemJson.length > 0 && !this.more_loading && !this.more_error && !this.more_nothing && this.page[this.activeName] >= 2
+                if (isBottom && isInit) {
+                    this.get_article_more()
                 }
-                timeoutRef = setTimeout(() => {
-                    let scrollTop = $(window).scrollTop()
-                    let windowHeight = $(window).height()
-                    let documentHeight = $(document).height()
-                    let footerHeight = $('#footer').height()
-                    let isBottom = scrollTop + windowHeight >= documentHeight - footerHeight
-                    let isInit = this.itemJson.length > 0 && !this.more_loading && !this.more_error && !this.more_nothing
-                    if (isBottom && isInit && this.page[this.activeName] >= 2) {
-                        this.get_article_more()
-                    }
-                }, 10)
-            })
+            }, 200)
         },
         scrollPosition() {
             if (this.$route.meta.position) {
@@ -145,7 +144,13 @@ export default {
     },
     created() {
         this.init()
-        this.listenScroll()
+    },
+    mounted() {
+        $(window).on('scroll', this.onScroll)
+    },
+    beforeRouteLeave (to, from, next) {
+        $(window).off('scroll', this.onScroll)
+        next()
     }
 }
 </script>
