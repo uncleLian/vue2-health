@@ -7,7 +7,12 @@ Vue.use(Vuex)
 
 const state = {
     user: '',
-    token: ''
+    token: '',
+    tasks: {
+        tags: [],
+        sentences: [],
+        articles: []
+    }
 }
 
 const getters = {
@@ -22,6 +27,9 @@ const getters = {
         } else {
             return ''
         }
+    },
+    tasks: state => {
+        return state.tasks
     }
 }
 
@@ -37,6 +45,9 @@ const mutations = {
         state.user = ''
         state.token = ''
         Cookies.remove('Token')
+    },
+    set_tasks(state, val) {
+        state.tasks = val
     }
 }
 
@@ -95,7 +106,7 @@ const actions = {
         return res
     },
 
-    // 获取文章数据
+    // 获取文章详细数据
     async get_article_data({ state }, id) {
         let params = {
             'userid': state.user.userid,

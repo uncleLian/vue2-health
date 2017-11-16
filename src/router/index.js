@@ -82,6 +82,7 @@ export default new Router({
                     component: home
                 },
                 {
+                    name: 'article',
                     path: 'article',
                     component: article,
                     children: [
@@ -97,6 +98,7 @@ export default new Router({
                     ]
                 },
                 {
+                    name: 'comment',
                     path: 'comment',
                     component: comment,
                     children: [
@@ -105,16 +107,19 @@ export default new Router({
                             redirect: 'newest'
                         },
                         {
+                            name: 'newest',
                             path: 'newest',
                             component: newest
                         },
                         {
+                            name: 'articles',
                             path: 'articles',
                             component: articles
                         }
                     ]
                 },
                 {
+                    name: 'material',
                     path: 'material',
                     component: material,
                     children: [
@@ -123,16 +128,19 @@ export default new Router({
                             redirect: 'pic'
                         },
                         {
+                            name: 'pic',
                             path: 'pic',
                             component: pic
                         }
                     ]
                 },
                 {
+                    name: 'count',
                     path: 'count',
                     component: count
                 },
                 {
+                    name: 'setting',
                     path: 'setting',
                     component: setting
                 }

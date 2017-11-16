@@ -79,9 +79,11 @@ img{
 #index .tab_main >.el-tabs__header{
     padding: 10px 24px 0;
     font-size: 14px;
+    height: 62px;
 }
 #index .tab_main .el-tabs__item{
     font-size: 16px;
+    height: 52px;
 }
 #index .tab_main .el-tabs__active-bar{
     height: 2px;

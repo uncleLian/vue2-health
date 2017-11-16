@@ -8,6 +8,7 @@
             </div>
         </div>
         <my-footer></my-footer>
+        <my-sidebar></my-sidebar>
     </div>
 </template>
 <script>

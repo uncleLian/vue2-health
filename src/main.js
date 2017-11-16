@@ -5,36 +5,38 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-Vue.config.productionTip = false
 
 // 第三方库
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import '@/assets/css/icon.less'
 import VueQuillEditor from 'vue-quill-editor'
-Vue.use(ElementUI)
-Vue.use(VueQuillEditor)
-import echarts from 'echarts'
-Vue.prototype.$echarts = echarts
 
 // 自定义组件
 import myHeader from '@/layout/header'
 import myFooter from '@/layout/footer'
 import myMenu from '@/layout/menu'
-Vue.component('my-footer', myFooter)
-Vue.component('my-header', myHeader)
-Vue.component('my-menu', myMenu)
-
-import articleList from '@/components/articleList'
-import commentList from '@/components/commentList'
+import mySidebar from '@/layout/sidebar'
 import myLoading from '@/components/loading'
 import myError from '@/components/error'
 import myNothing from '@/components/nothing'
-Vue.component('article-list', articleList)
-Vue.component('comment-list', commentList)
+import articleList from '@/components/articleList'
+import commentList from '@/components/commentList'
+
+Vue.config.productionTip = false
+
+Vue.use(ElementUI)
+Vue.use(VueQuillEditor)
+
+Vue.component('my-header', myHeader)
+Vue.component('my-footer', myFooter)
+Vue.component('my-menu', myMenu)
+Vue.component('my-sidebar', mySidebar)
 Vue.component('my-loading', myLoading)
 Vue.component('my-error', myError)
 Vue.component('my-nothing', myNothing)
+Vue.component('article-list', articleList)
+Vue.component('comment-list', commentList)
 
 // 全局路由判断
 router.beforeEach((to, from, next) => {
