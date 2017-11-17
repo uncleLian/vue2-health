@@ -4,7 +4,9 @@
         <div id="layout">
             <my-menu></my-menu>
             <div id="page">
-                <router-view></router-view>
+                <keep-alive include="count">
+                    <router-view></router-view>
+                </keep-alive>
             </div>
         </div>
         <my-footer></my-footer>

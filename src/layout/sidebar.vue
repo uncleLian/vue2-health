@@ -14,22 +14,28 @@
                     </el-form-item>
                     <!-- 关键词 -->
                     <el-form-item label="关键词" class="tags">
-                         <el-tag type="primary" v-for="(item,index) in tasks.tags" :key="index" :closable="true" :close-transition="true" @close="handleClose('tag',item)">{{item}}</el-tag>
+                        <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.tags" :key="index">
+                            <el-tag type="primary" :closable="true" :close-transition="true" @close="handleClose('tag',item)" @click.stop.native="backToSource(item)">{{item.data}}</el-tag>
+                        </el-tooltip>
                         <el-input class="input-new-tag" v-if="tagInput" v-model.trim="tagInputVal" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm('tag')" @blur="handleInputConfirm('tag')">
                         </el-input>
                         <el-button v-else class="button-new-tag" size="small" @click="showInput('tag')">+ 新建标签</el-button>
                     </el-form-item>
                     <!-- 句子 -->
                     <el-form-item label="句子" class="sentences">
-                        <el-tag class="wrap" type="primary" v-for="(item,index) in tasks.sentences" :key="index" :closable="true" :close-transition="true" @close="handleClose('sentence',item)">{{item}}</el-tag>
+                        <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.sentences" :key="index">
+                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('sentence',item)"@click.stop.native="backToSource(item)">{{item.data}}</el-tag>
+                        </el-tooltip>
                          <el-input v-if="sentenceInput" v-model.trim="sentenceInputVal" ref="saveSentenceInput" size="mini" @keyup.enter.native="handleInputConfirm('sentence')" @blur="handleInputConfirm('sentence')">
                         </el-input>
                         <el-button v-else size="small" @click="showInput('sentence')">+ 新建句子</el-button>
                     </el-form-item>
                     <!-- 文章 -->
                     <el-form-item label="文章" class="articles">
-                        <router-link :to="{name: 'index'}" :title="item" v-for="(item,index) in tasks.articles" :key="index">
-                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('article',item)">{{item}}</el-tag>
+                        <router-link :to="{name: 'index'}" v-for="(item,index) in tasks.articles" :key="index">
+                            <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" >
+                                <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('article',item)">{{item.data}}</el-tag>
+                            </el-tooltip>
                         </router-link>
                          <el-input v-if="articleInput" v-model.trim="articleInputVal" ref="saveArticleInput" size="mini" @keyup.enter.native="handleInputConfirm('article')" @blur="handleInputConfirm('article')">
                         </el-input>
@@ -71,7 +77,8 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'set_tasks'
+            'set_tasks',
+            'set_tabSource'
         ]),
         onSubmit() {
             console.log('submit!')
@@ -108,26 +115,42 @@ export default {
             if (type === 'tag') {
                 let tagInputVal = this.tagInputVal
                 if (tagInputVal) {
-                    this.tasks.tags.push(tagInputVal)
+                    let tag = {
+                        source: '新建',
+                        data: tagInputVal
+                    }
+                    this.tasks.tags.push(tag)
                 }
                 this.tagInput = false
                 this.tagInputVal = ''
             } else if (type === 'sentence') {
                 let sentenceInputVal = this.sentenceInputVal
                 if (sentenceInputVal) {
-                    this.tasks.sentences.push(sentenceInputVal)
+                    let sentence = {
+                        source: '新建',
+                        data: sentenceInputVal
+                    }
+                    this.tasks.sentences.push(sentence)
                 }
                 this.sentenceInput = false
                 this.sentenceInputVal = ''
             } else if (type === 'article') {
                 let articleInputVal = this.articleInputVal
                 if (articleInputVal) {
-                    this.tasks.articles.push(articleInputVal)
+                    let article = {
+                        source: '新建',
+                        data: articleInputVal
+                    }
+                    this.tasks.articles.push(article)
                 }
                 this.articleInput = false
                 this.articleInputVal = ''
             }
             this.set_tasks(this.tasks)
+        },
+        backToSource(item) {
+            this.set_tabSource(item.source)
+            this.$router.push({name: 'count'})
         }
     },
     mounted() {

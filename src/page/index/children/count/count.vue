@@ -1,20 +1,19 @@
 <template>
-    <div id="count">
-        <el-tabs class='tab_main' v-model='activeName'>
-            <el-tab-pane label="概况" name="all">
-                <!-- 搜索结果 -->
-                <div class="search-view" v-loading="loading" element-loading-text="正在加载中">
-                    <el-alert class="userTip" show-icon type="info" :title="useTip" > </el-alert>
-                    <div id="myChart"></div>
-                </div>
-            </el-tab-pane>
+    <div id="count" v-loading="loading" element-loading-text="正在加载中">
+        <!-- 内容 -->
+        <el-tabs class='tab_main' type="card" closable v-model="activeTab"  @tab-remove="removeTab">
+          <el-tab-pane v-for="(item, index) in tabData" :key="index" :label="item.label" :name="item.name" >
+                <div class="myChart" :id="item.name"></div>
+          </el-tab-pane>
         </el-tabs>
-        <!-- 搜索 -->
+        <!-- 搜索框 -->
         <div class="search">
             <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="searchSuggestion" placeholder="请输入内容" @select="handleSelect">
                 <el-button slot="append" icon="search" @click.native.stop="searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
+        <!-- 使用提示 -->
+        <el-alert class="userTip" v-if="!(tabData.length > 0)" show-icon type="info" :title="useTip"> </el-alert>
     </div>
 </template>
 <script>
@@ -23,6 +22,8 @@ export default {
     name: 'count',
     data() {
         return {
+            activeTab: '',
+            tabData: [],
             activeName: 'all',
             keyWord: '',
             searchJson: [],
@@ -30,22 +31,22 @@ export default {
             loading: false,
             show: {
                 normal: {
-                        color: '#00939c',
-                        label: {
-                            show: true,
-                            position: 'right',
-                            formatter: '{b}:{c}',
-                            textStyle: {
-                                color: '#000',
-                                fontSize: 12
-                            }
-                        },
-                        lineStyle: {
-                            color: '#ccc',
-                            type: 'curve' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
-
+                    color: '#00939c',
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}:{c}',
+                        textStyle: {
+                            color: '#000',
+                            fontSize: 12
                         }
                     },
+                    lineStyle: {
+                        color: '#ccc',
+                        type: 'curve' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+
+                    }
+                },
                 emphasis: {
                     color: '#00939c',
                     label: {
@@ -84,8 +85,25 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'tasks'
+            'tasks',
+            'tabSource'
         ])
+    },
+    watch: {
+        tabSource(val) {
+            if (val) {
+                let isHasTab = this.tabData.findIndex(n => n.name === val)
+                if (isHasTab > -1) {
+                    this.activeTab = val
+                } else {
+                    this.$message({
+                      showClose: true,
+                      message: `没有找到【${val}】选项卡，重新搜索一下吧`,
+                      type: 'warning'
+                    })
+                }
+            }
+        }
     },
     methods: {
         ...mapMutations([
@@ -121,13 +139,17 @@ export default {
         },
         // 搜索结果
         searchResult(keyWord) {
-            if (this.source) {
-                this.source.cancel()
-            }
-            this.source = this.$http.CancelToken.source()
-            this.loading = true
-            this.searchJson = []
-            this.$http.get('http://t.toutiaojk.com/e/extend/ltext/kw.php', {
+            let isExistTab = this.tabData.findIndex(n => n.name === keyWord)
+            if (isExistTab > -1) {
+                this.activeTab = keyWord
+            } else {
+                if (this.source) {
+                    this.source.cancel()
+                }
+                this.source = this.$http.CancelToken.source()
+                this.loading = true
+                this.searchJson = []
+                this.$http.get('http://t.toutiaojk.com/e/extend/ltext/kw.php', {
                     cancelToken: this.source.token,
                     params: { kword: keyWord }
                 })
@@ -153,7 +175,7 @@ export default {
                             name: keyWord,
                             children: data
                         }
-                        this.drawTree()
+                        this.addTab(keyWord)
                         this.loading = false
                     } else {
                         this.loading = false
@@ -169,9 +191,10 @@ export default {
                         this.$message.error('出错错误，请重新尝试')
                     }
                 })
+            }
         },
-        drawTree() {
-            let myChart = echarts.init(document.getElementById('myChart'))
+        drawTree(keyWord) {
+            let myChart = echarts.init(this.$el.querySelector(`#${keyWord}`))
             myChart.setOption({
                 tooltip: {
                     trigger: 'item',
@@ -185,7 +208,7 @@ export default {
                     symbolSize: 10,
                     roam: true,
                     orient: 'horizontal',
-                    rootLocation: {x: 50, y: 'center'}, // 根节点位置  {x: 100, y: 'center'}
+                    rootLocation: { x: 50, y: 'center' }, // 根节点位置  {x: 100, y: 'center'}
                     nodePadding: 8,
                     layerPadding: 200,
                     hoverable: false,
@@ -216,15 +239,47 @@ export default {
                 clearTimeout(this.timer)
                 console.log('dbClick', param)
                 if (param.data.type === 'tags') {
-                    this.tasks.tags.push(param.data.name)
+                    let tag = {
+                        source: keyWord,
+                        data: param.data.name
+                    }
+                    this.tasks.tags.push(tag)
                 } else if (param.data.type === 'sentences') {
-                    this.tasks.sentences.push(param.data.name)
+                    let sentence = {
+                        source: keyWord,
+                        data: param.data.name
+                    }
+                    this.tasks.sentences.push(sentence)
                 }
                 this.set_tasks(this.tasks)
             })
-        }
-    },
-    mounted() {
+        },
+        addTab(keyWord) {
+            this.tabData.push({
+                label: keyWord,
+                name: keyWord
+            })
+            this.activeTab = keyWord
+            this.$nextTick(() => {
+                this.drawTree(keyWord)
+            })
+        },
+        removeTab(targetName) {
+            let tabs = this.tabData
+            let activeName = this.activeTab
+            if (activeName === targetName) {
+              tabs.forEach((tab, index) => {
+                if (tab.name === targetName) {
+                  let nextTab = tabs[index + 1] || tabs[index - 1]
+                  if (nextTab) {
+                    activeName = nextTab.name
+                  }
+                }
+              })
+            }
+            this.activeTab = activeName
+            this.tabData = tabs.filter(tab => tab.name !== targetName)
+          }
     }
 }
 </script>
@@ -232,26 +287,30 @@ export default {
 #count {
     position: relative;
     width: 100%;
+    .myChart {
+        width: 100%;
+        height: 600px;
+    }
     .search {
         position: absolute;
         top: 20px;
         right: 24px;
     }
-    .userTip{
-        margin-bottom: 20px;
+    .userTip {
+        position: absolute;
+        top: 15px;
+        left: 24px;
+        width: 60%;
         background: #00939c;
     }
-    .search-view {
-        position: relative;
-        padding: 20px 24px;
-        #myChart {
-            width: 100%;
-            height: 600px;
-            border: 1px solid #e8e8e8;
-        }
-    }
-    .echarts-tooltip{
+    .echarts-tooltip {
         z-index: 1000
+    }
+    .el-tabs__nav-wrap.is-scrollable{
+        padding: 0 20px;
+    }
+    .tab_main > .el-tabs__header{
+        padding-right: 270px;
     }
 }
 </style>

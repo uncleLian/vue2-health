@@ -11,7 +11,8 @@ const state = {
     tasks: {
         tags: [],
         sentences: [],
-        articles: []
+        articles: [],
+        tabSource: ''
     }
 }
 
@@ -30,6 +31,9 @@ const getters = {
     },
     tasks: state => {
         return state.tasks
+    },
+    tabSource: state => {
+        return state.tasks.tabSource
     }
 }
 
@@ -48,6 +52,9 @@ const mutations = {
     },
     set_tasks(state, val) {
         state.tasks = val
+    },
+    set_tabSource(state, val) {
+        state.tasks.tabSource = val
     }
 }
 

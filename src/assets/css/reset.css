@@ -84,6 +84,10 @@ img{
 #index .tab_main .el-tabs__item{
     font-size: 16px;
     height: 52px;
+    line-height: 52px;
+}
+#index .tab_main .el-tabs__nav-next, #index .tab_main .el-tabs__nav-prev{
+    line-height: 56px;
 }
 #index .tab_main .el-tabs__active-bar{
     height: 2px;
