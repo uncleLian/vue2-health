@@ -9,6 +9,7 @@
 </template>
 <script>
 export default {
+    name: 'comment',
     data() {
         return {
             activeName: 'newest'

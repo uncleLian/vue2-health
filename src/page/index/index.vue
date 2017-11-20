@@ -15,6 +15,7 @@
 </template>
 <script>
 export default {
+    name: 'index',
     mounted() {
         $(function() {
             $('#page').css({ 'min-height': $('#menu').height() })

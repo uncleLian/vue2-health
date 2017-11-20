@@ -69,7 +69,7 @@ const actions = {
                     commit('set_token', res.data.token)
                     resolve()
                 } else {
-                    reject()
+                    reject(new Error('nothing data'))
                 }
             })
             .catch(err => {
@@ -92,7 +92,7 @@ const actions = {
                     resolve()
                 } else {
                     commit('remove_token')
-                    reject()
+                    reject(new Error('nothing data'))
                 }
             })
             .catch(err => {

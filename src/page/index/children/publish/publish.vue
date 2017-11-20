@@ -129,6 +129,7 @@
 import { get_local_cache, set_local_cache, remove_local_cache } from '@/utils/cache.js'
 import { mapActions } from 'vuex'
 export default {
+    name: 'publish',
     data() {
         return {
             json: null, // 修改的文章数据

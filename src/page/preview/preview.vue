@@ -28,10 +28,10 @@
         <my-footer></my-footer>
     </div>
 </template>
-
 <script>
 import { mapActions } from 'vuex'
 export default{
+    name: 'preview',
     data() {
         return {
             json: {},

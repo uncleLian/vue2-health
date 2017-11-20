@@ -9,8 +9,9 @@ import store from './store'
 // 第三方库
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-import '@/assets/css/icon.less'
 import VueQuillEditor from 'vue-quill-editor'
+import '@/assets/css/reset.css'
+import '@/assets/css/icon.less'
 
 // 自定义组件
 import myHeader from '@/layout/header'

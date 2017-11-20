@@ -8,6 +8,7 @@
 </template>
 <script>
 export default {
+    name: 'material',
     data() {
         return {
             activeName: 'pic'

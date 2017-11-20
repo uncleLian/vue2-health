@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-Vue.use(Router)
 
 // // 一级页面
 // const login = () => import('@/page/login/login')
@@ -38,6 +37,7 @@ import pic from '@/page/index/children/material/children/pic'
 import count from '@/page/index/children/count/count' // 统计
 import setting from '@/page/index/children/setting/setting' // 设置
 
+Vue.use(Router)
 export default new Router({
     mode: 'history',
     scrollBehavior(to, from, savedPosition) {

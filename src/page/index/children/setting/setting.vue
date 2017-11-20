@@ -8,6 +8,7 @@
 </template>
 <script>
 export default {
+    name: 'setting',
     data() {
         return {
             activeName: 'pic'

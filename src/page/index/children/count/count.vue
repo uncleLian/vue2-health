@@ -117,25 +117,25 @@ export default {
             this.searchResult(item.value)
         },
         // 搜索建议
-        searchSuggestion(keyWord, callback) {
+        searchSuggestion(keyWord, searchCallBack) {
             if (this.sourceObj) {
                 this.sourceObj.cancel()
             }
             this.sourceObj = this.$http.CancelToken.source()
             this.$http.get('http://t.toutiaojk.com/e/extend/ltext/kw2.php', {
-                    cancelToken: this.sourceObj.token,
-                    params: { kword: keyWord }
-                })
-                .then(res => {
-                    if (res.data.data) {
-                        callback(res.data.data)
-                    } else {
-                        callback([])
-                    }
-                })
-                .catch(() => {
-                    callback([])
-                })
+                cancelToken: this.sourceObj.token,
+                params: { kword: keyWord }
+            })
+            .then(res => {
+                if (res.data.data) {
+                    searchCallBack(res.data.data)
+                } else {
+                    searchCallBack([])
+                }
+            })
+            .catch(() => {
+                searchCallBack([])
+            })
         },
         // 搜索结果
         searchResult(keyWord) {

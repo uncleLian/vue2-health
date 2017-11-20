@@ -32,6 +32,7 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
+    name: 'login',
     data() {
         return {
             dialogFormVisible: false, // 登录框
