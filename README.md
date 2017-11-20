@@ -1,7 +1,7 @@
 # vue2-health
 
 ![image](https://img.shields.io/badge/vue-2.5.2-blue.svg)
-![image](https://img.shields.io/badge/vue--routet-3.0.1-blue.svg)
+![image](https://img.shields.io/badge/vue--router-3.0.1-blue.svg)
 ![image](https://img.shields.io/badge/vuex-3.0.1-blue.svg)
 ![image](https://img.shields.io/badge/element--ui-1.4.7-blue.svg)
 ![image](https://img.shields.io/badge/license-MIT-blue.svg)
