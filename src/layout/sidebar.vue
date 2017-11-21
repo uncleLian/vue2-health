@@ -2,8 +2,15 @@
     <div id="sidebar">
         <transition name="toggleSide">
             <!-- 任务 -->
-            <div class="container" v-show="taskVisible">
+            <div class="container" v-show="taskVisible" v-loading="loading" element-loading-text="正在保存中">
                 <el-form ref="form" :model="form" label-width="70px">
+                    <!-- 任务 -->
+                    <el-form-item label="任务">
+                        <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="taskSet">
+                            <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item"> </el-option>
+                        </el-select>
+                    </el-form-item>
+
                     <!-- 标题 -->
                     <el-form-item label="标题">
                         <el-input v-model.trim="form.title"></el-input>
@@ -14,8 +21,8 @@
                     </el-form-item>
                     <!-- 关键词 -->
                     <el-form-item label="关键词" class="tags">
-                        <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.tags" :key="index">
-                            <el-tag type="primary" :closable="true" :close-transition="true" @close="handleClose('tag',item)" @click.stop.native="backToSource(item)">{{item.data}}</el-tag>
+                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.tags" :key="index">
+                            <el-tag type="primary" :closable="true" :close-transition="true" @close="handleClose('tag',item)" @dblclick.stop.native="pickUp(item)">{{item.data}}</el-tag>
                         </el-tooltip>
                         <el-input class="input-new-tag" v-if="tagInput" v-model.trim="tagInputVal" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm('tag')" @blur="handleInputConfirm('tag')">
                         </el-input>
@@ -23,8 +30,8 @@
                     </el-form-item>
                     <!-- 句子 -->
                     <el-form-item label="句子" class="sentences">
-                        <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.sentences" :key="index">
-                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('sentence',item)"@click.stop.native="backToSource(item)">{{item.data}}</el-tag>
+                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.sentences" :key="index">
+                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('sentence',item)"@dblclick.stop.native="pickUp(item)">{{item.data}}</el-tag>
                         </el-tooltip>
                          <el-input v-if="sentenceInput" v-model.trim="sentenceInputVal" ref="saveSentenceInput" size="mini" @keyup.enter.native="handleInputConfirm('sentence')" @blur="handleInputConfirm('sentence')">
                         </el-input>
@@ -33,7 +40,7 @@
                     <!-- 文章 -->
                     <el-form-item label="文章" class="articles">
                         <router-link :to="{name: 'index'}" v-for="(item,index) in tasks.articles" :key="index">
-                            <el-tooltip effect="light" :content="`来源：${item.source}`" placement="top" >
+                            <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" >
                                 <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('article',item)">{{item.data}}</el-tag>
                             </el-tooltip>
                         </router-link>
@@ -42,8 +49,9 @@
                         <el-button v-else size="small" @click="showInput('article')">+ 新建文章</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="onSubmit">前去编辑</el-button>
-                        <el-button>取消</el-button>
+                        <el-button type="primary" @click.stop="post_task('edit')" v-if="taskSelect">保存</el-button>
+                        <el-button type="primary" @click.stop="post_task('new')" v-else>新建</el-button>
+                        <el-button @click.stop="taskReset">重置</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -53,10 +61,12 @@
     </div>
 </template>
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     data() {
         return {
+            taskList: [],
+            taskSelect: '',
             form: {
                 title: '',
                 describe: ''
@@ -67,7 +77,8 @@ export default {
             sentenceInput: false,
             articleInputVal: '',
             articleInput: false,
-            taskVisible: false
+            taskVisible: false,
+            loading: false
         }
     },
     computed: {
@@ -75,14 +86,86 @@ export default {
             'tasks'
         ])
     },
+    watch: {
+        taskVisible(val) {
+            // 任务框为true获取task列表数据
+            if (val) {
+                this.get_taskList()
+            }
+        }
+    },
     methods: {
         ...mapMutations([
             'set_tasks',
-            'set_tabSource'
+            'set_selected'
         ]),
-        onSubmit() {
-            console.log('submit!')
+        ...mapActions([
+            'get_task_data',
+            'post_task_data'
+        ]),
+        // 获取task列表数据
+        get_taskList() {
+            this.get_task_data()
+            .then(res => {
+                console.log(res)
+                if (res) {
+                    this.taskList = res.data
+                }
+            })
         },
+        // 提交task数据
+        post_task(type) {
+            if (this.form.title) {
+                this.loading = true
+                let params = {
+                    type: type,
+                    title: this.form.title,
+                    describe: this.form.describe,
+                    kword: this.tasks.tags,
+                    gzword: this.tasks.sentences,
+                    ctword: this.tasks.articles
+                }
+                if (type === 'edit' && this.taskSelect && this.taskSelect.id) {
+                    params.id = this.taskSelect.id
+                }
+                this.post_task_data(params)
+                .then(res => {
+                    console.log(res)
+                    this.loading = false
+                    this.$message.success('新建成功')
+                })
+            } else {
+                this.$message.error('标题不能为空')
+            }
+        },
+        // 设置task数据
+        taskSet(val) {
+            this.form.title = this.taskSelect.title
+            if (this.taskSelect.describe) {
+                this.form.describe = this.taskSelect.describe
+            }
+            if (this.taskSelect.kword) {
+                this.tasks.tags = this.taskSelect.kword
+            }
+            if (this.taskSelect.gzword) {
+                this.tasks.sentences = this.taskSelect.gzword
+            }
+            if (this.taskSelect.gzword) {
+                this.tasks.articles = this.taskSelect.ctword
+            }
+            this.set_tasks(this.tasks)
+        },
+        // 重置task数据
+        taskReset() {
+            this.form.title = ''
+            this.form.describe = ''
+            this.tasks.tags = []
+            this.tasks.sentences = []
+            this.tasks.articles = []
+            this.set_tasks(this.tasks)
+            this.taskSelect = ''
+        },
+        // 删除标签
         handleClose(type, item) {
             if (type === 'tag') {
                 this.tasks.tags.splice(this.tasks.tags.indexOf(item), 1)
@@ -93,6 +176,7 @@ export default {
             }
             this.set_tasks(this.tasks)
         },
+        // 展示input框
         showInput(type) {
             if (type === 'tag') {
                 this.tagInput = true
@@ -111,6 +195,7 @@ export default {
                 })
             }
         },
+        // 新增标签
         handleInputConfirm(type) {
             if (type === 'tag') {
                 let tagInputVal = this.tagInputVal
@@ -148,13 +233,12 @@ export default {
             }
             this.set_tasks(this.tasks)
         },
-        backToSource(item) {
-            this.set_tabSource(item.source)
-            this.$router.push({name: 'count'})
+        // 双击标签，设置选中的标签值
+        pickUp(item) {
+            if (this.$route.name === 'publish') {
+                this.set_selected(item.data)
+            }
         }
-    },
-    mounted() {
-
     }
 }
 </script>
@@ -181,6 +265,9 @@ export default {
         border: 1px solid #e8e8e8;
         overflow: auto;
         transition: all .3s ease-out;
+        .el-tag{
+            cursor: pointer;
+        }
         .tags{
             .el-tag{
                 margin-right: 5px;

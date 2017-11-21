@@ -19,7 +19,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 export default {
-    name: 'count',
+    name: 'search',
     data() {
         return {
             activeTab: '',
@@ -85,25 +85,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'tasks',
-            'tabSource'
+            'tasks'
         ])
-    },
-    watch: {
-        tabSource(val) {
-            if (val) {
-                let isHasTab = this.tabData.findIndex(n => n.name === val)
-                if (isHasTab > -1) {
-                    this.activeTab = val
-                } else {
-                    this.$message({
-                      showClose: true,
-                      message: `没有找到【${val}】选项卡，重新搜索一下吧`,
-                      type: 'warning'
-                    })
-                }
-            }
-        }
     },
     methods: {
         ...mapMutations([

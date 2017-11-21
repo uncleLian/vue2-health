@@ -1,9 +1,12 @@
 <template>
     <div id='publish' v-loading="loading" element-loading-text="加载中...">
+        <!-- 草稿提示 -->
         <div class="recovery" v-if="draft">
             已从草稿中恢复
             <el-button type="text" class="cancle" @click.stop="removeDraft">撤销</el-button>
         </div>
+
+        <!-- 写作 -->
         <div class="write">
             <!-- title -->
             <div class="title">
@@ -37,7 +40,7 @@
             </div>
         </div>
 
-        <!-- edit -->
+        <!-- 编辑 -->
         <div class="edit">
             <div class="cover edit-cell">
                 <div class="edit-label">封面</div>
@@ -80,22 +83,22 @@
             </div>
         </div>
 
-        <!-- control -->
+        <!-- 按钮 -->
         <div class="control">
             <!-- 修改 -->
             <template v-if="$route.query.id && this.json && this.json.state !== '2'">
                 <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
-                <el-button class='cancle_btn' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='cancle_btn gray' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
             <!-- 新建 -->
             <template v-else>
                 <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
-                <el-button class='draft_btn' type='primary' size='large' @click.stop="verify('draft')">存草稿</el-button>
-                <el-button class='cancle_btn' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='draft_btn gray' type='primary' size='large' @click.stop="verify('draft')">存草稿</el-button>
+                <el-button class='cancle_btn gray' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
             </template>
         </div>
 
-        <!-- 上传图片 -->
+        <!-- 上传图片dialog -->
         <el-dialog class="pictrue_upload" title="上传图片" :visible.sync="upload_picture_dialog"> 
             <el-upload class="upload" ref="upload" action="http://api.toutiaojk.com/e/extend/jkh/upload_file.php" list-type="picture-card" :multiple="true" :before-upload="handleFormat" :on-preview="onPreview" :on-success="onSuccess" :on-error="onError" :on-remove="onRemove">
                 <i class="el-icon-plus"></i>
@@ -109,7 +112,7 @@
             </div>
         </el-dialog>
 
-        <!-- 选择图片 -->
+        <!-- 选择图片dialog -->
         <el-dialog class="picture_select" title="正文图片" :visible.sync="select_picture_dialog">
             <!-- 单选 -->
             <el-radio-group v-model="selectImages">
@@ -127,7 +130,7 @@
 </template>
 <script>
 import { get_local_cache, set_local_cache, remove_local_cache } from '@/utils/cache.js'
-import { mapActions } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     name: 'publish',
     data() {
@@ -164,6 +167,17 @@ export default {
             }
         }
     },
+    computed: {
+        ...mapGetters([
+            'selected'
+        ]),
+        editor() {
+            return this.$refs.myQuillEditor.quill
+        },
+        article(val) {
+            return this.title + this.content + this.coverImages + this.classid
+        }
+    },
     watch: {
         article (val, old) {
             this.isChange = true
@@ -174,24 +188,28 @@ export default {
             if (this.isChange) {
                 this.saveDraft()
             }
-        }
-    },
-    computed: {
-        editor() {
-            return this.$refs.myQuillEditor.quill
         },
-        article(val) {
-            return this.title + this.content + this.coverImages + this.classid
+        selected(val) {
+            if (val) {
+                this.editor.focus()
+                this.editor.insertText(this.editor.getSelection().index, val, 'bold', true)
+                this.set_selected('')
+            }
         }
     },
     methods: {
+        ...mapMutations([
+            'set_selected'
+        ]),
         ...mapActions([
             'get_article_data',
             'post_article_data'
         ]),
+        // 初始化
         async init() {
             let id = this.$route.query.id
             let draft = JSON.parse(get_local_cache('draft'))
+            // 是否编辑某篇文章？请求数据，有这文章id的草稿就覆盖原数据：读取草稿
             if (id) {
                 await this.get_article()
                 if (draft && draft.id === id && (draft.title || draft.content)) {
@@ -205,6 +223,7 @@ export default {
                 this.draft = true
             }
         },
+        // 请求文章数据
         async get_article() {
             this.loading = true
             await this.get_article_data(this.$route.query.id)
@@ -232,6 +251,7 @@ export default {
                 console.log(err)
             })
         },
+        // 保存草稿
         saveDraft() {
             let id = this.$route.query.id
             let data = {
@@ -246,6 +266,7 @@ export default {
                 clearTimeout(timer)
             }, 1500)
         },
+        // 撤销草稿
         removeDraft() {
             if (this.$route.query.id) {
                 this.get_article()
@@ -280,15 +301,9 @@ export default {
             console.log('上传图片失败', err)
             this.$message.error('上传失败，请重新尝试!')
         },
-        // 移除钩子
+        // 移除图片钩子
         onRemove(file, fileList) {
             this.fileList = fileList
-        },
-        // 清除上传的图片
-        clearUploadFiles() {
-            this.fileList = []
-            this.$refs.upload.clearFiles()
-            this.upload_picture_dialog = false
         },
         // 上传完成，把图片添加进正文
         uploadComplete() {
@@ -302,21 +317,31 @@ export default {
             }
             this.clearUploadFiles()
         },
+        // 清除上传的图片
+        clearUploadFiles() {
+            this.fileList = []
+            this.$refs.upload.clearFiles()
+            this.upload_picture_dialog = false
+        },
+        // 打开图片选择框
         selectPictureOpen(index) {
             this.clickIndex = index
             this.contentImages = this.editor.container.querySelectorAll('img')
             this.select_picture_dialog = true
         },
-        clearSelectFiles() {
-            this.select_picture_dialog = false
-            this.selectImages = []
-        },
+        // 选择完成
         selectComplete() {
             if (this.selectImages.length > 0) {
                 this.coverImages[this.clickIndex] = this.selectImages
             }
             this.clearSelectFiles()
         },
+        // 清除选择图片
+        clearSelectFiles() {
+            this.select_picture_dialog = false
+            this.selectImages = []
+        },
+        // 所有规则
         allRule() {
             if (!this.title) {
                 this.$message.error('标题不能为空')
@@ -336,6 +361,7 @@ export default {
                 return true
             }
         },
+        // 标题规则
         onlyTitleRule() {
             if (!this.title) {
                 this.$message.error('标题不能为空')
@@ -347,6 +373,33 @@ export default {
                 return true
             }
         },
+        // 验证
+        verify(btnType) {
+            let type    // 类型
+            let state   // 状态码
+            // 确定编辑 or 新建
+            this.json ? type = 'edit' : type = 'new'
+            // 需要验证的类型
+            if (btnType === 'draft') {
+                state = '2'
+                if (this.onlyTitleRule()) {
+                    this.publish(type, state)
+                }
+            }
+            if (btnType === 'publish') {
+                state = '3'
+                if (this.allRule()) {
+                    this.$confirm('确定发表文章？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'info'
+                    }).then(() => {
+                        this.publish(type, state)
+                    })
+                }
+            }
+        },
+        // 发表
         publish(type, state) {
             this.loading = true
             this.title = this.title.replace(/\s/gi, '')
@@ -385,29 +438,7 @@ export default {
                     this.$notify.error('出现错误，请重新尝试')
                 })
         },
-        verify(btnType) {
-            let type
-            let state
-            this.json ? type = 'edit' : type = 'new'
-            if (btnType === 'draft') {
-                state = '2'
-                if (this.onlyTitleRule()) {
-                    this.publish(type, state)
-                }
-            }
-            if (btnType === 'publish') {
-                state = '3'
-                if (this.allRule()) {
-                    this.$confirm('确定发表文章？', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'info'
-                    }).then(() => {
-                        this.publish(type, state)
-                    })
-                }
-            }
-        },
+        // 监听刷新和关闭窗口
         listenFreshClose(e) {
             e.returnValue = '您将离开页面，可能会丢失正在编辑的内容'
         }
@@ -416,6 +447,7 @@ export default {
         this.init()
         window.addEventListener('beforeunload', this.listenFreshClose)
     },
+    // 离开路由钩子
     beforeRouteLeave (to, from, next) {
         if (this.isChange && (this.title || this.content)) {
             this.$confirm('要离开本页面吗？系统将可能不会保存你做的更改', '提示', {
@@ -631,15 +663,15 @@ export default {
             width: 140px;
             line-height: 1;
         }
-        .draft_btn,.cancle_btn{
+        .gray{
             background-color: #f1f1f1;
             color: #a4a4a4;
             border-color: #f1f1f1;
-        }
-        .draft_btn:hover,.cancle_btn:hover{
-            background-color: #e4e4e4;
-            color: #989898;
-            border-color: #e4e4e4;
+            &:hover{
+                background-color: #e4e4e4;
+                color: #989898;
+                border-color: #e4e4e4;
+            }
         }
     }
     .pictrue_upload {

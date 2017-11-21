@@ -12,7 +12,7 @@ const state = {
         tags: [],
         sentences: [],
         articles: [],
-        tabSource: ''
+        selected: ''
     }
 }
 
@@ -32,8 +32,8 @@ const getters = {
     tasks: state => {
         return state.tasks
     },
-    tabSource: state => {
-        return state.tasks.tabSource
+    selected: state => {
+        return state.tasks.selected
     }
 }
 
@@ -53,8 +53,8 @@ const mutations = {
     set_tasks(state, val) {
         state.tasks = val
     },
-    set_tabSource(state, val) {
-        state.tasks.tabSource = val
+    set_selected(state, val) {
+        state.tasks.selected = val
     }
 }
 
@@ -129,7 +129,25 @@ const actions = {
         params.userid = state.user.userid
         let res = await fetch('POST', 'edit', params)
         return res
+    },
+
+    // 获取素材任务数据
+    async get_task_data({state}) {
+        let params = {
+            userid: state.user.userid,
+            type: 'list'
+        }
+        let res = await fetch('POST', 'task', params)
+        return res
+    },
+
+    // 提交素材任务数据
+    async post_task_data({state}, params) {
+        params.userid = state.user.userid
+        let res = await fetch('POST', 'task', params)
+        return res
     }
+
 }
 export default new Vuex.Store({
     state,

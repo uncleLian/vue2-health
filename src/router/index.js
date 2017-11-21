@@ -1,41 +1,28 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-// // 一级页面
-// const login = () => import('@/page/login/login')
-// const preview = () => import('@/page/preview/preview')
-// const index = () => import('@/page/index/index')
-
-// // 二级页面
-// const publish = () => import('@/page/index/children/publish/publish') // 发表页
-// const home = () => import('@/page/index/children/home/home') // 主页
-// const article = () => import('@/page/index/children/article/article') // 内容文章
-// const own = () => import('@/page/index/children/article/children/own')
-// const comment = () => import('@/page/index/children/comment/comment') // 评论
-// const newest = () => import('@/page/index/children/comment/children/newest')
-// const articles = () => import('@/page/index/children/comment/children/articles')
-// const material = () => import('@/page/index/children/material/material') // 素材
-// const pic = () => import('@/page/index/children/material/children/pic')
-// const count = () => import('@/page/index/children/count/count') // 统计
-// const setting = () => import('@/page/index/children/setting/setting') // 设置
-
 // 一级页面
-import login from '@/page/login/login'
-import preview from '@/page/preview/preview'
-import index from '@/page/index/index'
+import login from '@/page/login/login'                                // 登录页
+import preview from '@/page/preview/preview'                          // 预览页
+import index from '@/page/index/index'                                // 首页
 
 // 二级页面
-import publish from '@/page/index/children/publish/publish' // 发表页
-import home from '@/page/index/children/home/home' // 主页
-import article from '@/page/index/children/article/article' // 内容文章
-import own from '@/page/index/children/article/children/own'
-import comment from '@/page/index/children/comment/comment' // 评论
-import newest from '@/page/index/children/comment/children/newest'
-import articles from '@/page/index/children/comment/children/articles'
-import material from '@/page/index/children/material/material' // 素材
-import pic from '@/page/index/children/material/children/pic'
-import count from '@/page/index/children/count/count' // 统计
-import setting from '@/page/index/children/setting/setting' // 设置
+import home from '@/page/index/children/home/home'                    // 主页
+// writer
+import search from '@/page/index/children/writer/search'              // 素材搜索
+import publish from '@/page/index/children/writer/publish'            // 作品编辑
+import article from '@/page/index/children/writer/article/article'    // 我的作品
+// manage
+import comment from '@/page/index/children/manage/comment/comment'           // 评论管理
+import material from '@/page/index/children/manage/material/material'        // 素材管理
+// setting
+import setting from '@/page/index/children/setting/setting'           // 设置
+
+// 三级页面
+import own from '@/page/index/children/writer/article/children/own'
+import newest from '@/page/index/children/manage/comment/children/newest'
+import articles from '@/page/index/children/manage/comment/children/articles'
+import pic from '@/page/index/children/manage/material/children/pic'
 
 Vue.use(Router)
 export default new Router({
@@ -72,30 +59,9 @@ export default new Router({
             meta: { login: true },
             children: [
                 {
-                    name: 'publish',
-                    path: 'publish',
-                    component: publish
-                },
-                {
                     name: 'home',
                     path: 'home',
                     component: home
-                },
-                {
-                    name: 'article',
-                    path: 'article',
-                    component: article,
-                    children: [
-                        {
-                            path: '',
-                            redirect: 'own'
-                        },
-                        {
-                            name: 'own',
-                            path: 'own',
-                            component: own
-                        }
-                    ]
                 },
                 {
                     name: 'comment',
@@ -135,9 +101,30 @@ export default new Router({
                     ]
                 },
                 {
-                    name: 'count',
-                    path: 'count',
-                    component: count
+                    name: 'search',
+                    path: 'search',
+                    component: search
+                },
+                {
+                    name: 'publish',
+                    path: 'publish',
+                    component: publish
+                },
+                {
+                    name: 'article',
+                    path: 'article',
+                    component: article,
+                    children: [
+                        {
+                            path: '',
+                            redirect: 'own'
+                        },
+                        {
+                            name: 'own',
+                            path: 'own',
+                            component: own
+                        }
+                    ]
                 },
                 {
                     name: 'setting',
