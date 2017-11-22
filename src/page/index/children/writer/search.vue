@@ -105,9 +105,9 @@ export default {
                 this.sourceObj.cancel()
             }
             this.sourceObj = this.$http.CancelToken.source()
-            this.$http.get('http://t.toutiaojk.com/e/extend/ltext/kw2.php', {
+            this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw2.php', {
                 cancelToken: this.sourceObj.token,
-                params: { kword: keyWord }
+                params: { type: 'kkey', kword: keyWord }
             })
             .then(res => {
                 if (res.data.data) {
@@ -132,9 +132,9 @@ export default {
                 this.source = this.$http.CancelToken.source()
                 this.loading = true
                 this.searchJson = []
-                this.$http.get('http://t.toutiaojk.com/e/extend/ltext/kw.php', {
+                this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw.php', {
                     cancelToken: this.source.token,
-                    params: { kword: keyWord }
+                    params: { type: 'mkey', kword: keyWord }
                 })
                 .then(res => {
                     console.log('搜索结果', res.data)

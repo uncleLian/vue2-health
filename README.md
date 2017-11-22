@@ -29,3 +29,16 @@
 - 第三阶段：头条号（pc端，难度：中等 ~ 困难） —— [仓库地址](https://github.com/uncleLian/vue2-health) —— 还在开发，敬请期待！（已实现核心功能）
 
 ##### 注：此系列只关注前端项目的实现，后端等知识不是此系列的范围，但会告知一二。
+
+## 交流
+
+欢迎热爱学习、忠于分享的朋友一起来交流
+- QQ：771674109
+- WX：L771674109
+- Vue交流群：338241465
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
+
+Copyright (c) 2017-present，uncleLian

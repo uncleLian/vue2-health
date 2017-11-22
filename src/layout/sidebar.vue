@@ -6,11 +6,10 @@
                 <el-form ref="form" :model="form" label-width="70px">
                     <!-- 任务 -->
                     <el-form-item label="任务">
-                        <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="taskSet">
-                            <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item"> </el-option>
+                        <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="taskSet" @clear="taskReset">
+                            <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item.id"> </el-option>
                         </el-select>
                     </el-form-item>
-
                     <!-- 标题 -->
                     <el-form-item label="标题">
                         <el-input v-model.trim="form.title"></el-input>
@@ -48,6 +47,7 @@
                         </el-input>
                         <el-button v-else size="small" @click="showInput('article')">+ 新建文章</el-button>
                     </el-form-item>
+
                     <el-form-item>
                         <el-button type="primary" @click.stop="post_task('edit')" v-if="taskSelect">保存</el-button>
                         <el-button type="primary" @click.stop="post_task('new')" v-else>新建</el-button>
@@ -125,14 +125,30 @@ export default {
                     gzword: this.tasks.sentences,
                     ctword: this.tasks.articles
                 }
-                if (type === 'edit' && this.taskSelect && this.taskSelect.id) {
-                    params.id = this.taskSelect.id
+                if (type === 'edit' && this.taskSelect) {
+                    params.id = this.taskSelect
                 }
                 this.post_task_data(params)
                 .then(res => {
                     console.log(res)
+                    if (res.data) {
+                        this.$message.success('操作成功')
+                        if (type === 'new') {
+                            this.taskList.unshift(res.data)
+                            this.taskSelect = res.data.id
+                        } else if (type === 'edit') {
+                            let index = this.taskList.findIndex(n => n.id === res.data.id)
+                            this.taskList[index] = res.data
+                        }
+                    } else {
+                        this.$message.error('操作失败，请重新尝试')
+                    }
                     this.loading = false
-                    this.$message.success('新建成功')
+                })
+                .catch(err => {
+                    console.log(err)
+                    this.loading = false
+                    this.$message.error('操作失败，请重新尝试')
                 })
             } else {
                 this.$message.error('标题不能为空')
@@ -140,20 +156,32 @@ export default {
         },
         // 设置task数据
         taskSet(val) {
-            this.form.title = this.taskSelect.title
-            if (this.taskSelect.describe) {
-                this.form.describe = this.taskSelect.describe
+            let index = this.taskList.findIndex(n => n.id === this.taskSelect)
+            if (index > -1) {
+                let taskItem = this.taskList[index]
+                this.form.title = taskItem.title
+                if (taskItem.describe) {
+                    this.form.describe = taskItem.describe
+                } else {
+                    this.form.describe = ''
+                }
+                if (taskItem.kword) {
+                    this.tasks.tags = taskItem.kword
+                } else {
+                    this.tasks.tags = []
+                }
+                if (taskItem.gzword) {
+                    this.tasks.sentences = taskItem.gzword
+                } else {
+                    this.tasks.sentences = []
+                }
+                if (taskItem.ctword) {
+                    this.tasks.articles = taskItem.ctword
+                } else {
+                    this.tasks.articles = []
+                }
+                this.set_tasks(this.tasks)
             }
-            if (this.taskSelect.kword) {
-                this.tasks.tags = this.taskSelect.kword
-            }
-            if (this.taskSelect.gzword) {
-                this.tasks.sentences = this.taskSelect.gzword
-            }
-            if (this.taskSelect.gzword) {
-                this.tasks.articles = this.taskSelect.ctword
-            }
-            this.set_tasks(this.tasks)
         },
         // 重置task数据
         taskReset() {
