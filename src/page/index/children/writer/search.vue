@@ -1,5 +1,5 @@
 <template>
-    <div id="count" v-loading="loading" element-loading-text="正在加载中">
+    <div id="search" v-loading="loading" element-loading-text="正在加载中">
         <!-- 内容 -->
         <el-tabs class='tab_main' type="card" closable v-model="activeTab"  @tab-remove="removeTab">
           <el-tab-pane v-for="(item, index) in tabData" :key="index" :label="item.label" :name="item.name" >
@@ -7,9 +7,9 @@
           </el-tab-pane>
         </el-tabs>
         <!-- 搜索框 -->
-        <div class="search">
-            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="searchSuggestion" placeholder="请输入内容" @select="handleSelect">
-                <el-button slot="append" icon="search" @click.native.stop="searchResult(keyWord)"></el-button>
+        <div class="searchInput">
+            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="handleSelect">
+                <el-button slot="append" icon="search" @click.native.stop="get_searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
         <!-- 使用提示 -->
@@ -24,7 +24,6 @@ export default {
         return {
             activeTab: '',
             tabData: [],
-            activeName: 'all',
             keyWord: '',
             searchJson: [],
             useTip: '使用提示：1、右上角搜索绘制图表  2、单击展开节点  3、双击选取节点',
@@ -43,12 +42,11 @@ export default {
                     },
                     lineStyle: {
                         color: '#ccc',
-                        type: 'curve' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
-
+                        type: 'curve'
                     }
                 },
                 emphasis: {
-                    color: '#00939c',
+                    color: '#d43d3d',
                     label: {
                         show: false
                     },
@@ -69,8 +67,7 @@ export default {
                     },
                     lineStyle: {
                         color: '#ccc',
-                        type: 'curve' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
-
+                        type: 'curve'
                     }
                 },
                 emphasis: {
@@ -84,23 +81,19 @@ export default {
         }
     },
     computed: {
-        ...mapGetters([
-            'tasks'
+        ...mapGetters('writer', [
+            'task'
         ])
     },
     methods: {
-        ...mapMutations([
-            'set_tasks'
+        ...mapMutations('writer', [
+            'set_task'
         ]),
         handleSelect(item) {
-            // 如果已经搜索，取消搜索建议请求
-            if (this.sourceObj) {
-                this.sourceObj.cancel()
-            }
-            this.searchResult(item.value)
+            this.get_searchResult(item.value)
         },
         // 搜索建议
-        searchSuggestion(keyWord, searchCallBack) {
+        get_searchSuggestion(keyWord, searchCallBack) {
             if (this.sourceObj) {
                 this.sourceObj.cancel()
             }
@@ -121,7 +114,7 @@ export default {
             })
         },
         // 搜索结果
-        searchResult(keyWord) {
+        get_searchResult(keyWord) {
             let isExistTab = this.tabData.findIndex(n => n.name === keyWord)
             if (isExistTab > -1) {
                 this.activeTab = keyWord
@@ -138,26 +131,10 @@ export default {
                 })
                 .then(res => {
                     console.log('搜索结果', res.data)
-                    if (res.data.data) {
-                        let data = res.data.data
-                        for (let i of data) {
-                            if (i.gzd) {
-                                for (let j of i.gzd) {
-                                    j.name = j.gztxt
-                                    j.type = 'sentences'
-                                }
-                                i.itemStyle = this.hide
-                                i.hide = i.gzd
-                            } else {
-                                i.itemStyle = this.show
-                            }
-                            i.name = i.value
-                            i.type = 'tags'
-                        }
-                        this.rootNode = {
-                            name: keyWord,
-                            children: data
-                        }
+                    if (res.data.children) {
+                        let data = res.data
+                        this.setStyle(data)
+                        this.searchJson = data
                         this.addTab(keyWord)
                         this.loading = false
                     } else {
@@ -179,15 +156,10 @@ export default {
         drawTree(keyWord) {
             let myChart = echarts.init(this.$el.querySelector(`#${keyWord}`))
             myChart.setOption({
-                tooltip: {
-                    trigger: 'item',
-                    triggerOn: 'mousemove',
-                    hideDelay: 0
-                },
                 series: [{
                     name: '节点关系',
                     type: 'tree',
-                    data: [this.rootNode],
+                    data: [this.searchJson],
                     symbolSize: 10,
                     roam: true,
                     orient: 'horizontal',
@@ -195,7 +167,32 @@ export default {
                     nodePadding: 8,
                     layerPadding: 200,
                     hoverable: false,
-                    itemStyle: this.show
+                    itemStyle: {
+                        normal: {
+                            color: '#00939c',
+                            label: {
+                                show: true,
+                                position: 'right',
+                                formatter: '{b}:{c}',
+                                textStyle: {
+                                    color: '#000',
+                                    fontSize: 12
+                                }
+                            },
+                            lineStyle: {
+                                color: '#ccc',
+                                type: 'curve' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+
+                            }
+                        },
+                        emphasis: {
+                            color: '#00939c',
+                            label: {
+                                show: false
+                            },
+                            borderWidth: 0
+                        }
+                    }
                 }]
             })
             myChart.on('click', (param) => {
@@ -221,20 +218,27 @@ export default {
             myChart.on('dblclick', (param) => {
                 clearTimeout(this.timer)
                 console.log('dbClick', param)
-                if (param.data.type === 'tags') {
+                if (param.data.type === 'tag') {
                     let tag = {
                         source: keyWord,
-                        data: param.data.name
+                        name: param.data.name
                     }
-                    this.tasks.tags.push(tag)
-                } else if (param.data.type === 'sentences') {
+                    this.task.tags.push(tag)
+                } else if (param.data.type === 'sentence') {
                     let sentence = {
                         source: keyWord,
-                        data: param.data.name
+                        name: param.data.name
                     }
-                    this.tasks.sentences.push(sentence)
+                    this.task.sentences.push(sentence)
+                } else if (param.data.type === 'article') {
+                    let article = {
+                        source: keyWord,
+                        name: param.data.name,
+                        id: param.data.newsid
+                    }
+                    this.task.articles.push(article)
                 }
-                this.set_tasks(this.tasks)
+                this.set_task(this.task)
             })
         },
         addTab(keyWord) {
@@ -262,19 +266,36 @@ export default {
             }
             this.activeTab = activeName
             this.tabData = tabs.filter(tab => tab.name !== targetName)
-          }
+        },
+        setArr(arr) {
+            for (var i = 0; i < arr.length; i++) {
+                this.setStyle(arr[i])
+            }
+        },
+        setStyle(item) {
+            if (item.children) {
+                item.itemStyle = this.show
+                this.setArr(item.children)
+            } else if (item.hide) {
+                item.itemStyle = this.hide
+                this.setArr(item.hide)
+            } else {
+                item.itemStyle = this.show
+            }
+        }
     }
 }
 </script>
 <style lang='stylus'>
-#count {
+#search {
     position: relative;
     width: 100%;
+    min-height: inherit;
     .myChart {
         width: 100%;
         height: 600px;
     }
-    .search {
+    .searchInput {
         position: absolute;
         top: 20px;
         right: 24px;
@@ -285,9 +306,6 @@ export default {
         left: 24px;
         width: 60%;
         background: #00939c;
-    }
-    .echarts-tooltip {
-        z-index: 1000
     }
     .el-tabs__nav-wrap.is-scrollable{
         padding: 0 20px;

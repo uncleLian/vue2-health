@@ -3,7 +3,6 @@
         <my-header></my-header>
 
         <div class="layout">
-
             <!-- options -->
             <div class="mobileOptions">
                 <el-select v-model="value" placeholder="请选择">
@@ -13,7 +12,6 @@
                 </el-option>
               </el-select>
             </div>
-
             <!-- article -->
             <article class="article" v-if="json" :class="value">
                 <h1 class="article_title">{{json.title}}</h1>
@@ -61,7 +59,7 @@ export default{
         }
     },
     methods: {
-        ...mapActions([
+        ...mapActions('writer', [
             'get_article_data'
         ]),
         get_article() {
@@ -69,10 +67,13 @@ export default{
             .then(res => {
                 if (res.data) {
                     this.json = res.data
+                } else {
+                    this.$message.error('没有文章数据')
                 }
             })
             .catch(err => {
                 console.log(err)
+                this.$message.error('没有文章数据')
             })
         }
     },

@@ -3,11 +3,14 @@
         <transition name="toggleSide">
             <!-- 任务 -->
             <div class="container" v-show="taskVisible" v-loading="loading" element-loading-text="正在保存中">
-                <el-form ref="form" :model="form" label-width="70px">
+                <el-form class="form" ref="form" :model="form" label-width="70px">
                     <!-- 任务 -->
                     <el-form-item label="任务">
-                        <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="taskSet" @clear="taskReset">
-                            <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item.id"> </el-option>
+                        <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="load_task" @clear="reset_task">
+                            <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item.id"> 
+                                <span style="float: left; vertical-align: middle;">{{ item.title }}</span>
+                                <span @click.stop="delete_task(item)" class="el-icon-delete" style="float: right; vertical-align: middle;"></span>
+                            </el-option>
                         </el-select>
                     </el-form-item>
                     <!-- 标题 -->
@@ -20,8 +23,8 @@
                     </el-form-item>
                     <!-- 关键词 -->
                     <el-form-item label="关键词" class="tags">
-                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.tags" :key="index">
-                            <el-tag type="primary" :closable="true" :close-transition="true" @close="handleClose('tag',item)" @dblclick.stop.native="pickUp(item)">{{item.data}}</el-tag>
+                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in task.tags" :key="index">
+                            <el-tag type="primary" :closable="true" :close-transition="true" @close.stop.prevent="handleClose('tag',item)" @dblclick.stop.native="pickUp(item)">{{item.name}}</el-tag>
                         </el-tooltip>
                         <el-input class="input-new-tag" v-if="tagInput" v-model.trim="tagInputVal" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm('tag')" @blur="handleInputConfirm('tag')">
                         </el-input>
@@ -29,29 +32,26 @@
                     </el-form-item>
                     <!-- 句子 -->
                     <el-form-item label="句子" class="sentences">
-                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in tasks.sentences" :key="index">
-                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('sentence',item)"@dblclick.stop.native="pickUp(item)">{{item.data}}</el-tag>
+                        <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" v-for="(item,index) in task.sentences" :key="index">
+                            <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close.stop.prevent="handleClose('sentence',item)"@dblclick.stop.native="pickUp(item)">{{item.name}}</el-tag>
                         </el-tooltip>
                          <el-input v-if="sentenceInput" v-model.trim="sentenceInputVal" ref="saveSentenceInput" size="mini" @keyup.enter.native="handleInputConfirm('sentence')" @blur="handleInputConfirm('sentence')">
                         </el-input>
                         <el-button v-else size="small" @click="showInput('sentence')">+ 新建句子</el-button>
                     </el-form-item>
                     <!-- 文章 -->
-                    <el-form-item label="文章" class="articles">
-                        <router-link :to="{name: 'index'}" v-for="(item,index) in tasks.articles" :key="index">
+                    <el-form-item label="文章" class="articles" v-if="task.articles.length > 0">
+                        <router-link target="_blank" v-for="(item,index) in task.articles" :key="index" :to="`/preview_article?id=${item.id}`">
                             <el-tooltip effect="light" :enterable="false" :content="`来源：${item.source}`" placement="top" >
-                                <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close="handleClose('article',item)">{{item.data}}</el-tag>
+                                <el-tag class="wrap" type="primary" :closable="true" :close-transition="true" @close.stop.prevent="handleClose('article',item)">{{item.name}}</el-tag>
                             </el-tooltip>
                         </router-link>
-                         <el-input v-if="articleInput" v-model.trim="articleInputVal" ref="saveArticleInput" size="mini" @keyup.enter.native="handleInputConfirm('article')" @blur="handleInputConfirm('article')">
-                        </el-input>
-                        <el-button v-else size="small" @click="showInput('article')">+ 新建文章</el-button>
                     </el-form-item>
 
                     <el-form-item>
                         <el-button type="primary" @click.stop="post_task('edit')" v-if="taskSelect">保存</el-button>
                         <el-button type="primary" @click.stop="post_task('new')" v-else>新建</el-button>
-                        <el-button @click.stop="taskReset">重置</el-button>
+                        <el-button @click.stop="reset_task">重置</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -65,25 +65,23 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     data() {
         return {
-            taskList: [],
-            taskSelect: '',
+            taskList: [],           // 任务列表
+            taskSelect: '',         // 选中的任务
             form: {
-                title: '',
-                describe: ''
+                title: '',          // 标题
+                describe: ''        // 描述
             },
-            tagInputVal: '',
-            tagInput: false,
-            sentenceInputVal: '',
-            sentenceInput: false,
-            articleInputVal: '',
-            articleInput: false,
-            taskVisible: false,
-            loading: false
+            tagInputVal: '',        // 标签的input内容
+            tagInput: false,        // 标签的input开关
+            sentenceInputVal: '',   // 句子的input内容
+            sentenceInput: false,   // 句子的input内容
+            taskVisible: false,     // 任务框开关
+            loading: false          // 加载提示
         }
     },
     computed: {
-        ...mapGetters([
-            'tasks'
+        ...mapGetters('writer', [
+            'task'
         ])
     },
     watch: {
@@ -95,11 +93,11 @@ export default {
         }
     },
     methods: {
-        ...mapMutations([
-            'set_tasks',
+        ...mapMutations('writer', [
+            'set_task',
             'set_selected'
         ]),
-        ...mapActions([
+        ...mapActions('writer', [
             'get_task_data',
             'post_task_data'
         ]),
@@ -108,8 +106,10 @@ export default {
             this.get_task_data()
             .then(res => {
                 console.log(res)
-                if (res) {
+                if (res && res.data) {
                     this.taskList = res.data
+                } else {
+                    this.taskList = []
                 }
             })
         },
@@ -121,9 +121,9 @@ export default {
                     type: type,
                     title: this.form.title,
                     describe: this.form.describe,
-                    kword: this.tasks.tags,
-                    gzword: this.tasks.sentences,
-                    ctword: this.tasks.articles
+                    kword: this.task.tags,
+                    gzword: this.task.sentences,
+                    ctword: this.task.articles
                 }
                 if (type === 'edit' && this.taskSelect) {
                     params.id = this.taskSelect
@@ -132,7 +132,6 @@ export default {
                 .then(res => {
                     console.log(res)
                     if (res.data) {
-                        this.$message.success('操作成功')
                         if (type === 'new') {
                             this.taskList.unshift(res.data)
                             this.taskSelect = res.data.id
@@ -140,6 +139,7 @@ export default {
                             let index = this.taskList.findIndex(n => n.id === res.data.id)
                             this.taskList[index] = res.data
                         }
+                        this.$message.success('操作成功')
                     } else {
                         this.$message.error('操作失败，请重新尝试')
                     }
@@ -154,8 +154,8 @@ export default {
                 this.$message.error('标题不能为空')
             }
         },
-        // 设置task数据
-        taskSet(val) {
+        // 记载task数据
+        load_task(val) {
             let index = this.taskList.findIndex(n => n.id === this.taskSelect)
             if (index > -1) {
                 let taskItem = this.taskList[index]
@@ -166,43 +166,74 @@ export default {
                     this.form.describe = ''
                 }
                 if (taskItem.kword) {
-                    this.tasks.tags = taskItem.kword
+                    this.task.tags = taskItem.kword
                 } else {
-                    this.tasks.tags = []
+                    this.task.tags = []
                 }
                 if (taskItem.gzword) {
-                    this.tasks.sentences = taskItem.gzword
+                    this.task.sentences = taskItem.gzword
                 } else {
-                    this.tasks.sentences = []
+                    this.task.sentences = []
                 }
                 if (taskItem.ctword) {
-                    this.tasks.articles = taskItem.ctword
+                    this.task.articles = taskItem.ctword
                 } else {
-                    this.tasks.articles = []
+                    this.task.articles = []
                 }
-                this.set_tasks(this.tasks)
+                this.set_task(this.task)
             }
         },
         // 重置task数据
-        taskReset() {
+        reset_task() {
             this.form.title = ''
             this.form.describe = ''
-            this.tasks.tags = []
-            this.tasks.sentences = []
-            this.tasks.articles = []
-            this.set_tasks(this.tasks)
+            this.task.tags = []
+            this.task.sentences = []
+            this.task.articles = []
             this.taskSelect = ''
+            this.set_task(this.task)
+        },
+        // 删除任务
+        delete_task(item) {
+            console.log('delete', item)
+            this.$confirm('此操作将永久删除该任务, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+            .then(() => {
+                this.loading = true
+                let params = {
+                    type: 'del',
+                    id: item.id
+                }
+                this.post_task_data(params)
+                .then(res => {
+                    let index = this.taskList.findIndex(n => n.id === item.id)
+                    this.taskList.splice(index, 1)
+                    if (this.taskSelect === item.id) {
+                        this.taskSelect = ''
+                        this.reset_task()
+                    }
+                    this.loading = false
+                    this.$message.success('删除成功')
+                })
+                .catch(() => {
+                    this.loading = false
+                    this.$message.error('删除失败')
+                })
+            })
         },
         // 删除标签
         handleClose(type, item) {
             if (type === 'tag') {
-                this.tasks.tags.splice(this.tasks.tags.indexOf(item), 1)
+                this.task.tags.splice(this.task.tags.indexOf(item), 1)
             } else if (type === 'sentence') {
-                this.tasks.sentences.splice(this.tasks.sentences.indexOf(item), 1)
+                this.task.sentences.splice(this.task.sentences.indexOf(item), 1)
             } else if (type === 'article') {
-                this.tasks.articles.splice(this.tasks.articles.indexOf(item), 1)
+                this.task.articles.splice(this.task.articles.indexOf(item), 1)
             }
-            this.set_tasks(this.tasks)
+            this.set_task(this.task)
         },
         // 展示input框
         showInput(type) {
@@ -216,11 +247,6 @@ export default {
                 this.$nextTick(_ => {
                     this.$refs.saveSentenceInput.$refs.input.focus()
                 })
-            } else if (type === 'article') {
-                this.articleInput = true
-                this.$nextTick(_ => {
-                    this.$refs.saveArticleInput.$refs.input.focus()
-                })
             }
         },
         // 新增标签
@@ -230,9 +256,9 @@ export default {
                 if (tagInputVal) {
                     let tag = {
                         source: '新建',
-                        data: tagInputVal
+                        name: tagInputVal
                     }
-                    this.tasks.tags.push(tag)
+                    this.task.tags.push(tag)
                 }
                 this.tagInput = false
                 this.tagInputVal = ''
@@ -241,30 +267,19 @@ export default {
                 if (sentenceInputVal) {
                     let sentence = {
                         source: '新建',
-                        data: sentenceInputVal
+                        name: sentenceInputVal
                     }
-                    this.tasks.sentences.push(sentence)
+                    this.task.sentences.push(sentence)
                 }
                 this.sentenceInput = false
                 this.sentenceInputVal = ''
-            } else if (type === 'article') {
-                let articleInputVal = this.articleInputVal
-                if (articleInputVal) {
-                    let article = {
-                        source: '新建',
-                        data: articleInputVal
-                    }
-                    this.tasks.articles.push(article)
-                }
-                this.articleInput = false
-                this.articleInputVal = ''
             }
-            this.set_tasks(this.tasks)
+            this.set_task(this.task)
         },
         // 双击标签，设置选中的标签值
         pickUp(item) {
             if (this.$route.name === 'publish') {
-                this.set_selected(item.data)
+                this.set_selected(item.name)
             }
         }
     }
@@ -287,7 +302,7 @@ export default {
     }
     .container{
         padding: 20px 20px 10px 5px;
-        margin-top: 5px;
+        margin-top: 28px;
         max-height: 600px;
         background: #fff;
         border: 1px solid #e8e8e8;

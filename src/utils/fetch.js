@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 Vue.prototype.$http = axios
-axios.defaults.baseURL = 'http://api.toutiaojk.com:8181/e/extend/jkh/'
+axios.defaults.baseURL = 'http://api.toutiaojk.com/e/extend/jkh/'
 const ajaxPHP = {
     list: 'List.php',
     edit: 'Edit.php',

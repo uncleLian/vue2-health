@@ -46,7 +46,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions([
+        ...mapActions('writer', [
             'get_articleList_data'
         ]),
         async init() {

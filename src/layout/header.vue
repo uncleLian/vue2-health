@@ -1,7 +1,7 @@
 <template>
     <header id="header" class="">
         <div class="header_wrap">
-            <router-link class="logo" to="/index/home">头条号</router-link>
+            <router-link class="logo" to="/">头条号</router-link>
             <div class="right">
                 <router-link to="/index/publish">
                     <el-button type="primary" class="publish_btn">发表</el-button>

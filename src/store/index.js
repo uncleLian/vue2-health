@@ -3,17 +3,13 @@ import Vuex from 'vuex'
 import { fetch } from '@/utils/fetch.js'
 import Cookies from 'js-cookie'
 
+import writer_module from './writer.js'
+
 Vue.use(Vuex)
 
 const state = {
     user: '',
-    token: '',
-    tasks: {
-        tags: [],
-        sentences: [],
-        articles: [],
-        selected: ''
-    }
+    token: ''
 }
 
 const getters = {
@@ -28,12 +24,6 @@ const getters = {
         } else {
             return ''
         }
-    },
-    tasks: state => {
-        return state.tasks
-    },
-    selected: state => {
-        return state.tasks.selected
     }
 }
 
@@ -49,17 +39,10 @@ const mutations = {
         state.user = ''
         state.token = ''
         Cookies.remove('Token')
-    },
-    set_tasks(state, val) {
-        state.tasks = val
-    },
-    set_selected(state, val) {
-        state.tasks.selected = val
     }
 }
 
 const actions = {
-
     // 获取登录数据
     async get_login_data({ commit }, params) {
         return new Promise((resolve, reject) => {
@@ -100,58 +83,14 @@ const actions = {
                 reject(err)
             })
         })
-    },
-
-    // 获取文章列表数据
-    async get_articleList_data({ state }, { type, page }) {
-        let params = {
-            'userid': state.user.userid
-        }
-        params.type = type
-        params.page = page
-        let res = await fetch('GET', 'list', params)
-        return res
-    },
-
-    // 获取文章详细数据
-    async get_article_data({ state }, id) {
-        let params = {
-            'userid': state.user.userid,
-            'id': id,
-            'type': 'edit'
-        }
-        let res = await fetch('GET', 'list', params)
-        return res
-    },
-
-    // 提交文章数据
-    async post_article_data({ state }, params) {
-        params.userid = state.user.userid
-        let res = await fetch('POST', 'edit', params)
-        return res
-    },
-
-    // 获取素材任务数据
-    async get_task_data({state}) {
-        let params = {
-            userid: state.user.userid,
-            type: 'list'
-        }
-        let res = await fetch('POST', 'task', params)
-        return res
-    },
-
-    // 提交素材任务数据
-    async post_task_data({state}, params) {
-        params.userid = state.user.userid
-        let res = await fetch('POST', 'task', params)
-        return res
     }
-
 }
 export default new Vuex.Store({
     state,
     getters,
     mutations,
-    actions
+    actions,
+    modules: {
+        writer: writer_module
+    }
 })

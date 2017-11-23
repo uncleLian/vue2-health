@@ -18,6 +18,6 @@ export default {
 </script>
 <style lang='stylus'>
 #article {
-    
+    min-height: inherit;
 }
 </style>

@@ -168,7 +168,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters([
+        ...mapGetters('writer', [
             'selected'
         ]),
         editor() {
@@ -192,16 +192,16 @@ export default {
         selected(val) {
             if (val) {
                 this.editor.focus()
-                this.editor.insertText(this.editor.getSelection().index, val, 'bold', true)
+                this.editor.insertText(this.editor.getSelection().index, val, true)
                 this.set_selected('')
             }
         }
     },
     methods: {
-        ...mapMutations([
+        ...mapMutations('writer', [
             'set_selected'
         ]),
-        ...mapActions([
+        ...mapActions('writer', [
             'get_article_data',
             'post_article_data'
         ]),
@@ -472,6 +472,7 @@ export default {
 <style lang='stylus'>
 #publish {
     padding: 20px 24px;
+    min-height: inherit;
     .recovery{
         background: rgba(254,133,0,0.95);
         font-size: 14px;

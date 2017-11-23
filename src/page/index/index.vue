@@ -4,7 +4,7 @@
         <div id="layout">
             <my-menu></my-menu>
             <div id="page">
-                <keep-alive include="count">
+                <keep-alive include="search">
                     <router-view></router-view>
                 </keep-alive>
             </div>
@@ -35,7 +35,7 @@ export default {
         margin: 36px auto 0;
         font-size: 0;
     }
-    #page {
+    #page{
         position: relative;
         display: inline-block;
         width: 934px;
