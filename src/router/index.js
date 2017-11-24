@@ -13,8 +13,8 @@ import search from '@/page/index/children/writer/search'              // 素材�
 import publish from '@/page/index/children/writer/publish'            // 作品编辑
 import article from '@/page/index/children/writer/article/article'    // 我的作品
 // manage
-import comment from '@/page/index/children/manage/comment/comment'           // 评论管理
-import material from '@/page/index/children/manage/material/material'        // 素材管理
+import comment from '@/page/index/children/manage/comment/comment'    // 评论管理
+import material from '@/page/index/children/manage/material/material' // 素材管理
 // setting
 import setting from '@/page/index/children/setting/setting'           // 设置
 

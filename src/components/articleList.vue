@@ -81,7 +81,7 @@ export default {
         'itemJson': Array
     },
     methods: {
-        ...mapActions([
+        ...mapActions('writer', [
             'post_article_data'
         ]),
         previewURL(item) {

@@ -5,7 +5,7 @@
             <div class="container" v-show="taskVisible" v-loading="loading" element-loading-text="正在保存中">
                 <el-form class="form" ref="form" :model="form" label-width="70px">
                     <!-- 任务 -->
-                    <el-form-item label="任务">
+                    <el-form-item label="素材">
                         <el-select v-model="taskSelect" clearable filterable placeholder="请选择" @change="load_task" @clear="reset_task">
                             <el-option v-for="(item,index) in taskList" :key="index" :label="item.title" :value="item.id"> 
                                 <span style="float: left; vertical-align: middle;">{{ item.title }}</span>
