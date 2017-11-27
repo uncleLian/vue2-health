@@ -33,11 +33,12 @@ export default {
                     color: '#00939c',
                     label: {
                         show: true,
-                        position: 'right',
+                        position: 'left',
                         formatter: '{b}:{c}',
                         textStyle: {
-                            color: '#000',
-                            fontSize: 12
+                            color: '#00939c',
+                            fontSize: 12,
+                            fontWeight: 'bold'
                         }
                     },
                     lineStyle: {
@@ -72,6 +73,31 @@ export default {
                 },
                 emphasis: {
                     color: '#00939c',
+                    label: {
+                        show: false
+                    },
+                    borderWidth: 0
+                }
+            },
+            normal: {
+                normal: {
+                    color: '#00939c',
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}:{c}',
+                        textStyle: {
+                            color: '#00939c',
+                            fontSize: 12
+                        }
+                    },
+                    lineStyle: {
+                        color: '#ccc',
+                        type: 'curve'
+                    }
+                },
+                emphasis: {
+                    color: '#d43d3d',
                     label: {
                         show: false
                     },
@@ -133,9 +159,9 @@ export default {
                     console.log('搜索结果', res.data)
                     if (res.data.children) {
                         let data = res.data
-                        this.setStyle(data)
-                        this.searchJson = data
-                        this.addTab(keyWord)
+                        this.setStyle(data)     // 设置节点样式
+                        this.searchJson = data      // 设置数据
+                        this.addTab(keyWord)        // 添加tab选项卡
                         this.loading = false
                     } else {
                         this.loading = false
@@ -156,6 +182,16 @@ export default {
         drawTree(keyWord) {
             let myChart = echarts.init(this.$el.querySelector(`#${keyWord}`))
             myChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: (item) => {
+                        if (item.data.hot) {
+                            return `热度: ${item.data.hot}`
+                        } else {
+                            return `热度: 0`
+                        }
+                    }
+                },
                 series: [{
                     name: '节点关系',
                     type: 'tree',
@@ -192,7 +228,8 @@ export default {
                             },
                             borderWidth: 0
                         }
-                    }
+                    },
+                    z: 2
                 }]
             })
             myChart.on('click', (param) => {
@@ -267,11 +304,6 @@ export default {
             this.activeTab = activeName
             this.tabData = tabs.filter(tab => tab.name !== targetName)
         },
-        setArr(arr) {
-            for (var i = 0; i < arr.length; i++) {
-                this.setStyle(arr[i])
-            }
-        },
         setStyle(item) {
             if (item.children) {
                 item.itemStyle = this.show
@@ -280,7 +312,12 @@ export default {
                 item.itemStyle = this.hide
                 this.setArr(item.hide)
             } else {
-                item.itemStyle = this.show
+                item.itemStyle = this.normal
+            }
+        },
+        setArr(arr) {
+            for (var i = 0; i < arr.length; i++) {
+                this.setStyle(arr[i])
             }
         }
     }
@@ -293,7 +330,7 @@ export default {
     min-height: inherit;
     .myChart {
         width: 100%;
-        height: 600px;
+        height: 800px;
     }
     .searchInput {
         position: absolute;

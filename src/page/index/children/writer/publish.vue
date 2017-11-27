@@ -135,26 +135,26 @@ export default {
     name: 'publish',
     data() {
         return {
-            json: null, // 修改的文章数据
-            title: '',  // 标题
-            content: '', // 正文
-            fileList: [], // 上传的图片数组
-            cover_mode: 1,  // 封面模式：单图 / 三图
-            contentImages: [], // 正文图片
+            json: null,                             // 修改的文章数据
+            title: '',                              // 标题
+            content: '',                            // 正文
+            fileList: [],                           // 上传的图片数组
+            cover_mode: 1,                          // 封面模式：单图 / 三图
+            contentImages: [],                      // 正文图片
             clickIndex: '',
-            selectImages: [], // 选择图片
-            coverImages: [], // 封面图片
-            classid: '',    // 标签
+            selectImages: [],                       // 选择图片
+            coverImages: [],                        // 封面图片
+            classid: '',                            // 标签
             draft: false,
-            upload_picture_dialog: false,  // 上传图片dialog
-            select_picture_dialog: false,   // 选中图片dialog
-            preView_dialog: false, // 图片预览
-            dialogImageUrl: '', // 预览图片地址
+            upload_picture_dialog: false,           // 上传图片dialog
+            select_picture_dialog: false,           // 选中图片dialog
+            preView_dialog: false,                  // 图片预览
+            dialogImageUrl: '',                     // 预览图片地址
             loading: false,
-            isRequest: false,   // 是否请求了
-            isChange: false,    // 是否修改了
-            isSave: false,      // 是否保存了
-            editorOption: { // 富文本编辑器配置
+            isRequest: false,                       // 是否请求了
+            isChange: false,                        // 是否修改了
+            isSave: false,                          // 是否保存了
+            editorOption: {                         // 富文本编辑器配置
                 modules: {
                     toolbar: '#toolbar',
                     history: {
@@ -279,11 +279,11 @@ export default {
         // 上传图片前检查格式、大小
         handleFormat(file) {
             const isImg = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
-            const isLt2M = file.size / 1024 / 1024 < 2
+            const isLt2M = file.size / 1024 / 1024 < 5
             if (!isImg) {
                 this.$message.error('目前只支持 jpg / png / gif 的图片格式')
             } else if (!isLt2M) {
-                this.$message.error('上传图片大小不能超过 2MB')
+                this.$message.error('上传图片大小不能超过 5MB')
             }
             return isImg && isLt2M
         },
