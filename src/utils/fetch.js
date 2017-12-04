@@ -8,7 +8,8 @@ const ajaxPHP = {
     edit: 'Edit.php',
     uploadFile: 'upload_file.php',
     login: 'ecmsadmin.php',
-    task: 'kwdata.php'
+    task: 'kwdata.php',
+    picture: 'picsearch'
 }
 export var fetch = async(type = 'POST', url = '', data = {}) => {
     let result

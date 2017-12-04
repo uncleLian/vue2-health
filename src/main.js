@@ -10,8 +10,11 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import VueQuillEditor from 'vue-quill-editor'
+
 import '@/assets/css/reset.css'
 import '@/assets/css/icon.less'
+import '@/assets/css/global.css'
+import '@/assets/css/transition.css'
 
 // 自定义组件
 import myHeader from '@/layout/header'
@@ -23,6 +26,8 @@ import myError from '@/components/error'
 import myNothing from '@/components/nothing'
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
+
+import selectPicture from '@/components/selectPicture'
 
 Vue.config.productionTip = false
 
@@ -38,6 +43,8 @@ Vue.component('my-error', myError)
 Vue.component('my-nothing', myNothing)
 Vue.component('article-list', articleList)
 Vue.component('comment-list', commentList)
+
+Vue.component('select-picture', selectPicture)
 
 // 全局路由判断
 router.beforeEach((to, from, next) => {

@@ -25,7 +25,7 @@
                             <button class="ql-list" value="bullet" title="无序列表"></button>
                         </div>
                         <div class='ql-formats'>
-                            <el-button icon="picture" class="picLib_btn" title="插入图片" @click.stop="upload_picture_dialog = true"></el-button>
+                            <el-button icon="picture" class="picLib_btn" title="插入图片" @click.stop="selectPictureVisible = true"></el-button>
                             <button class="ql-link" title="文章链接"></button>
                             <button class="ql-video" title="插入视频"></button>
                         </div>
@@ -98,24 +98,12 @@
             </template>
         </div>
 
-        <!-- 上传图片dialog -->
-        <el-dialog class="pictrue_upload" title="上传图片" :visible.sync="upload_picture_dialog"> 
-            <el-upload class="upload" ref="upload" action="http://api.toutiaojk.com/e/extend/jkh/upload_file.php" list-type="picture-card" :multiple="true" :before-upload="handleFormat" :on-preview="onPreview" :on-success="onSuccess" :on-error="onError" :on-remove="onRemove">
-                <i class="el-icon-plus"></i>
-            </el-upload>
-            <el-dialog class="picture_preview" v-model="preView_dialog" size="tiny" :modal="false">
-                <img width="100%" :src="dialogImageUrl">
-            </el-dialog>
-            <div slot="footer">
-                <el-button class="cancle_btn" @click.stop="clearUploadFiles">取 消</el-button>
-                <el-button type="primary" @click="uploadComplete">确 定</el-button>
-            </div>
-        </el-dialog>
+        <select-picture  v-if="selectPictureVisible" @selectComplete="inserPicture" @close="selectPictureVisible = false"></select-picture>
 
         <!-- 选择图片dialog -->
         <el-dialog class="picture_select" title="正文图片" :visible.sync="select_picture_dialog">
             <!-- 单选 -->
-            <el-radio-group v-model="selectImages">
+            <el-radio-group v-model="selectImages" class="img-list">
                 <div class="img-item" v-for="(item,index) in contentImages">
                     <el-radio-button :label="item.src"><img :src="item.src"></el-radio-button>
                 </div>
@@ -125,7 +113,6 @@
                 <el-button type="primary" @click="selectComplete">确 定</el-button>
             </div>
         </el-dialog>
-
     </div>
 </template>
 <script>
@@ -138,7 +125,6 @@ export default {
             json: null,                             // 修改的文章数据
             title: '',                              // 标题
             content: '',                            // 正文
-            fileList: [],                           // 上传的图片数组
             cover_mode: 1,                          // 封面模式：单图 / 三图
             contentImages: [],                      // 正文图片
             clickIndex: '',
@@ -148,8 +134,6 @@ export default {
             draft: false,
             upload_picture_dialog: false,           // 上传图片dialog
             select_picture_dialog: false,           // 选中图片dialog
-            preView_dialog: false,                  // 图片预览
-            dialogImageUrl: '',                     // 预览图片地址
             loading: false,
             isRequest: false,                       // 是否请求了
             isChange: false,                        // 是否修改了
@@ -164,7 +148,8 @@ export default {
                     }
                 },
                 placeholder: ' '
-            }
+            },
+            selectPictureVisible: false
         }
     },
     computed: {
@@ -203,7 +188,8 @@ export default {
         ]),
         ...mapActions('writer', [
             'get_article_data',
-            'post_article_data'
+            'post_article_data',
+            'get_picture_data'
         ]),
         // 初始化
         async init() {
@@ -251,6 +237,14 @@ export default {
                 console.log(err)
             })
         },
+        inserPicture(files) {
+            this.editor.focus()
+            files.forEach((item, index) => {
+                if (item) {
+                    this.editor.insertEmbed(this.editor.getSelection().index + index, 'image', item)
+                }
+            })
+        },
         // 保存草稿
         saveDraft() {
             let id = this.$route.query.id
@@ -275,53 +269,6 @@ export default {
             }
             remove_local_cache('draft')
             this.draft = false
-        },
-        // 上传图片前检查格式、大小
-        handleFormat(file) {
-            const isImg = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
-            const isLt2M = file.size / 1024 / 1024 < 5
-            if (!isImg) {
-                this.$message.error('目前只支持 jpg / png / gif 的图片格式')
-            } else if (!isLt2M) {
-                this.$message.error('上传图片大小不能超过 5MB')
-            }
-            return isImg && isLt2M
-        },
-        // 点击上传的图片时的钩子
-        onPreview(file) {
-            this.dialogImageUrl = file.url
-            this.preView_dialog = true
-        },
-        // 上传成功钩子
-        onSuccess(response, file, fileList) {
-            this.fileList = fileList
-        },
-        // 上传失败钩子
-        onError(err, file, fileList) {
-            console.log('上传图片失败', err)
-            this.$message.error('上传失败，请重新尝试!')
-        },
-        // 移除图片钩子
-        onRemove(file, fileList) {
-            this.fileList = fileList
-        },
-        // 上传完成，把图片添加进正文
-        uploadComplete() {
-            this.editor.focus()
-            for (let i = 0; i < this.fileList.length; i++) {
-                if (!this.fileList[i].response) {
-                    this.$message.warning('还有图片没有上传成功，请重新尝试')
-                } else {
-                    this.editor.insertEmbed(this.editor.getSelection().index + i, 'image', this.fileList[i].response.data)
-                }
-            }
-            this.clearUploadFiles()
-        },
-        // 清除上传的图片
-        clearUploadFiles() {
-            this.fileList = []
-            this.$refs.upload.clearFiles()
-            this.upload_picture_dialog = false
         },
         // 打开图片选择框
         selectPictureOpen(index) {
@@ -675,9 +622,47 @@ export default {
             }
         }
     }
-    .pictrue_upload {
+    .pictrue {
+        .el-dialog.el-dialog--small{
+            min-height: min_dialogHieght;
+            max-height: max_dialogHieght;
+            .el-dialog__header{
+                padding: 0;
+                .el-dialog__headerbtn{
+                    float: none;
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1;
+                }
+            }
+            .el-dialog__body{
+                padding: 0;
+                min-height: min_dialogBodyHeight;
+                max-height: max_dialogBodyHeight
+                margin-bottom: marginBottom;
+                .el-tabs{
+                    min-height: min_dialogBodyHeight;
+                    max-height: max_dialogBodyHeight;
+                    .el-tabs__header{
+                        padding: 0 12px;
+                        .el-tabs__item{
+                            height: tabHeaderHeight;
+                            line-height: tabHeaderHeight;
+                            font-size: 16px;
+                        }
+                    }
+                    .el-tabs__content{
+                        min-height: min_dialogBodyHeight - tabHeaderHeight;
+                        max-height: max_dialogBodyHeight - tabHeaderHeight;
+                        overflow: auto;
+                    }
+                }
+            }
+        }
         .upload {
             width: 100%;
+            padding: 20px 15px 0;
             .el-upload-list__item-thumbnail{
                 width: auto;
                 height: auto;
@@ -692,6 +677,19 @@ export default {
                 user-select: none;
             }
         }
+        .select{
+            min-height: inherit;
+            max-height: inherit;
+            .imgInput{
+                padding: 20px;
+            }
+            .imgWrapper{
+                width: 100%;
+                height: imgWrapperHeight;
+                padding: 0 15px;
+                overflow: auto;
+            }
+        }
     }
     .picture_preview{
         .el-dialog__body{
@@ -702,6 +700,8 @@ export default {
         .el-dialog__body{
             padding: 20px 10px;
         }
+    }
+    .img-list{
         .img-item{
             width: 150px;
             height: 120px;
@@ -779,11 +779,12 @@ export default {
     }
     .el-dialog.el-dialog--small{
         min-height: 400px;
+        margin: 0;
         .el-dialog__title{
             font-weight: 400;
         }
         .el-dialog__body{
-            max-height: 380px;
+            min-height: 320px;
             margin-bottom: 80px;
             overflow-y: auto;
         }
@@ -799,18 +800,6 @@ export default {
             max-height: 250px;
             margin-bottom: 0;        
         }
-    }
-}
-
-@keyframes slideDown {
-    6%{
-        height: 40px;
-    }
-    94% {
-        height: 40px;
-    }
-    100% {
-        height: 0;
     }
 }
 </style>
