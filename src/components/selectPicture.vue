@@ -16,10 +16,14 @@
                     <el-button slot="append" @click.stop="get_picture">搜索</el-button>
                 </el-input>
                 <div class="imgWrapper">
+                    <div class="nothing" v-if="freePictureList && !(freePictureList.length > 0) && !loading && !error && !nothing">
+                        <img src="~@/assets/img/picture.png">
+                        <p>还没有图片，搜索一下吧~</p>
+                    </div>
                     <my-loading :visible="loading"></my-loading>
                     <my-error :visible="error" :reload="get_picture"></my-error>
                     <my-nothing :visible="nothing && !loading && !error"></my-nothing>
-                    <el-checkbox-group v-model="selectFileList" class="img-list">
+                    <el-checkbox-group class="img-list" v-model="selectFileList" :max="5">
                         <div class="img-item" v-for="(item,index) in freePictureList">
                             <el-checkbox-button :label="item.picurl"><img :src="item.picurl"></el-checkbox-button>
                         </div>
@@ -54,19 +58,16 @@ export default {
             uploadFileList: [],         // 上传的图片数组
             selectFileList: [],         // 选中的图片数组
             preViewURL: '',             // 预览图片的URL
-            keyWord: '',
-            page: 1,
+            keyWord: '',                // 搜索关键字
+            page: 1,                    // 请求免费图片页数
             loading: false,
             error: false,
             nothing: false,
             more_loading: false,
             more_error: false,
             more_nothing: false,
-            lock: false
+            lock: false                 // 底部请求是否上锁
         }
-    },
-    computed: {
-
     },
     watch: {
         visible(val) {
@@ -79,6 +80,7 @@ export default {
         ...mapActions('writer', [
             'get_picture_data'
         ]),
+        // tabClick
         handleClick(val) {
             if (this.activeTab === 'select') {
                 this.$nextTick(() => {
@@ -142,7 +144,7 @@ export default {
         slelectCancle() {
             this.visible = false
         },
-        async get_picture() {
+        get_picture() {
             this.freePictureList = []
             this.nothing = false
             this.error = false
@@ -154,14 +156,13 @@ export default {
                 key: this.keyWord,
                 page: 1
             }
-            await this.get_picture_data(params)
+            this.get_picture_data(params)
             .then(res => {
-                console.log(res)
                 if (res.data) {
                     this.freePictureList = res.data
                     this.page = 2
                 } else {
-                    this.this.freePictureList = []
+                    this.freePictureList = []
                     this.nothing = true
                 }
                 this.loading = false
@@ -173,7 +174,7 @@ export default {
                 this.error = true
             })
         },
-        async get_picture_more() {
+        get_picture_more() {
             this.more_nothing = false
             this.more_error = false
             this.more_loading = true
@@ -181,7 +182,7 @@ export default {
                 key: this.keyWord,
                 page: this.page
             }
-            await this.get_picture_data(params)
+            this.get_picture_data(params)
             .then(res => {
                 console.log(res)
                 if (res.data) {
@@ -296,6 +297,19 @@ imgWrapperHeight=min_dialogBodyHeight - tabHeaderHeight - 40px - 36px;
             height: imgWrapperHeight;
             padding: 0 15px;
             overflow: auto;
+            .nothing{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate3d(-50%, -50%, 0);
+                z-index: 1;
+                text-align: center;
+                p{
+                    font-size: 14px;
+                    color: #999;
+                    margin-top: 5px;
+                }
+            }
         }
     }
 }

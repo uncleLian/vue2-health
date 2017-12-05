@@ -15,6 +15,8 @@ import article from '@/page/index/children/writer/article/article'    // 我的�
 // manage
 import comment from '@/page/index/children/manage/comment/comment'    // 评论管理
 import material from '@/page/index/children/manage/material/material' // 素材管理
+// count
+import count from '@/page/index/children/count/count'                 // 统计
 // setting
 import setting from '@/page/index/children/setting/setting'           // 设置
 
@@ -67,11 +69,8 @@ export default new Router({
                     name: 'comment',
                     path: 'comment',
                     component: comment,
+                    redirect: 'comment/newest',
                     children: [
-                        {
-                            path: '',
-                            redirect: 'newest'
-                        },
                         {
                             name: 'newest',
                             path: 'newest',
@@ -88,11 +87,8 @@ export default new Router({
                     name: 'material',
                     path: 'material',
                     component: material,
+                    redirect: 'material/pic',
                     children: [
-                        {
-                            path: '',
-                            redirect: 'pic'
-                        },
                         {
                             name: 'pic',
                             path: 'pic',
@@ -114,17 +110,19 @@ export default new Router({
                     name: 'article',
                     path: 'article',
                     component: article,
+                    redirect: 'article/own',
                     children: [
-                        {
-                            path: '',
-                            redirect: 'own'
-                        },
                         {
                             name: 'own',
                             path: 'own',
                             component: own
                         }
                     ]
+                },
+                {
+                    name: 'count',
+                    path: 'count',
+                    component: count
                 },
                 {
                     name: 'setting',

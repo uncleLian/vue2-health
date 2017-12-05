@@ -8,7 +8,7 @@
         </el-tabs>
         <!-- 搜索框 -->
         <div class="searchInput">
-            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="handleSelect">
+            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="onSelect">
                 <el-button slot="append" icon="search" @click.native.stop="get_searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
@@ -22,10 +22,10 @@ export default {
     name: 'search',
     data() {
         return {
-            activeTab: '',
-            tabData: [],
-            keyWord: '',
-            searchJson: [],
+            activeTab: '',          // 选中的Tab
+            tabData: [],            // Tab选项数据
+            keyWord: '',            // 搜索关键字
+            searchJson: [],         // 搜索数据
             useTip: '使用提示：1、右上角搜索绘制图表  2、单击展开节点  3、双击选取节点',
             loading: false,
             show: {
@@ -115,10 +115,11 @@ export default {
         ...mapMutations('writer', [
             'set_task'
         ]),
-        handleSelect(item) {
+        // 下拉框选择钩子
+        onSelect(item) {
             this.get_searchResult(item.value)
         },
-        // 搜索建议
+        // 获取搜索词建议数据
         get_searchSuggestion(keyWord, searchCallBack) {
             if (this.sourceObj) {
                 this.sourceObj.cancel()
@@ -139,7 +140,7 @@ export default {
                 searchCallBack([])
             })
         },
-        // 搜索结果
+        // 获取搜索数据
         get_searchResult(keyWord) {
             let isExistTab = this.tabData.findIndex(n => n.name === keyWord)
             if (isExistTab > -1) {
@@ -159,7 +160,7 @@ export default {
                     console.log('搜索结果', res.data)
                     if (res.data.children) {
                         let data = res.data
-                        this.setStyle(data)     // 设置节点样式
+                        this.setStyle(data)         // 设置节点样式
                         this.searchJson = data      // 设置数据
                         this.addTab(keyWord)        // 添加tab选项卡
                         this.loading = false
@@ -179,6 +180,7 @@ export default {
                 })
             }
         },
+        // 画树形图
         drawTree(keyWord) {
             let myChart = echarts.init(this.$el.querySelector(`#${keyWord}`))
             myChart.setOption({
@@ -199,7 +201,7 @@ export default {
                     symbolSize: 10,
                     roam: true,
                     orient: 'horizontal',
-                    rootLocation: { x: 50, y: 'center' }, // 根节点位置  {x: 100, y: 'center'}
+                    rootLocation: { x: 50, y: 'center' },
                     nodePadding: 8,
                     layerPadding: 200,
                     hoverable: false,
@@ -232,10 +234,11 @@ export default {
                     z: 2
                 }]
             })
+            // 绑定单击事件：展开节点
             myChart.on('click', (param) => {
                 clearTimeout(this.timer)
                 this.timer = setTimeout(() => {
-                    console.log('click', param)
+                    // console.log('click', param)
                     let data = param.data
                     if (data.children && data.children.length > 0) {
                         // 隐藏
@@ -252,9 +255,10 @@ export default {
                     }
                 }, 300)
             })
+            // 绑定双击事件：选择节点
             myChart.on('dblclick', (param) => {
                 clearTimeout(this.timer)
-                console.log('dbClick', param)
+                // console.log('dbClick', param)
                 if (param.data.type === 'tag') {
                     let tag = {
                         source: keyWord,
@@ -278,6 +282,7 @@ export default {
                 this.set_task(this.task)
             })
         },
+        // 添加Tab选项
         addTab(keyWord) {
             this.tabData.push({
                 label: keyWord,
@@ -288,6 +293,7 @@ export default {
                 this.drawTree(keyWord)
             })
         },
+        // 移除Tab选项
         removeTab(targetName) {
             let tabs = this.tabData
             let activeName = this.activeTab
@@ -304,6 +310,7 @@ export default {
             this.activeTab = activeName
             this.tabData = tabs.filter(tab => tab.name !== targetName)
         },
+        // 设置节点样式
         setStyle(item) {
             if (item.children) {
                 item.itemStyle = this.show
@@ -315,6 +322,7 @@ export default {
                 item.itemStyle = this.normal
             }
         },
+        // 递归循环
         setArr(arr) {
             for (var i = 0; i < arr.length; i++) {
                 this.setStyle(arr[i])

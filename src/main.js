@@ -10,6 +10,8 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import VueQuillEditor from 'vue-quill-editor'
+import VueProgressBar from 'vue-progressbar'
+import echarts from 'echarts'
 
 import '@/assets/css/reset.css'
 import '@/assets/css/icon.less'
@@ -33,6 +35,12 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
+Vue.use(VueProgressBar, {
+    color: '#29F',
+    failedColor: 'red',
+    thickness: '4px'
+})
+Vue.prototype.$echarts = echarts
 
 Vue.component('my-header', myHeader)
 Vue.component('my-footer', myFooter)

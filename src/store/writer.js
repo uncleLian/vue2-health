@@ -72,7 +72,7 @@ export default {
             return res
         },
 
-        // 提交素材任务数据
+        // 获取免费图片数据
         async get_picture_data({rootState}, params) {
             let res = await fetch('GET', 'picture', params)
             return res

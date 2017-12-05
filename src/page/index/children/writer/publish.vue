@@ -237,6 +237,7 @@ export default {
                 console.log(err)
             })
         },
+        // 插入图片
         inserPicture(files) {
             this.editor.focus()
             files.forEach((item, index) => {
@@ -244,6 +245,8 @@ export default {
                     this.editor.insertEmbed(this.editor.getSelection().index + index, 'image', item)
                 }
             })
+            // 设置光标为末尾
+            this.editor.setSelection(this.editor.getSelection().index + 1)
         },
         // 保存草稿
         saveDraft() {

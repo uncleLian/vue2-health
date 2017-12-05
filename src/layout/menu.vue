@@ -19,6 +19,9 @@
                 <el-menu-item index="/index/material">素材管理</el-menu-item>
             </el-submenu>
 
+            <!-- count -->
+            <el-menu-item index="/index/count"><i class="el-icon-fa-bar-chart el-icon-fa-lg"></i>统计</el-menu-item>
+
             <!-- setting -->
             <el-menu-item index="/index/setting"><i class="el-icon-fa-cog el-icon-fa-lg"></i>设置</el-menu-item>
         </el-menu>
@@ -36,11 +39,12 @@ export default {
             let activeRoute = this.$route.path
             let routerArr = [
                 '/index/home',
-                '/index/comment',
-                '/index/material',
                 '/index/search',
                 '/index/publish',
                 '/index/article',
+                '/index/comment',
+                '/index/material',
+                '/index/count',
                 '/index/setting'
             ]
             for (var i = 0; i < routerArr.length; i++) {
