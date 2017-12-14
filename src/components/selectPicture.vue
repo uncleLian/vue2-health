@@ -25,7 +25,11 @@
                     <my-nothing :visible="nothing && !loading && !error"></my-nothing>
                     <el-checkbox-group class="img-list" v-model="selectFileList" :max="5">
                         <div class="img-item" v-for="(item,index) in freePictureList">
-                            <el-checkbox-button :label="item.picurl"><img :src="item.picurl"></el-checkbox-button>
+                            <el-tooltip placement="right-end" effect="light" :enterable="false">
+                                <el-checkbox-button :label="item.picurl"><img :src="item.picurl"></el-checkbox-button>
+                                <!-- hover出现的内容 -->
+                                <img class="tooltipImg" slot="content" :src="item.picurl">
+                            </el-tooltip>
                         </div>
                     </el-checkbox-group>
                     <template v-if="freePictureList && freePictureList.length > 0">
@@ -309,6 +313,10 @@ imgWrapperHeight=min_dialogBodyHeight - tabHeaderHeight - 40px - 36px;
                     color: #999;
                     margin-top: 5px;
                 }
+            }
+            .tooltipImg{
+                max-width: 800px;
+                max-height: 500px;
             }
         }
     }

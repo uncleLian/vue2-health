@@ -1,10 +1,22 @@
 <template>
     <div id="search" v-loading="loading" element-loading-text="正在加载中">
-        <!-- 内容 -->
-        <el-tabs class='tab_main' type="card" closable v-model="activeTab"  @tab-remove="removeTab">
-          <el-tab-pane v-for="(item, index) in tabData" :key="index" :label="item.label" :name="item.name" >
-                <div class="myChart" :id="item.name"></div>
-          </el-tab-pane>
+        <el-tabs class='tab_main' v-model="activeView">
+            <!-- 传统视图 -->
+            <el-tab-pane class="tab_tradition" label="传统视图" name="tradition">
+                <el-button class="addBtn" type="primary" icon="plus" @click="getCheckedNodes">将选中项添加到素材库</el-button>
+                <el-tree ref="tree" :data="traditionJson" :props="traditionProps" :show-checkbox="true" :check-strictly="true" :highlight-current="true" :default-expanded-keys="traditionOpen" node-key="id" @node-click="handleNodeClick"></el-tree>
+            </el-tab-pane>
+            <!-- 图形视图 -->
+            <el-tab-pane class="tab_graph" label="图形视图" name="graph">
+                <!-- 内容 -->
+                <el-tabs type="card" v-show="graph_tabData.length > 0" closable v-model="graph_activeTab" @tab-remove="removeKeyword">
+                    <el-tab-pane v-for="(item, index) in graph_tabData" :key="index" :label="item.label" :name="item.name">
+                        <div class="myChart" style="width:934px; height:800px;" :id="item.name"></div>
+                    </el-tab-pane>
+                </el-tabs>
+                <!-- 使用提示 -->
+                <el-alert class="userTip" v-if="!(graph_tabData.length > 0)" show-icon type="info" title="使用提示：1、右上角搜索绘制图表  2、单击展开节点  3、双击选取节点"> </el-alert>
+            </el-tab-pane>
         </el-tabs>
         <!-- 搜索框 -->
         <div class="searchInput">
@@ -12,8 +24,6 @@
                 <el-button slot="append" icon="search" @click.native.stop="get_searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
-        <!-- 使用提示 -->
-        <el-alert class="userTip" v-if="!(tabData.length > 0)" show-icon type="info" :title="useTip"> </el-alert>
     </div>
 </template>
 <script>
@@ -22,12 +32,21 @@ export default {
     name: 'search',
     data() {
         return {
-            activeTab: '',          // 选中的Tab
-            tabData: [],            // Tab选项数据
-            keyWord: '',            // 搜索关键字
-            searchJson: [],         // 搜索数据
-            useTip: '使用提示：1、右上角搜索绘制图表  2、单击展开节点  3、双击选取节点',
+            activeView: 'tradition',    // 选中的视图
+            keyWord: '',                // 搜索关键字
             loading: false,
+            keywordHistory: [],         // 搜索过的关键词
+            searchJson: [],             // 搜索数据
+            traditionJson: [],          // 传统视图数据
+            traditionProps: {
+                label: 'name',
+                children: 'data',
+                disabled: (data, node) => !data.type
+            },
+            traditionOpen: [],          // 传统属性打开的数组
+            graphJson: [],              // 图形视图数据
+            graph_tabData: [],          // Tab选项数据
+            graph_activeTab: '',        // 选中的Tab
             show: {
                 normal: {
                     color: '#00939c',
@@ -112,6 +131,9 @@ export default {
         ])
     },
     methods: {
+        handleNodeClick(val) {
+            console.log(val)
+        },
         ...mapMutations('writer', [
             'set_task'
         ]),
@@ -126,26 +148,23 @@ export default {
             }
             this.sourceObj = this.$http.CancelToken.source()
             this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw2.php', {
-                cancelToken: this.sourceObj.token,
-                params: { type: 'kkey', kword: keyWord }
-            })
-            .then(res => {
-                if (res.data.data) {
-                    searchCallBack(res.data.data)
-                } else {
+                    cancelToken: this.sourceObj.token,
+                    params: { type: 'kkey', kword: keyWord }
+                })
+                .then(res => {
+                    if (res.data.data) {
+                        searchCallBack(res.data.data)
+                    } else {
+                        searchCallBack([])
+                    }
+                })
+                .catch(() => {
                     searchCallBack([])
-                }
-            })
-            .catch(() => {
-                searchCallBack([])
-            })
+                })
         },
         // 获取搜索数据
         get_searchResult(keyWord) {
-            let isExistTab = this.tabData.findIndex(n => n.name === keyWord)
-            if (isExistTab > -1) {
-                this.activeTab = keyWord
-            } else {
+            if (!this.isHasKeyword()) {
                 if (this.source) {
                     this.source.cancel()
                 }
@@ -153,34 +172,116 @@ export default {
                 this.loading = true
                 this.searchJson = []
                 this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw.php', {
-                    cancelToken: this.source.token,
-                    params: { type: 'mkey', kword: keyWord }
-                })
-                .then(res => {
-                    console.log('搜索结果', res.data)
-                    if (res.data.children) {
+                        cancelToken: this.source.token,
+                        params: { type: 'mkey', kword: keyWord }
+                    })
+                    .then(res => {
                         let data = res.data
-                        this.setStyle(data)         // 设置节点样式
-                        this.searchJson = data      // 设置数据
-                        this.addTab(keyWord)        // 添加tab选项卡
-                        this.loading = false
-                    } else {
-                        this.loading = false
-                        this.$message.warning('搜索不到，换个词试试')
-                    }
-                })
-                .catch((err) => {
-                    if (this.$http.isCancel(err)) {
-                        console.log('Request canceled', err.message)
-                    } else {
-                        console.log(err)
-                        this.loading = false
-                        this.$message.error('出错错误，请重新尝试')
-                    }
-                })
+                        console.log('搜索结果', data)
+                        if (data.data || data.children) {
+                            this.searchJson = data // 设置搜索数据
+                            this.keywordHistory.push(keyWord) // 设置关键字历史
+                            this.traditionTree_init()
+                            this.graphTree_init()
+                            this.loading = false
+                        } else {
+                            this.loading = false
+                            this.$message.warning('搜索不到，换个词试试')
+                        }
+                    })
+                    .catch((err) => {
+                        if (this.$http.isCancel(err)) {
+                            console.log('Request canceled', err.message)
+                        } else {
+                            console.log(err)
+                            this.loading = false
+                            this.$message.error('出错错误，请重新尝试')
+                        }
+                    })
             }
         },
-        // 画树形图
+        isHasKeyword() {
+            let isHas = this.keywordHistory.findIndex(n => n === this.keyWord)
+            if (isHas > -1) {
+                // this.$message.warning('搜索视图已经存在')
+                this.graph_activeTab = this.keyWord
+                return true
+            } else {
+                return false
+            }
+        },
+        removeKeyword(targetName) {
+            this.keywordHistory.forEach((item, index) => {
+                if (item === targetName) {
+                    this.keywordHistory.splice(index, 1)
+                }
+            })
+            this.traditionJson.forEach((item, index) => {
+                if (item.name === targetName) {
+                    this.traditionJson.splice(index, 1)
+                }
+            })
+            this.removeTab(targetName)
+        },
+        // 添加各类型数据
+        setTypeDate(data) {
+            if (data.type === 'tag') {
+                let tag = {
+                    source: this.keyWord,
+                    name: data.name
+                }
+                this.task.tags.push(tag)
+            } else if (data.type === 'sentence') {
+                let sentence = {
+                    source: this.keyWord,
+                    name: data.name
+                }
+                this.task.sentences.push(sentence)
+            } else if (data.type === 'article') {
+                let article = {
+                    source: this.keyWord,
+                    name: data.name,
+                    id: data.newsid
+                }
+                this.task.articles.push(article)
+            }
+            this.set_task(this.task)
+        },
+        // 传统树图初始化
+        traditionTree_init() {
+            this.traditionJson.push(this.searchJson)
+        },
+        // 传统树图：获取选中节点
+        getCheckedNodes() {
+            let checkData = this.$refs.tree.getCheckedNodes()
+            if (checkData && checkData.length > 0) {
+                checkData.forEach((item, index) => {
+                    this.setTypeDate(item)
+                })
+                this.$message({
+                    message: '添加成功',
+                    type: 'success',
+                    duration: 1500
+                })
+                this.$refs.tree.setCheckedKeys([])
+            }
+        },
+        // 图形树图初始化
+        graphTree_init() {
+            // 设置节点样式
+            this.setStyle(this.searchJson)
+            // 添加tab选项卡
+            this.graph_tabData.push({
+                label: this.keyWord,
+                name: this.keyWord
+            })
+            this.graph_activeTab = this.keyWord
+            // 画树形图
+            this.$nextTick(() => {
+                this.drawTree(this.keyWord)
+            })
+        },
+        // 画图形树图
         drawTree(keyWord) {
             let myChart = echarts.init(this.$el.querySelector(`#${keyWord}`))
             myChart.setOption({
@@ -259,73 +360,43 @@ export default {
             myChart.on('dblclick', (param) => {
                 clearTimeout(this.timer)
                 // console.log('dbClick', param)
-                if (param.data.type === 'tag') {
-                    let tag = {
-                        source: keyWord,
-                        name: param.data.name
-                    }
-                    this.task.tags.push(tag)
-                } else if (param.data.type === 'sentence') {
-                    let sentence = {
-                        source: keyWord,
-                        name: param.data.name
-                    }
-                    this.task.sentences.push(sentence)
-                } else if (param.data.type === 'article') {
-                    let article = {
-                        source: keyWord,
-                        name: param.data.name,
-                        id: param.data.newsid
-                    }
-                    this.task.articles.push(article)
-                }
-                this.set_task(this.task)
+                let data = param.data
+                this.setTypeDate(data)
+                this.$message({
+                    message: '添加成功',
+                    type: 'success',
+                    duration: 1500
+                })
             })
         },
-        // 添加Tab选项
-        addTab(keyWord) {
-            this.tabData.push({
-                label: keyWord,
-                name: keyWord
-            })
-            this.activeTab = keyWord
-            this.$nextTick(() => {
-                this.drawTree(keyWord)
-            })
-        },
-        // 移除Tab选项
+        // 移除Tab
         removeTab(targetName) {
-            let tabs = this.tabData
-            let activeName = this.activeTab
-            if (activeName === targetName) {
-              tabs.forEach((tab, index) => {
-                if (tab.name === targetName) {
-                  let nextTab = tabs[index + 1] || tabs[index - 1]
-                  if (nextTab) {
-                    activeName = nextTab.name
-                  }
-                }
-              })
+            this.graph_tabData = this.graph_tabData.filter(item => item.name !== targetName)
+            if (this.graph_activeTab === targetName) {
+                this.graph_tabData.forEach((item, index) => {
+                    if (item.name === targetName) {
+                        let nextTab = item[index + 1] || item[index - 1]
+                        if (nextTab) {
+                            this.graph_activeTab = nextTab.name
+                        }
+                    }
+                })
             }
-            this.activeTab = activeName
-            this.tabData = tabs.filter(tab => tab.name !== targetName)
         },
         // 设置节点样式
         setStyle(item) {
             if (item.children) {
                 item.itemStyle = this.show
-                this.setArr(item.children)
+                item.children.forEach((item, index) => {
+                    this.setStyle(item)
+                })
             } else if (item.hide) {
                 item.itemStyle = this.hide
-                this.setArr(item.hide)
+                item.hide.forEach((item, index) => {
+                    this.setStyle(item)
+                })
             } else {
                 item.itemStyle = this.normal
-            }
-        },
-        // 递归循环
-        setArr(arr) {
-            for (var i = 0; i < arr.length; i++) {
-                this.setStyle(arr[i])
             }
         }
     }
@@ -336,27 +407,39 @@ export default {
     position: relative;
     width: 100%;
     min-height: inherit;
-    .myChart {
-        width: 100%;
-        height: 800px;
-    }
     .searchInput {
         position: absolute;
         top: 20px;
         right: 24px;
     }
-    .userTip {
-        position: absolute;
-        top: 15px;
-        left: 24px;
-        width: 60%;
-        background: #00939c;
-    }
-    .el-tabs__nav-wrap.is-scrollable{
+
+    .el-tabs__nav-wrap.is-scrollable {
         padding: 0 20px;
     }
-    .tab_main > .el-tabs__header{
+    .tab_main>.el-tabs__header {
         padding-right: 270px;
+    }
+    .tab_graph {
+        width: 900px;
+        .el-tabs__header {
+            padding: 10px 24px 0;
+        }
+        .myChart {
+            position: relative;
+            width: 100%;
+            height: 800px;
+        }
+        .userTip {
+            margin: 20px 24px;
+            width: 60%;
+            background: #00939c;
+        }
+    }
+    .tab_tradition {
+        padding: 20px 24px;
+        .addBtn {
+            margin-bottom: 30px;
+        }
     }
 }
 </style>
