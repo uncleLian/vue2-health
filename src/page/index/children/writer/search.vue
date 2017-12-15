@@ -4,7 +4,7 @@
             <!-- 传统视图 -->
             <el-tab-pane class="tab_tradition" label="传统视图" name="tradition">
                 <el-button class="addBtn" type="primary" icon="plus" @click="getCheckedNodes">将选中项添加到素材库</el-button>
-                <el-tree ref="tree" :data="traditionJson" :props="traditionProps" :show-checkbox="true" :check-strictly="true" :highlight-current="true" :default-expanded-keys="traditionOpen" node-key="id" @node-click="handleNodeClick"></el-tree>
+                <el-tree ref="tree" :data="traditionJson" :props="traditionProps" :show-checkbox="true" :check-strictly="true" :highlight-current="true" :default-expanded-keys="traditionOpen" node-key="id"></el-tree>
             </el-tab-pane>
             <!-- 图形视图 -->
             <el-tab-pane class="tab_graph" label="图形视图" name="graph">
@@ -20,7 +20,7 @@
         </el-tabs>
         <!-- 搜索框 -->
         <div class="searchInput">
-            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="onSelect">
+            <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="(item) => get_searchResult(item.value)">
                 <el-button slot="append" icon="search" @click.native.stop="get_searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
@@ -32,21 +32,21 @@ export default {
     name: 'search',
     data() {
         return {
-            activeView: 'tradition',    // 选中的视图
-            keyWord: '',                // 搜索关键字
+            activeView: 'tradition', // 选中的视图
+            keyWord: '', // 搜索关键字
             loading: false,
-            keywordHistory: [],         // 搜索过的关键词
-            searchJson: [],             // 搜索数据
-            traditionJson: [],          // 传统视图数据
+            keywordHistory: [], // 搜索过的关键词
+            searchJson: [], // 搜索数据
+            traditionJson: [], // 传统视图数据
             traditionProps: {
                 label: 'name',
                 children: 'data',
                 disabled: (data, node) => !data.type
             },
-            traditionOpen: [],          // 传统属性打开的数组
-            graphJson: [],              // 图形视图数据
-            graph_tabData: [],          // Tab选项数据
-            graph_activeTab: '',        // 选中的Tab
+            traditionOpen: [], // 传统属性打开的数组
+            graphJson: [], // 图形视图数据
+            graph_tabData: [], // Tab选项数据
+            graph_activeTab: '', // 选中的Tab
             show: {
                 normal: {
                     color: '#00939c',
@@ -131,16 +131,9 @@ export default {
         ])
     },
     methods: {
-        handleNodeClick(val) {
-            console.log(val)
-        },
         ...mapMutations('writer', [
             'set_task'
         ]),
-        // 下拉框选择钩子
-        onSelect(item) {
-            this.get_searchResult(item.value)
-        },
         // 获取搜索词建议数据
         get_searchSuggestion(keyWord, searchCallBack) {
             if (this.sourceObj) {
@@ -162,68 +155,105 @@ export default {
                     searchCallBack([])
                 })
         },
-        // 获取搜索数据
-        get_searchResult(keyWord) {
+        // 获取树图数据
+        async get_searchResult(keyWord) {
             if (!this.isHasKeyword()) {
                 if (this.source) {
                     this.source.cancel()
                 }
                 this.source = this.$http.CancelToken.source()
                 this.loading = true
-                this.searchJson = []
-                this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw.php', {
-                        cancelToken: this.source.token,
-                        params: { type: 'mkey', kword: keyWord }
-                    })
-                    .then(res => {
-                        let data = res.data
-                        console.log('搜索结果', data)
-                        if (data.data || data.children) {
-                            this.searchJson = data // 设置搜索数据
-                            this.keywordHistory.push(keyWord) // 设置关键字历史
-                            this.traditionTree_init()
-                            this.graphTree_init()
-                            this.loading = false
-                        } else {
-                            this.loading = false
-                            this.$message.warning('搜索不到，换个词试试')
-                        }
-                    })
-                    .catch((err) => {
-                        if (this.$http.isCancel(err)) {
-                            console.log('Request canceled', err.message)
-                        } else {
-                            console.log(err)
-                            this.loading = false
-                            this.$message.error('出错错误，请重新尝试')
-                        }
-                    })
+                this.graphJson = this.traditionJson = []
+                this.$http.all([this.get_traditionJson(keyWord), this.get_graphJson(keyWord)])
+                .then(() => {
+                    this.keywordHistory.push(keyWord)   // 设置关键字历史
+                })
             }
         },
+        // 获取传统树图数据
+        async get_traditionJson(keyWord) {
+            this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw3.php', {
+                    cancelToken: this.source.token,
+                    params: { type: 'mkey', kword: keyWord }
+                })
+                .then(res => {
+                    let data = res.data
+                    // console.log('搜索结果', data)
+                    if (data) {
+                        this.traditionTree_init(data) // 图形树图初始化
+                    } else {
+                        this.$message.warning('搜索不到，换个词试试')
+                    }
+                    if (this.activeView === 'tradition') {
+                        this.loading = false
+                    }
+                })
+                .catch((err) => {
+                    if (this.$http.isCancel(err)) {
+                        console.log('Request canceled', err.message)
+                    } else {
+                        console.log(err)
+                        this.loading = false
+                        this.$message.error('出错错误，请重新尝试')
+                    }
+                })
+        },
+        // 获取图形树图数据
+        async get_graphJson(keyWord) {
+            await this.$http.get('http://api.toutiaojk.com/e/extend/jkh/kw.php', {
+                    cancelToken: this.source.token,
+                    params: { type: 'mkey', kword: keyWord }
+                })
+                .then(res => {
+                    let data = res.data
+                    // console.log('搜索结果', data)
+                    if (data) {
+                        this.graphTree_init(data) // 传统树图初始化
+                    } else {
+                        this.$message.warning('搜索不到，换个词试试')
+                    }
+                    if (this.activeView === 'graph') {
+                        this.loading = false
+                    }
+                })
+                .catch((err) => {
+                    if (this.$http.isCancel(err)) {
+                        console.log('Request canceled', err.message)
+                    } else {
+                        console.log(err)
+                        this.loading = false
+                        this.$message.error('出错错误，请重新尝试')
+                    }
+                })
+        },
+        // 判断关键词历史视图
         isHasKeyword() {
             let isHas = this.keywordHistory.findIndex(n => n === this.keyWord)
             if (isHas > -1) {
-                // this.$message.warning('搜索视图已经存在')
+                this.$message.warning('视图已经存在')
                 this.graph_activeTab = this.keyWord
                 return true
             } else {
                 return false
             }
         },
+        // 移除关键词视图
         removeKeyword(targetName) {
-            this.keywordHistory.forEach((item, index) => {
-                if (item === targetName) {
-                    this.keywordHistory.splice(index, 1)
-                }
-            })
-            this.traditionJson.forEach((item, index) => {
-                if (item.name === targetName) {
-                    this.traditionJson.splice(index, 1)
-                }
-            })
-            this.removeTab(targetName)
+            this.keywordHistory = this.keywordHistory.filter(item => item.name !== targetName)
+            this.traditionJson = this.traditionJson.filter(item => item.name !== targetName)
+            this.graph_tabData = this.graph_tabData.filter(item => item.name !== targetName)
+            if (this.graph_activeTab === targetName) {
+                this.graph_tabData.forEach((item, index) => {
+                    if (item.name === targetName) {
+                        let nextTab = item[index + 1] || item[index - 1]
+                        if (nextTab) {
+                            this.graph_activeTab = nextTab.name
+                        }
+                    }
+                })
+            }
         },
-        // 添加各类型数据
+        // 根据节点类型添加数据
         setTypeDate(data) {
             if (data.type === 'tag') {
                 let tag = {
@@ -248,8 +278,8 @@ export default {
             this.set_task(this.task)
         },
         // 传统树图初始化
-        traditionTree_init() {
-            this.traditionJson.push(this.searchJson)
+        traditionTree_init(data) {
+            this.traditionJson.push(data)
         },
         // 传统树图：获取选中节点
         getCheckedNodes() {
@@ -267,9 +297,10 @@ export default {
             }
         },
         // 图形树图初始化
-        graphTree_init() {
+        graphTree_init(data) {
+            this.graphJson = data
             // 设置节点样式
-            this.setStyle(this.searchJson)
+            this.setStyle(this.graphJson)
             // 添加tab选项卡
             this.graph_tabData.push({
                 label: this.keyWord,
@@ -298,7 +329,7 @@ export default {
                 series: [{
                     name: '节点关系',
                     type: 'tree',
-                    data: [this.searchJson],
+                    data: [this.graphJson],
                     symbolSize: 10,
                     roam: true,
                     orient: 'horizontal',
@@ -369,20 +400,6 @@ export default {
                 })
             })
         },
-        // 移除Tab
-        removeTab(targetName) {
-            this.graph_tabData = this.graph_tabData.filter(item => item.name !== targetName)
-            if (this.graph_activeTab === targetName) {
-                this.graph_tabData.forEach((item, index) => {
-                    if (item.name === targetName) {
-                        let nextTab = item[index + 1] || item[index - 1]
-                        if (nextTab) {
-                            this.graph_activeTab = nextTab.name
-                        }
-                    }
-                })
-            }
-        },
         // 设置节点样式
         setStyle(item) {
             if (item.children) {
@@ -439,6 +456,27 @@ export default {
         padding: 20px 24px;
         .addBtn {
             margin-bottom: 30px;
+        }
+        .el-tree-node {
+            white-space: normal;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            .el-tree-node__content {
+                height: auto;
+                line-height: 1.7;
+                .el-tree-node__expand-icon {
+                    vertical-align: middle;
+                }
+            }
+        }
+        .el-tree-node__content>.el-checkbox {
+            vertical-align: top;
+        }
+        .el-tree-node__label {
+            width: 90%;
+            text-indent: -4em;
+            padding-left: 4em;
+            vertical-align: top;
         }
     }
 }
