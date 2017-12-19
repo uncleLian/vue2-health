@@ -1,11 +1,13 @@
 <template>
     <div id="search" v-loading="loading" element-loading-text="正在加载中">
         <el-tabs class='tab_main' v-model="activeView">
+            
             <!-- 传统视图 -->
             <el-tab-pane class="tab_tradition" label="传统视图" name="tradition">
                 <el-button class="addBtn" type="primary" icon="plus" @click="getCheckedNodes">将选中项添加到素材库</el-button>
                 <el-tree ref="tree" :data="traditionJson" :props="traditionProps" :show-checkbox="true" :check-strictly="true" :highlight-current="true" :default-expanded-keys="traditionOpen" node-key="id"></el-tree>
             </el-tab-pane>
+
             <!-- 图形视图 -->
             <el-tab-pane class="tab_graph" label="图形视图" name="graph">
                 <!-- 内容 -->
@@ -18,6 +20,7 @@
                 <el-alert class="userTip" v-if="!(graph_tabData.length > 0)" show-icon type="info" title="使用提示：1、右上角搜索绘制图表  2、单击展开节点  3、双击选取节点"> </el-alert>
             </el-tab-pane>
         </el-tabs>
+
         <!-- 搜索框 -->
         <div class="searchInput">
             <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="(item) => get_searchResult(item.value)">
@@ -41,7 +44,7 @@ export default {
             traditionProps: {
                 label: 'name',
                 children: 'data',
-                disabled: (data, node) => !data.type
+                disabled: (data) => !data.type
             },
             traditionOpen: [], // 传统属性打开的数组
             graphJson: [], // 图形视图数据
