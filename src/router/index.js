@@ -2,33 +2,32 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // 一级页面
-import login from '@/page/login/login'                                // 登录页
-import preview from '@/page/preview/preview'                          // 预览页
-import index from '@/page/index/index'                                // 首页
-
+const login = () => import('@/page/login/login')                                // 登录页
+const preview = () => import('@/page/preview/preview')                          // 预览页
+const index = () => import('@/page/index/index')                                // 首页
 // 二级页面
-import home from '@/page/index/children/home/home'                    // 主页
+const home = () => import('@/page/index/children/home/home')                    // 主页
 // writer
-import search from '@/page/index/children/writer/search'              // 素材搜索
-import publish from '@/page/index/children/writer/publish'            // 作品编辑
-import article from '@/page/index/children/writer/article/article'    // 我的作品
+const search = () => import('@/page/index/children/writer/search')              // 素材搜索
+const publish = () => import('@/page/index/children/writer/publish')           // 作品编辑
+const article = () => import('@/page/index/children/writer/article/article')    // 我的作品
 // manage
-import comment from '@/page/index/children/manage/comment/comment'    // 评论管理
-import material from '@/page/index/children/manage/material/material' // 素材管理
+const comment = () => import('@/page/index/children/manage/comment/comment')    // 评论管理
+const material = () => import('@/page/index/children/manage/material/material') // 素材管理
 // count
-import count from '@/page/index/children/count/count'                 // 统计
+const count = () => import('@/page/index/children/count/count')                 // 统计
 // setting
-import setting from '@/page/index/children/setting/setting'           // 设置
-
+const setting = () => import('@/page/index/children/setting/setting')           // 设置
 // 三级页面
-import own from '@/page/index/children/writer/article/children/own'
-import newest from '@/page/index/children/manage/comment/children/newest'
-import articles from '@/page/index/children/manage/comment/children/articles'
-import pic from '@/page/index/children/manage/material/children/pic'
+const own = () => import('@/page/index/children/writer/article/children/own')
+const newest = () => import('@/page/index/children/manage/comment/children/newest')
+const articles = () => import('@/page/index/children/manage/comment/children/articles')
+const pic = () => import('@/page/index/children/manage/material/children/pic')
 
 Vue.use(Router)
+
 export default new Router({
-    mode: 'history',
+    // mode: 'history',
     scrollBehavior(to, from, savedPosition) {
         if (savedPosition) {
             to.meta.position = savedPosition

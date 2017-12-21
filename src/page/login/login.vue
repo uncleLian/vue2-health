@@ -37,8 +37,8 @@ export default {
         return {
             dialogFormVisible: false, // 登录框
             form: {
-                username: '',
-                password: '',
+                username: 'etone',
+                password: '123456',
                 agree: true
             }
         }
