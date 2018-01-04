@@ -6,10 +6,10 @@
             <!-- options -->
             <div class="mobileOptions">
                 <el-select v-model="value" placeholder="请选择">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                    <span style="float: left">{{ item.label }}</span>
-                    <span style="float: right; font-size: 13px">{{ item.size }}</span>
-                </el-option>
+                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                        <span style="float: left">{{ item.label }}</span>
+                        <span style="float: right; font-size: 13px">{{ item.size }}</span>
+                    </el-option>
               </el-select>
             </div>
             <!-- article -->
