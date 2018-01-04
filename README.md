@@ -27,6 +27,10 @@
 
 ##### 注：此系列只关注前端项目的实现，后端等知识不是此系列的范围，但会告知一二。
 
+## 其他开源项目
+- 后台类应用模板（vue全家桶 + element-ui） —— [仓库地址](https://github.com/uncleLian/vue2-blog) —— [演示地址](http://blog.liansixin.win/) 
+
+
 ## 交流
 
 欢迎热爱学习、忠于分享的朋友一起来交流
