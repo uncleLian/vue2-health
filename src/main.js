@@ -10,6 +10,9 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import VueQuillEditor from 'vue-quill-editor'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.min.css'
+import '@/assets/css/animate.css'
 import VueProgressBar from 'vue-progressbar'
 import echarts from 'echarts'
 
@@ -35,6 +38,7 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
+Vue.use(VueAwesomeSwiper)
 Vue.use(VueProgressBar, {
     color: '#29F',
     failedColor: 'red',

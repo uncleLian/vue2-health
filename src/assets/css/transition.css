@@ -9,3 +9,12 @@
         height: 0;
     }
 }
+@keyframes ripple{
+    0% {
+        opacity: .4;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(4,4);
+    }
+}
