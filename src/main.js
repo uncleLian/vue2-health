@@ -8,13 +8,14 @@ import store from './store'
 
 // 第三方库
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-default/index.css'
+import 'element-ui/lib/theme-chalk/index.css'
 import VueQuillEditor from 'vue-quill-editor'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.min.css'
 import '@/assets/css/animate.css'
 import VueProgressBar from 'vue-progressbar'
 import echarts from 'echarts'
+import vueNumTo from 'vue-num-to'
 
 import '@/assets/css/reset.css'
 import '@/assets/css/icon.less'
@@ -27,8 +28,6 @@ import myFooter from '@/layout/footer'
 import myMenu from '@/layout/menu'
 import mySidebar from '@/layout/sidebar'
 import myLoading from '@/components/loading'
-import myError from '@/components/error'
-import myNothing from '@/components/nothing'
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
 
@@ -45,14 +44,13 @@ Vue.use(VueProgressBar, {
     thickness: '4px'
 })
 Vue.prototype.$echarts = echarts
+Vue.use(vueNumTo)
 
 Vue.component('my-header', myHeader)
 Vue.component('my-footer', myFooter)
 Vue.component('my-menu', myMenu)
 Vue.component('my-sidebar', mySidebar)
 Vue.component('my-loading', myLoading)
-Vue.component('my-error', myError)
-Vue.component('my-nothing', myNothing)
 Vue.component('article-list', articleList)
 Vue.component('comment-list', commentList)
 

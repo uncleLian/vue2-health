@@ -66,33 +66,21 @@ export default {
 }
 </script>
 <style lang='stylus'>
-bgColor = #00939c
+menuWidth = 180px
 #menu {
     position: relative;
     display: inline-block;
-    width: 180px;
+    width: menuWidth;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
     min-height: inherit;
     background: #fff;
     font-size: 14px;
     user-select: none;
-    i{
-        color: #999 !important;
-    }
-    .el-menu {
-        background: #fff;
-    }
-    .el-submenu {
-        .el-menu {
-            background: #fff !important;
-        }
-        .el-menu-item {
-            padding: 0 45px !important;
-            min-width: 180px;
-        }
+    .el-submenu .el-menu-item{
+        min-width: menuWidth;
     }
     .el-menu-item.is-active{
-        background: bgColor;
+        background: appColor;
         color: #fff;
         i{
             color: #fff!important;

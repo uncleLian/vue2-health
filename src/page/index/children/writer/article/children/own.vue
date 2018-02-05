@@ -8,17 +8,13 @@
             <el-tab-pane label="已撤回" name="recall"></el-tab-pane>
         </el-tabs>
         <div class="own_content">
-            <my-loading :visible="loading"></my-loading>
-            <my-error :visible="error" :reload="get_article"></my-error>
-            <my-nothing :visible="nothing && !loading && !error"></my-nothing>
+            <my-loading :visible="loading" :reload="get_article"></my-loading>
 
             <!-- list -->
-            <article-list v-if="!loading && !error && !nothing" :itemJson="itemJson"></article-list>
+            <article-list v-if="!loading" :itemJson="itemJson"></article-list>
 
             <template v-if="itemJson && itemJson.length > 0">
-                <my-loading :visible="more_loading"></my-loading>
-                <my-error :visible="more_error" :reload="get_article_more"></my-error>
-                <my-nothing :visible="more_nothing && !loading && !error">没有更多数据了</my-nothing>
+                <my-loading :visible="more_loading" :reload="get_article_more"></my-loading>
             </template>
         </div>
     </div>
@@ -38,11 +34,7 @@ export default {
                 recall: 1
             },
             loading: false,
-            error: false,
-            nothing: false,
-            more_loading: false,
-            more_error: false,
-            more_nothing: false
+            more_loading: false
         }
     },
     methods: {
@@ -54,11 +46,7 @@ export default {
             this.scrollPosition()
         },
         async get_article() {
-            this.nothing = false
-            this.error = false
             this.more_loading = false
-            this.more_nothing = false
-            this.more_error = false
             this.page = {
                 all: 1,
                 passed: 1,
@@ -76,21 +64,18 @@ export default {
                     if (res && res.data) {
                         this.itemJson = res.data
                         this.page[this.activeName]++
+                        this.loading = false
                     } else {
                         this.itemJson = []
-                        this.nothing = true
+                        this.loading = 'nothing'
                     }
-                    this.loading = false
                 })
                 .catch(() => {
                     this.itemJson = []
-                    this.loading = false
-                    this.error = true
+                    this.loading = 'error'
                 })
         },
         get_article_more() {
-            this.more_nothing = false
-            this.more_error = false
             this.more_loading = true
             let params = {
                 type: this.activeName,
@@ -101,14 +86,13 @@ export default {
                 if (res && res.data) {
                     this.itemJson.push(...res.data)
                     this.page[this.activeName]++
+                    this.more_loading = false
                 } else {
-                    this.more_nothing = true
+                    this.more_nothing = 'nothing'
                 }
-                this.more_loading = false
             })
             .catch(() => {
-                this.more_loading = false
-                this.more_error = true
+                this.more_loading = 'error'
             })
         },
         onScroll() {
@@ -122,7 +106,7 @@ export default {
                 let documentHeight = $(document).height()
                 let footerHeight = $('#footer').height()
                 let isBottom = scrollTop + windowHeight >= documentHeight - footerHeight
-                let isInit = this.itemJson.length > 0 && !this.more_loading && !this.more_error && !this.more_nothing && this.page[this.activeName] >= 2
+                let isInit = this.itemJson.length > 0 && !this.more_loading && this.page[this.activeName] >= 2
                 if (isBottom && isInit) {
                     this.get_article_more()
                 }

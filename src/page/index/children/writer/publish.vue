@@ -25,7 +25,7 @@
                             <button class="ql-list" value="bullet" title="无序列表"></button>
                         </div>
                         <div class='ql-formats'>
-                            <el-button icon="picture" class="picLib_btn" title="插入图片" @click.stop="selectPictureVisible = true"></el-button>
+                            <el-button icon="el-icon-picture" class="picLib_btn" title="插入图片" @click.stop="selectPictureVisible = true"></el-button>
                             <button class="ql-link" title="文章链接"></button>
                             <button class="ql-video" title="插入视频"></button>
                         </div>
@@ -500,7 +500,7 @@ export default {
                         height: 26px;
                     }
                     .picLib_btn i {
-                        font-size: 16px;
+                        font-size: 18px;
                     }
                 }
                 h1 {

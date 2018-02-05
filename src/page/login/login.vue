@@ -30,7 +30,7 @@
             <swiper-slide>
                 <div class="page login-page2">
                     <div class="page2-wrap">
-                        <div class="ani page2-content" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.8s" swiper-animate-delay="0.2s">
+                        <div class="ani page2-content" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.8s">
                             <a href="">观看视频，进一步了解头条号</a>
                             <h2>高速成长的新兴创作平台</h2>
                             <p>当其他公众平台已是红海，</p>
@@ -38,34 +38,83 @@
                             <p>而且，我们还在高速成长。</p>
                         </div>
                         <div class="page2-picture">
-                         <div class="iphone">
-                                <div class="count">
-                                    +723,245
+                            <div class="iphone">
+                                <div class="count" v-if="page === 2">
+                                    <vue-num-to :endVal="723245" prefix="+" :duration="1000"></vue-num-to>
                                 </div>
                             </div>
                             <div class="animate-cuve">
-                                 <svg height="362" version="1.1" width="625" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="overflow: hidden; position: relative; left: -0.5px;">
-                                    <desc style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Created with Raphaël 2.1.2</desc>
-                                    <defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></defs>
-                                    <path fill="none" stroke="#ffffff" d="M145,285C235,270,325,210,345,180" stroke-width="0px" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-                                    <circle cx="0" cy="0" r="10" fill="#38c6ff" stroke="#ddf1ff" stroke-width="5px" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" transform="matrix(1,0,0,1,0, 0)">
-                                        <animateMotion path="M145,285C235,270,325,210,345,180" dur="1.5s" repeatCount="indefinite" />
+                                <svg v-if="page === 2" height="362" version="1.1" width="625" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="overflow: hidden; position: relative; left: -0.5px;">
+                                    <circle cx="-10" cy="-10" r="10" fill="#38c6ff" stroke="#ddf1ff" stroke-width="5px" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" transform="matrix(1,0,0,1,0, 0)">
+                                        <animateMotion path="M155,295C245,280,335,220,355,190" dur="0.8s" repeatCount="1" calcMode="discrete" />
+                                        <set attributeName="transform" attributeType="XML" to="matrix(1,0,0,1,345, 180)" begin="1.6s" />
+                                        <set attributeName="cx" attributeType="XML" to="345" begin="0.8s" />
+                                        <set attributeName="cy" attributeType="XML" to="180" begin="0.8s" />
                                     </circle>
                                     <image x="-90" y="-90" width="177" height="62" preserveAspectRatio="none" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="~@/assets/img/message.png" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" transform="matrix(1,0,0,1,0, 0)">
-                                        <animateMotion path="M145,285C235,270,325,210,345,180" dur="1.5s" repeatCount="indefinite" />
+                                        <animateMotion path="M145,285C235,270,325,210,345,180" dur="0.8s" repeatCount="1" calcMode="discrete" />
+                                        <set attributeName="x" attributeType="XML" to="255" begin="0.8s" />
+                                        <set attributeName="y" attributeType="XML" to="90" begin="0.8s" />
                                     </image>
                                     <text x="10" y="-60" text-anchor="middle" font-family="&quot;Arial&quot;" font-size="18px" stroke="none" fill="#539fe0" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: Arial; font-size: 18px;" transform="matrix(1,0,0,1,0, 0)">
-                                        <animateMotion path="M145,285C235,270,325,210,345,180" dur="1.5s" repeatCount="indefinite" />
-                                        <tspan style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" dy="6">623,545</tspan>
+                                        <animateMotion path="M145,285C235,270,325,210,345,180" dur="0.8s" repeatCount="1" calcMode="discrete" />
+                                        <set attributeName="x" attributeType="XML" to="355" begin="0.8s" />
+                                        <set attributeName="y" attributeType="XML" to="120" begin="0.8s" />
+                                        <vue-num-to v-model="increaseNum" :endVal="623535" :duration="1000"></vue-num-to>
+                                        <tspan style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" dy="6">{{increaseNum}}</tspan>
                                     </text>
                                 </svg>
                             </div>
-                           
                         </div>
                     </div>
                 </div>
             </swiper-slide>
-            <div class="swiper-pagination" slot="pagination"></div>
+            <swiper-slide>
+                <div class="page login-page3">
+                    <div class="page3-wrap">
+                        <div class="circle-wrapper">
+                            <div class="circle" v-if="page === 3">
+                                <div class="circle-wrap-1">
+                                    <span class="circle-1"></span>
+                                </div>
+                                <div class="circle-wrap-2">
+                                    <span class="circle-2"></span>
+                                </div>
+                                <div class="circle-wrap-3">
+                                    <span class="circle-3"></span>
+                                </div>
+                                <div class="circle-wrap-4">
+                                    <span class="circle-4"></span>
+                                </div>
+                                <div class="circle-wrap-5">
+                                    <span class="circle-5"></span>
+                                </div>
+                                <div class="circle-wrap-6">
+                                    <span class="circle-6"></span>
+                                </div>
+                                <div class="circle-wrap-7">
+                                    <span class="circle-7"></span>
+                                </div>
+                                <span class="digup"></span>
+                                <span class="like"></span>
+                                <span class="search"></span>
+                                <span class="favorite"></span>
+                            </div>
+                        </div>
+                        <div class="ani article" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.8s">
+                             <a class="link" target="_blank" href="###">观看视频，了解头条号推荐机制</a>
+                            <h2>迄今为止</h2>
+                            <h2>最科学和精确的推荐引擎</h2>
+                            <div class="text">
+                                <p>依托今日头条独创的大数据算法，</p>
+                                <p>你所创作的内容可以在数秒之内，</p>
+                                <p>就抵达目标读者的手机上。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </swiper-slide>
+            <div class="swiper-pagination" :class="{'other': page !== 1}" slot="pagination"></div>
         </swiper>
         <!-- dialog -->
         <el-dialog class='login_box' title="登录" :visible.sync="dialogFormVisible">
@@ -100,8 +149,8 @@ export default {
             swiperOption: {
                 direction: 'vertical',
                 slidesPerView: 1,
-                spaceBetween: 30,
                 mousewheel: true,
+                speed: 1000,
                 pagination: {
                     el: '.swiper-pagination',
                     clickable: true
@@ -112,14 +161,13 @@ export default {
                         swiperAnimate(this)
                     },
                     slideChangeTransitionEnd: () => {
-                        // if (this.swiper.activeIndex === 1) {
-                        //     console.log('运行曲线')
-                        // }
+                        this.page = this.swiper.activeIndex + 1
                         swiperAnimate(this.swiper)
                     }
                 }
             },
-            run: false,
+            page: 1,
+            increaseNum: 623535,
             dialogFormVisible: false, // 登录框
             form: {
                 username: 'etone',
@@ -163,15 +211,12 @@ export default {
                 this.$message.error('请阅读并同意用户协议和隐私条款')
             }
         }
-    },
-    mounted() {
-        // console.log(this.swiper)
     }
 }
 </script>
 <style lang='stylus'>
-bgColor=#00939c
-bgColor2=#00838d
+bgColor=#ff6e7c
+bgColor2=#ff776d
 #login {
     position: relative;
     width: 100%;
@@ -194,7 +239,7 @@ bgColor2=#00838d
             transform: none;
             right: inherit;
             .swiper-pagination-bullet {
-                background: #000;
+                background: #f7f9fa;
                 display: block;
                 width: 10px;
                 height: 10px;
@@ -205,10 +250,19 @@ bgColor2=#00838d
                 opacity: 1;
             }
             .swiper-pagination-bullet-active {
-                border: 4px solid #000;
+                border: 4px solid #fff;
                 background: transparent;
                 width: 16px;
                 height: 16px;
+            }
+        }
+        .swiper-pagination.other{
+            .swiper-pagination-bullet{
+                background: #d2d4d6;
+            }
+            .swiper-pagination-bullet-active{
+                border-color: #f95e58;
+                background: transparent;
             }
         }
     }
@@ -375,14 +429,14 @@ bgColor2=#00838d
                     position: absolute;
                     top: 0;
                     left: 0;
-                    right: 0
+                    right: 0;
                     z-index: 3;
-                    svg{
+                    svg {
                         position: relative;
                         path {
-                             transition: all 2s ease-in;
+                            transition: all 2s ease-in;
                         }
-                        cricle{
+                        cricle {
                             transition: all 2s ease-in;
                         }
                     }
@@ -390,66 +444,239 @@ bgColor2=#00838d
             }
         }
     }
-
-    .login_box {
-        a {
-            display: inline-block;
-            font-size: 12px;
-            color: bgColor;
-        }
-        .el-dialog {
-            width: 340px;
-            .el-input input {
-                height: 42px;
+    .login-page3 {
+        background: #fff;
+        .page3-wrap {
+            position: relative;
+            height: 100%;
+            width: fit-content;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            backface-visibility: hidden;
+            .circle-wrapper{
+                position: relative;
+                width: 470px;
+                height: 522px;
             }
-            .el-checkbox__label {
-                font-size: 12px !important;
-            }
-            .el-form-item {
-                margin-bottom: 18px;
-            }
-            .agree_item {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 18px;
-            }
-            .login_btn {
-                width: 100%;
-                font-size: 18px;
-                &:hover {
-                    opacity: 0.8;
-                }
-                input {
-                    color: #fff;
-                    background: bgColor;
-                    border: none;
-                    outline: none;
-                    cursor: pointer;
-                }
-            }
-        }
-        .footer {
-            .otherLogin {
-                padding-bottom: 20px;
-                font-size: 0;
-                text-align: center;
-                li {
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 40px;
-                    margin-right: 24px;
-                    cursor: pointer;
-                    span {
+            .circle {
+                position: relative;
+                top: -50px;
+                width: 470px;
+                height: 522px;
+                transform-style: preserve-3d;
+                animation: rings-translate 1s 1 linear reverse both;
+                .circle-wrap-1 {
+                    transform: translateZ(-140px);
+                    .circle-1 {
+                        animation: spin 35s infinite linear;
+                        width: 470px;
+                        height: 470px;
+                        display: block;
                         position: absolute;
-                        left: 8px;
-                        bottom: -20px;
-                        font-size: 12px;
-                        width: 24px;
-                        line-height: 1;
-                        color: #505050;
                     }
+                }
+                .circle-wrap-2 {
+                    transform: translateZ(-120px);
+                    .circle-2 {
+                        animation: spin 30s infinite linear reverse;
+                        width: 445px;
+                        height: 445px;
+                        display: block;
+                        position: absolute;
+                        margin: 12.5px;
+                    }
+                }
+                .circle-wrap-3 {
+                    transform: translateZ(-100px);
+                    .circle-3 {
+                        width: 380px;
+                        height: 380px;
+                        display: block;
+                        position: absolute;
+                        margin: 44px;
+                    }
+                }
+                .circle-wrap-4 {
+                    transform: translateZ(-80px);
+                    .circle-4 {
+                        animation: spin 20s infinite linear;
+                        width: 359px;
+                        height: 359px;
+                        display: block;
+                        position: absolute;
+                        margin: 55px;
+                    }
+                }
+                .circle-wrap-5 {
+                    transform: translateZ(-60px);
+                    .circle-5 {
+                        width: 316px;
+                        height: 316px;
+                        display: block;
+                        position: absolute;
+                        margin: 77px;
+                    }
+                }
+                .circle-wrap-6 {
+                    transform: translateZ(-40px);
+                    .circle-6 {
+                        animation: spin 25s infinite linear reverse;
+                        width: 326px;
+                        height: 326px;
+                        display: block;
+                        position: absolute;
+                        margin: 71px;
+                    }
+                }
+                .circle-wrap-7 {
+                    transform: translateZ(-20px);
+                    .circle-7 {
+                        width: 244px;
+                        height: 244px;
+                        display: block;
+                        position: absolute;
+                        margin: 111px;
+                    }
+                }
+                .icon{
+                    transition: all ease 1.5s;
+                }
+                .digup{
+                    transform: translateZ(70px);
+                    width: 80px;
+                    height: 80px;
+                    display: block;
+                    position: absolute;
+                    left: 80px;
+                    top: 13%;
+                }
+                .like{
+                    transform: translateZ(40px);
+                    width: 120px;
+                    height: 120px;
+                    display: block;
+                    position: absolute;
+                    left: 22%;
+                    top: 63%;
+                }
+                .search{
+                    transform: translate3d(11px,0,30px);
+                    width: 84px;
+                    height: 84px;
+                    display: block;
+                    position: absolute;
+                    left: 68%;
+                    top: 5%;
+                }
+                .favorite{
+                    transform: translateZ(50px);
+                    width: 124px;
+                    height: 124px;
+                    display: block;
+                    position: absolute;
+                    left: 50%;
+                    top: 5%;
+                }
+            }
+            .article{
+                width: 440px;
+                height: 250px;
+                border: 4px solid #f95e58;
+                border-left: 0;
+                padding: 30px;
+                font-weight: 300;
+                a{
+                    display: inline-block;
+                    border-bottom: 1px solid #EBEBEC;
+                    margin-bottom: 10px;
+                    padding-bottom: 4px;
+                    line-height: 22px;
+                    font-size: 16px;
+                    color: #899ec5;
+                }
+                h2{
+                    font-size: 32px;
+                    color: #222;
+                    line-height: 35px;
+                    font-weight: 400;
+                }
+                .text{
+                    margin-top: 10px;
+                    p{
+                        line-height: 22px;
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.login_box {
+    a {
+        display: inline-block;
+        font-size: 12px;
+        color: appColor;
+    }
+    .el-dialog {
+        width: 340px;
+        .el-dialog__header{
+            padding-bottom: 0;
+        }
+        .el-input input {
+            height: 42px;
+        }
+        .el-checkbox__label {
+            font-size: 12px !important;
+            color: #333;
+        }
+        .el-form-item {
+            margin-bottom: 18px;
+        }
+        .agree_item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .login_btn {
+            width: 100%;
+            font-size: 18px;
+            &:hover {
+                opacity: 0.8;
+            }
+            input {
+                color: #fff;
+                background: appColor;
+                border: none;
+                outline: none;
+                cursor: pointer;
+            }
+        }
+    }
+    .footer {
+        .otherLogin {
+            padding-bottom: 20px;
+            font-size: 0;
+            text-align: center;
+            li {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 40px;
+                margin-right: 24px;
+                cursor: pointer;
+                span {
+                    position: absolute;
+                    left: 8px;
+                    bottom: -20px;
+                    font-size: 12px;
+                    width: 24px;
+                    line-height: 1;
+                    color: #505050;
                 }
             }
         }
@@ -457,7 +684,7 @@ bgColor2=#00838d
 }
 </style>
 <style>
-.login-page1:after {
+.login-page1::after {
     content: "";
     display: block;
     height: 100%;
@@ -480,6 +707,44 @@ bgColor2=#00838d
     background: url(~@/assets/img/message.png) no-repeat;
 }
 
+.login-page3 .circle-1 {
+    background: url(~@/assets/img/circle1.png) no-repeat;
+}
+
+.login-page3 .circle-2 {
+    background: url(~@/assets/img/circle2.png) no-repeat;
+}
+
+.login-page3 .circle-3 {
+    background: url(~@/assets/img/circle3.png) no-repeat;
+}
+
+.login-page3 .circle-4 {
+    background: url(~@/assets/img/circle4.png) no-repeat;
+}
+
+.login-page3 .circle-5 {
+    background: url(~@/assets/img/circle5.png) no-repeat;
+}
+
+.login-page3 .circle-6 {
+    background: url(~@/assets/img/circle6.png) no-repeat;
+}
+.login-page3 .circle-7 {
+    background: url(~@/assets/img/circle7.png) no-repeat;
+}
+.login-page3 .digup{
+    background: url(~@/assets/img/circle-digup.png) no-repeat;
+}
+.login-page3 .like{
+    background: url(~@/assets/img/circle-like.png) no-repeat;
+}
+.login-page3 .search{
+    background: url(~@/assets/img/circle-search.png) no-repeat;
+}
+.login-page3 .favorite{
+    background: url(~@/assets/img/circle-favorite.png) no-repeat;
+}
 #login .otherLogin .wx {
     background: url(~@/assets/icon/icon_wx_pc.svg)no-repeat center center;
 }

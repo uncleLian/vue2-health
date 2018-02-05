@@ -57,7 +57,7 @@
             </div>
         </transition>
         <!-- tasks开关 -->
-        <el-button class="visibleBtn" type="primary" :icon="taskVisible? 'd-arrow-right' : 'd-arrow-left'"  @click="taskVisible = !taskVisible"></el-button>
+        <el-button class="visibleBtn" type="primary" :icon="taskVisible? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"  @click="taskVisible = !taskVisible"></el-button>
     </div>
 </template>
 <script>
@@ -299,6 +299,8 @@ export default {
         right: 0;
         transform: translateY(-100%);
         transition: all .3s ease;
+        font-size: 16px;
+        padding: 10px 15px;
     }
     .container{
         padding: 20px 20px 10px 5px;

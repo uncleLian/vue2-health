@@ -43,11 +43,10 @@ export default {
 }
 </script>
 <style lang='stylus'>
-bgColor = #00939c
 #header {
     position: relative;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
-    border-top: 4px solid bgColor;
+    border-top: 4px solid appColor;
     height: 76px;
     background: #fff;
     min-width: 1138px;

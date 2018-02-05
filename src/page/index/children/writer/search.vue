@@ -24,7 +24,7 @@
         <!-- 搜索框 -->
         <div class="searchInput">
             <el-autocomplete size="small" :trigger-on-focus="false" :select-when-unmatched="true" v-model.trim="keyWord" :fetch-suggestions="get_searchSuggestion" placeholder="请输入内容" @select="(item) => get_searchResult(item.value)">
-                <el-button slot="append" icon="search" @click.native.stop="get_searchResult(keyWord)"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click.native.stop="get_searchResult(keyWord)"></el-button>
             </el-autocomplete>
         </div>
     </div>
@@ -436,9 +436,6 @@ export default {
     .el-tabs__nav-wrap.is-scrollable {
         padding: 0 20px;
     }
-    .tab_main>.el-tabs__header {
-        padding-right: 270px;
-    }
     .tab_graph {
         width: 900px;
         .el-tabs__header {
@@ -452,7 +449,6 @@ export default {
         .userTip {
             margin: 20px 24px;
             width: 60%;
-            background: #00939c;
         }
     }
     .tab_tradition {

@@ -18,3 +18,19 @@
         transform: scale(4,4);
     }
 }
+@keyframes spin{
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+@keyframes rings-translate{
+    0% {
+        transform: rotateX(40deg);
+    }
+    100% {
+        transform: rotateX(0deg);
+    }
+}
