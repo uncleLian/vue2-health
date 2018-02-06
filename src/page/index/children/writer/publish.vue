@@ -25,7 +25,7 @@
                             <button class="ql-list" value="bullet" title="无序列表"></button>
                         </div>
                         <div class='ql-formats'>
-                            <el-button icon="el-icon-picture" class="picLib_btn" title="插入图片" @click.stop="selectPictureVisible = true"></el-button>
+                            <el-button icon="el-icon-picture" title="插入图片" style="font-size: 16px;" @click.stop="uploadPictureVisible = true"></el-button>
                             <button class="ql-link" title="文章链接"></button>
                             <button class="ql-video" title="插入视频"></button>
                         </div>
@@ -88,38 +88,33 @@
             <!-- 修改 -->
             <template v-if="$route.query.id && this.json && this.json.state !== '2'">
                 <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
-                <el-button class='cancle_btn gray' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='cancle_btn gray' type='primary' size='large' @click.stop.native="$router.go(-1)">取消</el-button>
             </template>
             <!-- 新建 -->
             <template v-else>
                 <el-button class='publish_btn' type='primary' size='large' @click.stop="verify('publish')">发表</el-button>
                 <el-button class='draft_btn gray' type='primary' size='large' @click.stop="verify('draft')">存草稿</el-button>
-                <el-button class='cancle_btn gray' type='primary' size='large' @click="$router.go(-1)">取消</el-button>
+                <el-button class='cancle_btn gray' type='primary' size='large' @click.stop.native="$router.go(-1)">取消</el-button>
             </template>
         </div>
 
-        <select-picture  v-if="selectPictureVisible" @selectComplete="inserPicture" @close="selectPictureVisible = false"></select-picture>
+        <!-- 自定义上传图片 -->
+        <upload-picture  v-if="uploadPictureVisible" @complete="inserPicture" @close="uploadPictureVisible = false"></upload-picture>
 
-        <!-- 选择图片dialog -->
-        <el-dialog class="picture_select" title="正文图片" :visible.sync="select_picture_dialog">
-            <!-- 单选 -->
-            <el-radio-group v-model="selectImages" class="img-list">
-                <div class="img-item" v-for="(item,index) in contentImages">
-                    <el-radio-button :label="item.src"><img :src="item.src"></el-radio-button>
-                </div>
-            </el-radio-group>
-            <div slot="footer">
-                <el-button class="cancle_btn" @click.stop="clearSelectFiles">取 消</el-button>
-                <el-button type="primary" @click="selectComplete">确 定</el-button>
-            </div>
-        </el-dialog>
+        <!-- 选择封面图 -->
+        <select-picture v-if="selectPictureVisible" :json="contentImages"  @complete="inserCover" @close="selectPictureVisible = false"></select-picture>
+
     </div>
 </template>
 <script>
-import { get_local_cache, set_local_cache, remove_local_cache } from '@/utils/cache.js'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import uploadPicture from '@/components/uploadPicture'
+import selectPicture from '@/components/selectPicture'
+import { mapState, mapMutations } from 'vuex'
+import { getArticle, postArticle } from '@/api'
+import cache from '@/utils/cache'
 export default {
     name: 'publish',
+    components: { uploadPicture, selectPicture },
     data() {
         return {
             json: null,                             // 修改的文章数据
@@ -132,8 +127,8 @@ export default {
             coverImages: [],                        // 封面图片
             classid: '',                            // 标签
             draft: false,
-            upload_picture_dialog: false,           // 上传图片dialog
-            select_picture_dialog: false,           // 选中图片dialog
+            uploadPictureVisible: false,            // 自定义图片上传dialog的toggle
+            selectPictureVisible: false,            // 选择封面图dialog的toggle
             loading: false,
             isRequest: false,                       // 是否请求了
             isChange: false,                        // 是否修改了
@@ -148,14 +143,13 @@ export default {
                     }
                 },
                 placeholder: ' '
-            },
-            selectPictureVisible: false
+            }
         }
     },
     computed: {
-        ...mapGetters('writer', [
-            'selected'
-        ]),
+        ...mapState({
+            selected: state => state.task.selected
+        }),
         editor() {
             return this.$refs.myQuillEditor.quill
         },
@@ -183,18 +177,13 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('writer', [
+        ...mapMutations([
             'set_selected'
-        ]),
-        ...mapActions('writer', [
-            'get_article_data',
-            'post_article_data',
-            'get_picture_data'
         ]),
         // 初始化
         async init() {
             let id = this.$route.query.id
-            let draft = JSON.parse(get_local_cache('draft'))
+            let draft = JSON.parse(cache.getLocal('draft'))
             // 是否编辑某篇文章？请求数据，有这文章id的草稿就覆盖原数据：读取草稿
             if (id) {
                 await this.get_article()
@@ -212,7 +201,7 @@ export default {
         // 请求文章数据
         async get_article() {
             this.loading = true
-            await this.get_article_data(this.$route.query.id)
+            await getArticle(this.$route.query.id)
             .then(res => {
                 if (res.data) {
                     this.isRequest = true
@@ -256,7 +245,7 @@ export default {
                 title: this.title,
                 content: this.content
             }
-            set_local_cache('draft', data)
+            cache.setLocal('draft', data)
             this.isSave = true
             let timer = setTimeout(() => {
                 this.isSave = false
@@ -270,14 +259,18 @@ export default {
             } else {
                 this.title = this.content = ''
             }
-            remove_local_cache('draft')
+            cache.removeLocal('draft')
             this.draft = false
         },
         // 打开图片选择框
         selectPictureOpen(index) {
+            let allImg = []
             this.clickIndex = index
-            this.contentImages = this.editor.container.querySelectorAll('img')
-            this.select_picture_dialog = true
+            this.editor.container.querySelectorAll('img').forEach(item => {
+                allImg.push(item.src)
+            })
+            this.contentImages = allImg
+            this.selectPictureVisible = true
         },
         // 选择完成
         selectComplete() {
@@ -288,7 +281,7 @@ export default {
         },
         // 清除选择图片
         clearSelectFiles() {
-            this.select_picture_dialog = false
+            this.selectPictureVisible = false
             this.selectImages = []
         },
         // 所有规则
@@ -323,6 +316,12 @@ export default {
                 return true
             }
         },
+        // 插入封面图
+        inserCover(val) {
+            if (val) {
+                this.coverImages[this.clickIndex] = val
+            }
+        },
         // 验证
         verify(btnType) {
             let type    // 类型
@@ -340,11 +339,11 @@ export default {
                 state = '3'
                 if (this.allRule()) {
                     this.$confirm('确定发表文章？', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
                         type: 'info'
                     }).then(() => {
                         this.publish(type, state)
+                    }).catch(err => {
+                        console.log(err)
                     })
                 }
             }
@@ -370,23 +369,24 @@ export default {
                 params.titlepic2 = this.coverImages[1]
                 params.titlepic3 = this.coverImages[2]
             }
-            this.post_article_data(params)
-                .then(res => {
-                    this.loading = false
-                    if (res.data) {
-                        this.isChange = false
-                        remove_local_cache('draft')
-                        this.$notify.success('操作成功')
-                        this.$router.push({name: 'own'})
-                    } else {
-                        this.$notify.error('出现错误，请重新尝试')
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                    this.loading = false
+            postArticle(params)
+            .then(res => {
+                console.log(res)
+                if (res && res.data) {
+                    this.isChange = false
+                    cache.removeLocal('draft')
+                    this.$notify.success('操作成功')
+                    this.$router.push({name: 'own'})
+                } else {
                     this.$notify.error('出现错误，请重新尝试')
-                })
+                }
+                this.loading = false
+            })
+            .catch(err => {
+                console.log(err)
+                this.loading = false
+                this.$notify.error('出现错误，请重新尝试')
+            })
         },
         // 监听刷新和关闭窗口
         listenFreshClose(e) {
@@ -399,17 +399,20 @@ export default {
     },
     // 离开路由钩子
     beforeRouteLeave (to, from, next) {
+        // 使用$router.go(-1)跳转触发confirm将会产生问题
+        // 详情：https://github.com/ElemeFE/element/issues/9567
         if (this.isChange && (this.title || this.content)) {
             this.$confirm('要离开本页面吗？系统将可能不会保存你做的更改', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
+              type: 'warning',
+              closeOnHashChange: false,
+              closeOnClickModal: false
             })
             .then(() => {
                 next()
                 window.removeEventListener('beforeunload', this.listenFreshClose)
             })
-            .catch(() => {
+            .catch(err => {
+                console.log(err)
                 next(false)
             })
         } else {

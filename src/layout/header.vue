@@ -6,7 +6,7 @@
                 <router-link to="/index/publish">
                     <el-button type="primary" class="publish_btn">发表</el-button>
                 </router-link>
-                <el-dropdown class="user" @command="handleCommand" menu-align='start'>
+                <el-dropdown class="user" @command="handleCommand" placement='bottom'>
                     <div class="userinfo">
                         <img :src="user.headimgurl" alt="">
                         <span class="el-dropdown-link">{{user.nickname}}</span>
@@ -20,17 +20,16 @@
     </header>
 </template>
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
     computed: {
-        ...mapGetters([
+        ...mapState([
             'user'
         ])
     },
     methods: {
         ...mapMutations([
             'set_user',
-            'set_token',
             'remove_token'
         ]),
         handleCommand(command) {

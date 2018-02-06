@@ -61,7 +61,8 @@
     </div>
 </template>
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
+import { getTask, postTask } from '@/api'
 export default {
     data() {
         return {
@@ -80,7 +81,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('writer', [
+        ...mapState([
             'task'
         ])
     },
@@ -93,19 +94,15 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('writer', [
+        ...mapMutations([
             'set_task',
             'set_selected'
         ]),
-        ...mapActions('writer', [
-            'get_task_data',
-            'post_task_data'
-        ]),
         // 获取task列表数据
         get_taskList() {
-            this.get_task_data()
+            getTask()
             .then(res => {
-                console.log(res)
+                // console.log(res)
                 if (res && res.data) {
                     this.taskList = res.data
                 } else {
@@ -128,7 +125,7 @@ export default {
                 if (type === 'edit' && this.taskSelect) {
                     params.id = this.taskSelect
                 }
-                this.post_task_data(params)
+                postTask(params)
                 .then(res => {
                     console.log(res)
                     if (res.data) {
@@ -207,7 +204,7 @@ export default {
                     type: 'del',
                     id: item.id
                 }
-                this.post_task_data(params)
+                postTask(params)
                 .then(res => {
                     let index = this.taskList.findIndex(n => n.id === item.id)
                     this.taskList.splice(index, 1)

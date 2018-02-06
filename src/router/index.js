@@ -9,7 +9,7 @@ const index = () => import('@/page/index/index')                                
 const home = () => import('@/page/index/children/home/home')                    // 主页
 // writer
 const search = () => import('@/page/index/children/writer/search')              // 素材搜索
-const publish = () => import('@/page/index/children/writer/publish')           // 作品编辑
+const publish = () => import('@/page/index/children/writer/publish')            // 作品编辑
 const article = () => import('@/page/index/children/writer/article/article')    // 我的作品
 // manage
 const comment = () => import('@/page/index/children/manage/comment/comment')    // 评论管理

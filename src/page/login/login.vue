@@ -10,6 +10,7 @@
                             <span class="login_btn" @click.stop="dialogFormVisible = true">登录</span>
                         </div>
                     </div>
+                    <a class="projectLogo" href="https://github.com/uncleLian/vue2-health" target="_blank">vue2-health</a>
                     <!-- ripple -->
                     <div class="ripple left">
                         <i class="r1"></i>
@@ -31,7 +32,7 @@
                 <div class="page login-page2">
                     <div class="page2-wrap">
                         <div class="ani page2-content" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.8s">
-                            <a href="">观看视频，进一步了解头条号</a>
+                            <a class="link" href="javascript:;">观看视频，进一步了解头条号</a>
                             <h2>高速成长的新兴创作平台</h2>
                             <p>当其他公众平台已是红海，</p>
                             <p>我们才刚进入红利期，</p>
@@ -102,7 +103,7 @@
                             </div>
                         </div>
                         <div class="ani article" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.8s">
-                             <a class="link" target="_blank" href="###">观看视频，了解头条号推荐机制</a>
+                             <a class="link" target="_blank" href="javascript:;">观看视频，了解头条号推荐机制</a>
                             <h2>迄今为止</h2>
                             <h2>最科学和精确的推荐引擎</h2>
                             <div class="text">
@@ -272,15 +273,30 @@ bgColor2=#ff776d
         height: 100%;
         overflow: hidden;
         overflow: hidden;
+        a.link{
+            display: inline-block;
+            border-bottom: 1px solid #EBEBEC;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            line-height: 22px;
+            font-size: 16px;
+            color: #899ec5;
+        }
     }
     .login-page1 {
         background: linear-gradient(bgColor, bgColor2);
         color: #333;
-        a:hover {
-            color: #f85959 !important;
-        }
         li:hover {
             opacity: 0.8 !important;
+        }
+        .projectLogo{
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            z-index: 999;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
         }
         .page1_wrap {
             width: 440px;
@@ -392,9 +408,6 @@ bgColor2=#ff776d
                 padding: 32px;
                 border: 4px solid #f95e58;
                 font-weight: 300;
-                a {
-                    font-size: 16px;
-                }
                 h2 {
                     font-size: 30px;
                     color: #222;
@@ -445,7 +458,7 @@ bgColor2=#ff776d
         }
     }
     .login-page3 {
-        background: #fff;
+        background: #f2f3f4;
         .page3-wrap {
             position: relative;
             height: 100%;
@@ -588,15 +601,6 @@ bgColor2=#ff776d
                 border-left: 0;
                 padding: 30px;
                 font-weight: 300;
-                a{
-                    display: inline-block;
-                    border-bottom: 1px solid #EBEBEC;
-                    margin-bottom: 10px;
-                    padding-bottom: 4px;
-                    line-height: 22px;
-                    font-size: 16px;
-                    color: #899ec5;
-                }
                 h2{
                     font-size: 32px;
                     color: #222;

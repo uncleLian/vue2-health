@@ -1,9 +1,9 @@
 # vue2-health
 
-![image](https://img.shields.io/badge/vue-2.5.2-blue.svg)
+![image](https://img.shields.io/badge/vue-2.5.13-blue.svg)
 ![image](https://img.shields.io/badge/vue--router-3.0.1-blue.svg)
 ![image](https://img.shields.io/badge/vuex-3.0.1-blue.svg)
-![image](https://img.shields.io/badge/element--ui-1.4.7-blue.svg)
+![image](https://img.shields.io/badge/element--ui-2.1.0-blue.svg)
 
 #### 正在完善，敬请期待！
 > 你的 "Star" 是我最大的动力！🌹

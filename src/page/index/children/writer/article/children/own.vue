@@ -14,13 +14,15 @@
             <article-list v-if="!loading" :itemJson="itemJson"></article-list>
 
             <template v-if="itemJson && itemJson.length > 0">
-                <my-loading :visible="more_loading" :reload="get_article_more"></my-loading>
+                <my-loading :visible="more_loading" :reload="get_article_more">
+                    <div slot="nothing">没有更多数据了</div>
+                </my-loading>
             </template>
         </div>
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { getArticleList } from '@/api'
 export default {
     data() {
         return {
@@ -38,9 +40,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions('writer', [
-            'get_articleList_data'
-        ]),
         async init() {
             await this.get_article()
             this.scrollPosition()
@@ -59,7 +58,7 @@ export default {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
-            await this.get_articleList_data(params)
+            await getArticleList(params)
                 .then(res => {
                     if (res && res.data) {
                         this.itemJson = res.data
@@ -81,14 +80,14 @@ export default {
                 type: this.activeName,
                 page: this.page[this.activeName]
             }
-            this.get_articleList_data(params)
+            getArticleList(params)
             .then(res => {
                 if (res && res.data) {
                     this.itemJson.push(...res.data)
                     this.page[this.activeName]++
                     this.more_loading = false
                 } else {
-                    this.more_nothing = 'nothing'
+                    this.more_loading = 'nothing'
                 }
             })
             .catch(() => {
@@ -141,8 +140,5 @@ export default {
 <style lang='stylus'>
 #own {
     padding-top: 20px;
-    .own_content {
-        padding-top: 15px;
-    }
 }
 </style>

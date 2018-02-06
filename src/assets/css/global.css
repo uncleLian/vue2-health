@@ -18,17 +18,18 @@ img{
 #index .el-tabs{
     user-select: none;
 }
-#index .tab_main .el-tabs__nav-wrap{
+#index .tab_main > .el-tabs__header > .el-tabs__nav-wrap{
     padding: 10px 24px 0;
     height: 62px;
     line-height: 52px;
 }
+#index .tab_main > .el-tabs__header .el-tabs__nav > .el-tabs__item{
+    font-size: 16px;
+}
 #index .el-tabs__nav-wrap::after{
     height: 1px;
 }
-#index .tab_main .el-tabs__item{
-    font-size: 16px;
-}
+
 #index .tab_sub .el-tabs__header{
     padding: 0 24px;
 }

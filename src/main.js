@@ -6,6 +6,8 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import cache from '@/utils/cache'
+
 // 第三方库
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -31,15 +33,12 @@ import myLoading from '@/components/loading'
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
 
-import selectPicture from '@/components/selectPicture'
-
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
 Vue.use(VueAwesomeSwiper)
 Vue.use(VueProgressBar, {
-    color: '#29F',
     failedColor: 'red',
     thickness: '4px'
 })
@@ -54,39 +53,35 @@ Vue.component('my-loading', myLoading)
 Vue.component('article-list', articleList)
 Vue.component('comment-list', commentList)
 
-Vue.component('select-picture', selectPicture)
-
 // 全局路由判断
 router.beforeEach((to, from, next) => {
-    if (to.path === '/login' && store.getters.token) {
-        next('/')
-    } else if (to.matched.some(record => record.meta.login)) {
-        let token = store.getters.token
-        if (token) {
-            store.commit('set_token', token)
-            if (store.getters.user.userid) {
-                next()
+    if (to.matched.some(record => record.meta.login)) { // 是否需要登录
+        if (cache.getToken()) {
+            if (to.path === '/login') {
+                next('/')
             } else {
-                store.dispatch('get_user_data')
-                .then(res => {
+                if (store.state.user) {
                     next()
-                })
-                .catch(() => {
-                    window.alert('账号在别处登录，请重新登录')
-                    next({
-                        path: '/login',
-                        query: { redirect: to.fullPath }
+                } else {
+                    store.dispatch('get_user_data').then(res => {
+                        next()
                     })
-                })
+                    .catch(err => {
+                        console.log('登录出错：', err)
+                        // 可根据错误信息，做相应需求，这里默认token值失效
+                        window.alert('登录已失效，请重新登录')
+                        goLoginPage()
+                    })
+                }
             }
         } else {
-            next({
-                path: '/login',
-                query: { redirect: to.fullPath }
-            })
+            goLoginPage()
         }
     } else {
         next()
+    }
+    function goLoginPage() {
+        next({ path: '/login', query: { redirect: to.fullPath } })
     }
 })
 

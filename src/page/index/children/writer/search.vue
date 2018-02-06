@@ -11,7 +11,7 @@
             <!-- 图形视图 -->
             <el-tab-pane class="tab_graph" label="图形视图" name="graph">
                 <!-- 内容 -->
-                <el-tabs type="card" v-show="graph_tabData.length > 0" closable v-model="graph_activeTab" @tab-remove="removeKeyword">
+                <el-tabs class="tab_sub" type="card" v-show="graph_tabData.length > 0" closable v-model="graph_activeTab" @tab-remove="removeKeyword">
                     <el-tab-pane v-for="(item, index) in graph_tabData" :key="index" :label="item.label" :name="item.name">
                         <div class="myChart" style="width:934px; height:800px;" :id="item.name"></div>
                     </el-tab-pane>
@@ -438,9 +438,6 @@ export default {
     }
     .tab_graph {
         width: 900px;
-        .el-tabs__header {
-            padding: 10px 24px 0;
-        }
         .myChart {
             position: relative;
             width: 100%;

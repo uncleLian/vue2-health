@@ -12,9 +12,6 @@ export default {
 
         }
     },
-    computed: {
-
-    },
     methods: {
         drawLine() {
             let myChart = this.$echarts.init(document.getElementById('myChart1'))

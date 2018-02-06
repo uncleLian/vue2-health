@@ -1,44 +1,36 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { fetch } from '@/utils/fetch.js'
-import Cookies from 'js-cookie'
-
-import writer_module from './writer.js'
+import { getLogin, getUser } from '@/api'
+import cache from '@/utils/cache'
 
 Vue.use(Vuex)
 
 const state = {
     user: '',
-    token: ''
+    task: {
+        tags: [],
+        sentences: [],
+        articles: [],
+        selected: ''
+    }
 }
 
 const getters = {
-    user: state => {
-        return state.user
-    },
-    token: state => {
-        if (state.token) {
-            return state.token
-        } else if (Cookies.get('Token')) {
-            return Cookies.get('Token')
-        } else {
-            return ''
-        }
-    }
 }
 
 const mutations = {
     set_user(state, val) {
         state.user = val
     },
-    set_token(state, val) {
-        state.token = val
-        Cookies.set('Token', val, { expires: 7 })
+    set_task(state, val) {
+        state.task = val
+    },
+    set_selected(state, val) {
+        state.task.selected = val
     },
     remove_token(state) {
         state.user = ''
-        state.token = ''
-        Cookies.remove('Token')
+        cache.removeToken()
     }
 }
 
@@ -46,11 +38,11 @@ const actions = {
     // 获取登录数据
     async get_login_data({ commit }, params) {
         return new Promise((resolve, reject) => {
-            fetch('POST', 'login', params)
+            getLogin(params)
             .then(res => {
                 if (res.data && res.data.token) {
-                    commit('set_token', res.data.token)
-                    resolve()
+                    cache.setToken(res.data.token)
+                    resolve(res.data)
                 } else {
                     reject(new Error('nothing data'))
                 }
@@ -62,17 +54,13 @@ const actions = {
     },
 
     // 获取用户数据
-    async get_user_data({ getters, commit }, token) {
-        let params = {
-            enews: 'check',
-            token: getters.token
-        }
+    async get_user_data({ commit }) {
         return new Promise((resolve, reject) => {
-            fetch('POST', 'login', params)
+            getUser(cache.getToken())
             .then(res => {
-                if (res.data && res.data.userid) {
+                if (res && res.data) {
                     commit('set_user', res.data)
-                    resolve()
+                    resolve(res.data)
                 } else {
                     commit('remove_token')
                     reject(new Error('nothing data'))
@@ -89,8 +77,5 @@ export default new Vuex.Store({
     state,
     getters,
     mutations,
-    actions,
-    modules: {
-        writer: writer_module
-    }
+    actions
 })

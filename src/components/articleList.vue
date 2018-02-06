@@ -59,7 +59,7 @@
                         <div class="action">
                             <el-button icon="edit" type="text" @click="editArticle(item)">修改</el-button>
                             <el-button icon="share" type="text">转发</el-button>
-                            <el-dropdown menu-align='start'>
+                            <el-dropdown placement='bottom' trigger="click">
                                     <el-button icon="more" type="text">更多</el-button>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native="recallArticle(item,index)">撤回</el-dropdown-item>
@@ -75,15 +75,12 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { postArticle } from '@/api'
 export default {
     props: {
         'itemJson': Array
     },
     methods: {
-        ...mapActions('writer', [
-            'post_article_data'
-        ]),
         previewURL(item) {
             if (item.state === '0' || item.state === '1') {
                 return `http://m.toutiaojk.com/#/detail?classid=${item.classid}&id=${item.id}&datafrom=${item.datafrom}`
@@ -106,7 +103,7 @@ export default {
                     id: item.id,
                     state: '5'
                 }
-                this.post_article_data(params)
+                postArticle(params)
                 .then(res => {
                     item.state = '5'
                     this.$notify.success('撤回成功')
@@ -132,7 +129,7 @@ export default {
                     id: item.id,
                     datafrom: item.datafrom
                 }
-                this.post_article_data(params)
+                postArticle(params)
                 .then(res => {
                     this.itemJson.splice(index, 1)
                     this.$notify.success('删除成功')
