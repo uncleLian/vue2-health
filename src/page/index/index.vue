@@ -1,16 +1,14 @@
 <template>
     <div id="index">
-        <my-header></my-header>
-        <div id="layout">
-            <my-menu></my-menu>
-            <div id="page">
-                <keep-alive include="search">
-                    <router-view></router-view>
-                </keep-alive>
-            </div>
-        </div>
-        <my-footer></my-footer>
-        <my-sidebar></my-sidebar>
+        <el-container id="verContainer" direction="vertical">
+            <my-header></my-header>
+            <el-container id="horContainer" direction="horizontal">
+                <my-menu></my-menu>
+                <my-page></my-page>
+            </el-container>
+            <my-footer></my-footer>
+            <my-sidebar></my-sidebar>
+        </el-container>
     </div>
 </template>
 <script>
@@ -28,23 +26,24 @@ export default {
     position: relative;
     width: 100%;
     background: #f4f5f6;
-    #layout {
+    #horContainer {
         position: relative;
         width: 1138px;
         min-width: 1138px;
         margin: 36px auto 0;
         font-size: 0;
-    }
-    #page{
-        position: relative;
-        display: inline-block;
-        width: 934px;
-        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
-        min-height: inherit;
-        margin-left: 24px;
-        font-size: 14px;
-        vertical-align: top;
-        background: #fff;
+        .pageView {
+            position: relative;
+            width: 934px;
+            height: fit-content;
+            min-height: 100%;
+            background: #fff;
+            overflow: inherit;
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
+            margin-left: 24px;
+            font-size: 14px;
+            padding: 0;
+        }
     }
 }
 </style>

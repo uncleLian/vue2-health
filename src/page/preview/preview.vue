@@ -27,7 +27,7 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { getArticle } from '@/api'
 export default{
     name: 'preview',
     data() {
@@ -59,11 +59,8 @@ export default{
         }
     },
     methods: {
-        ...mapActions('writer', [
-            'get_article_data'
-        ]),
         get_article() {
-            this.get_article_data(this.$route.query.id)
+            getArticle(this.$route.query.id)
             .then(res => {
                 if (res.data) {
                     this.json = res.data

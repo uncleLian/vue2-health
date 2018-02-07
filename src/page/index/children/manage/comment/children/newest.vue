@@ -14,10 +14,9 @@ export default {
         }
     },
     methods: {
-
     },
-    watch: {},
-    mounted() {}
+    mounted() {
+    }
 }
 </script>
 <style lang='stylus'>

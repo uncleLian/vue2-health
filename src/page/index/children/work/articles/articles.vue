@@ -1,22 +1,18 @@
 <template>
-    <div id="comment">
+    <div id="articles">
         <my-tabs class="tab_main" :json="json"></my-tabs>
         <router-view></router-view>
     </div>
 </template>
 <script>
 export default {
-    name: 'comment',
+    name: 'articles',
     data() {
         return {
             json: [
                 {
-                    label: '最新评论',
-                    name: 'newest'
-                },
-                {
-                    label: '文章评论',
-                    name: 'all'
+                    label: '我发表的',
+                    name: 'own'
                 }
             ]
         }
@@ -24,6 +20,7 @@ export default {
 }
 </script>
 <style lang='stylus'>
-#comment {
+#articles {
+    min-height: inherit;
 }
 </style>

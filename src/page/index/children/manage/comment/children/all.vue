@@ -1,6 +1,6 @@
 <template>
-    <div id="articleCom">
-        articleCom
+    <div id="all">
+        all
     </div>
 </template>
 
@@ -24,7 +24,7 @@ export default{
 </script>
 
 <style lang='stylus'>
-#articleCom{
-    
+#all{
+    padding: 20px 24px;
 }
 </style>

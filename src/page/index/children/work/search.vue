@@ -1,7 +1,6 @@
 <template>
     <div id="search" v-loading="loading" element-loading-text="正在加载中">
         <el-tabs class='tab_main' v-model="activeView">
-            
             <!-- 传统视图 -->
             <el-tab-pane class="tab_tradition" label="传统视图" name="tradition">
                 <el-button class="addBtn" type="primary" icon="plus" @click="getCheckedNodes">将选中项添加到素材库</el-button>
@@ -30,7 +29,7 @@
     </div>
 </template>
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
     name: 'search',
     data() {
@@ -129,12 +128,12 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('writer', [
+        ...mapState([
             'task'
         ])
     },
     methods: {
-        ...mapMutations('writer', [
+        ...mapMutations([
             'set_task'
         ]),
         // 获取搜索词建议数据

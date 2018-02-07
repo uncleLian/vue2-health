@@ -33,3 +33,8 @@ img{
 #index .tab_sub .el-tabs__header{
     padding: 0 24px;
 }
+
+#index .el-tabs__item{
+    outline: none;
+    box-shadow: none;
+}

@@ -7,11 +7,6 @@
 <script>
 export default {
     name: 'count',
-    data() {
-        return {
-
-        }
-    },
     methods: {
         drawLine() {
             let myChart = this.$echarts.init(document.getElementById('myChart1'))

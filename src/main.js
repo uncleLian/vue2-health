@@ -28,10 +28,14 @@ import '@/assets/css/transition.css'
 import myHeader from '@/layout/header'
 import myFooter from '@/layout/footer'
 import myMenu from '@/layout/menu'
+import myMenuItem from '@/layout/menuItem'
+import myPage from '@/layout/page'
 import mySidebar from '@/layout/sidebar'
+import view from '@/layout/view'
 import myLoading from '@/components/loading'
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
+import tabs from '@/components/tabs'
 
 Vue.config.productionTip = false
 
@@ -48,10 +52,14 @@ Vue.use(vueNumTo)
 Vue.component('my-header', myHeader)
 Vue.component('my-footer', myFooter)
 Vue.component('my-menu', myMenu)
+Vue.component('my-menu-item', myMenuItem)
+Vue.component('my-page', myPage)
 Vue.component('my-sidebar', mySidebar)
+Vue.component('my-view', view)
 Vue.component('my-loading', myLoading)
 Vue.component('article-list', articleList)
 Vue.component('comment-list', commentList)
+Vue.component('my-tabs', tabs)
 
 // 全局路由判断
 router.beforeEach((to, from, next) => {

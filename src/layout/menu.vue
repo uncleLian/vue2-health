@@ -1,67 +1,53 @@
 <template>
-    <div id="menu">
-        <el-menu :default-active="activeName" :router="true" :default-openeds="['writer','manage']"> 
-            <!-- home -->
-            <el-menu-item index="/index/home"><i class="el-icon-fa-home el-icon-fa-lg"></i>主页</el-menu-item>
-
-            <!-- writer -->
-            <el-submenu index="writer">
-                <template slot="title"><i class="el-icon-fa-pencil el-icon-fa-lg"></i>写作</template>
-                <el-menu-item index="/index/search">素材搜索</el-menu-item>
-                <el-menu-item index="/index/publish">发表作品</el-menu-item>
-                <el-menu-item index="/index/article">我的作品</el-menu-item>
-            </el-submenu>
-
-            <!-- manage -->
-            <el-submenu index="manage">
-                <template slot="title"><i class="el-icon-fa-cube el-icon-fa-lg"></i>管理</template>
-                <el-menu-item index="/index/comment">评论管理</el-menu-item>
-                <el-menu-item index="/index/material">素材管理</el-menu-item>
-            </el-submenu>
-
-            <!-- count -->
-            <el-menu-item index="/index/count"><i class="el-icon-fa-bar-chart el-icon-fa-lg"></i>统计</el-menu-item>
-
-            <!-- setting -->
-            <el-menu-item index="/index/setting"><i class="el-icon-fa-cog el-icon-fa-lg"></i>设置</el-menu-item>
+    <el-aside id="menu" width="240px">
+        <el-menu class="el-menu-container" :default-active="$route.name" :default-openeds="defaultOpeneds">
+            <my-menu-item :json="filterRoutes"></my-menu-item>
         </el-menu>
-    </div>
+    </el-aside>
 </template>
 <script>
+import { routes } from '@/router'
 export default {
+    name: 'my-menu',
     data() {
         return {
-            activeName: '/index/home'
+            filterRoutes: [],       // 过滤后的路由
+            defaultOpeneds: []      // 默认打开的二级菜单
         }
     },
-    computed: {
-        menuActive() {
-            let activeRoute = this.$route.path
-            let routerArr = [
-                '/index/home',
-                '/index/search',
-                '/index/publish',
-                '/index/article',
-                '/index/comment',
-                '/index/material',
-                '/index/count',
-                '/index/setting'
-            ]
-            for (var i = 0; i < routerArr.length; i++) {
-                if (activeRoute.includes(routerArr[i])) {
-                    return routerArr[i]
+    methods: {
+        // 过滤路由
+        handleRoutes(Arr) {
+            const Routes = Arr.filter(route => {
+                if (route.name) {
+                    if (route.hidden) {
+                        return false
+                    } else {
+                        if (!route.open) {
+                            this.defaultOpeneds.push(route.name)
+                        }
+                        if (route.children) {
+                            route.children = this.handleRoutes(route.children)
+                        }
+                        return true
+                    }
+                } else {
+                    return false
                 }
+            })
+            return Routes
+        },
+        // 过滤出index路由
+        handleIndexRoutes() {
+            let filterRoutes = this.handleRoutes(routes)
+            let indexRoutes = filterRoutes[0]
+            if (indexRoutes.name === 'index' && indexRoutes.children) {
+                this.filterRoutes = indexRoutes.children
             }
-            return ''
-        }
-    },
-    watch: {
-        $route(val) {
-            this.activeName = this.menuActive
         }
     },
     created() {
-        this.activeName = this.menuActive
+        this.handleIndexRoutes()
     }
 }
 </script>
@@ -69,10 +55,9 @@ export default {
 menuWidth = 180px
 #menu {
     position: relative;
-    display: inline-block;
-    width: menuWidth;
+    width: menuWidth !important;
+    height: fit-content;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .12);
-    min-height: inherit;
     background: #fff;
     font-size: 14px;
     user-select: none;
