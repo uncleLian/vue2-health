@@ -5,11 +5,12 @@
     </div>
 </template>
 <script>
+import echarts from 'echarts'
 export default {
     name: 'count',
     methods: {
         drawLine() {
-            let myChart = this.$echarts.init(document.getElementById('myChart1'))
+            let myChart = echarts.init(document.getElementById('myChart1'))
             myChart.setOption({
                 title: { text: '柱状图' },
                 tooltip: {},
@@ -53,7 +54,7 @@ export default {
             })
         },
          drawPie() {
-            let myChart = this.$echarts.init(document.getElementById('myChart2'))
+            let myChart = echarts.init(document.getElementById('myChart2'))
              myChart.setOption({
                 title: {
                     text: '饼图'

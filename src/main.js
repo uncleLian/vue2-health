@@ -9,57 +9,57 @@ import store from './store'
 import cache from '@/utils/cache'
 
 // 第三方库
+import axios from 'axios'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import VueQuillEditor from 'vue-quill-editor'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.min.css'
 import '@/assets/css/animate.css'
 import VueProgressBar from 'vue-progressbar'
-import echarts from 'echarts'
 import vueNumTo from 'vue-num-to'
-
 import '@/assets/css/reset.css'
 import '@/assets/css/icon.less'
 import '@/assets/css/global.css'
 import '@/assets/css/transition.css'
 
 // 自定义组件
-import myHeader from '@/layout/header'
-import myFooter from '@/layout/footer'
-import myMenu from '@/layout/menu'
-import myMenuItem from '@/layout/menuItem'
-import myPage from '@/layout/page'
-import mySidebar from '@/layout/sidebar'
+import header from '@/layout/header'
+import footer from '@/layout/footer'
+import menu from '@/layout/menu'
+import menuItem from '@/layout/menuItem'
+import page from '@/layout/page'
+import sidebar from '@/layout/sidebar'
 import view from '@/layout/view'
-import myLoading from '@/components/loading'
+import loading from '@/components/loading'
 import articleList from '@/components/articleList'
 import commentList from '@/components/commentList'
 import tabs from '@/components/tabs'
+import backTop from '@/components/backTop'
+import sticky from '@/components/sticky'
 
 Vue.config.productionTip = false
-
+Vue.prototype.$http = axios
 Vue.use(ElementUI)
-Vue.use(VueQuillEditor)
 Vue.use(VueAwesomeSwiper)
 Vue.use(VueProgressBar, {
     failedColor: 'red',
     thickness: '4px'
 })
-Vue.prototype.$echarts = echarts
 Vue.use(vueNumTo)
 
-Vue.component('my-header', myHeader)
-Vue.component('my-footer', myFooter)
-Vue.component('my-menu', myMenu)
-Vue.component('my-menu-item', myMenuItem)
-Vue.component('my-page', myPage)
-Vue.component('my-sidebar', mySidebar)
+Vue.component('my-header', header)
+Vue.component('my-footer', footer)
+Vue.component('my-menu', menu)
+Vue.component('my-menu-item', menuItem)
+Vue.component('my-page', page)
+Vue.component('my-sidebar', sidebar)
 Vue.component('my-view', view)
-Vue.component('my-loading', myLoading)
+Vue.component('my-loading', loading)
 Vue.component('article-list', articleList)
 Vue.component('comment-list', commentList)
 Vue.component('my-tabs', tabs)
+Vue.component('my-backTop', backTop)
+Vue.component('my-sticky', sticky)
 
 // 全局路由判断
 router.beforeEach((to, from, next) => {
@@ -92,6 +92,20 @@ router.beforeEach((to, from, next) => {
         next({ path: '/login', query: { redirect: to.fullPath } })
     }
 })
+
+// 全局错误处理
+// you can set only in production env show the error-log
+if (process.env.NODE_ENV === 'production') {
+    Vue.config.errorHandler = function (error, vm, info) {
+        console.log('错误日志', {
+            error,
+            vm,
+            info,
+            url: window.location.href,
+            time: new Date()
+        })
+    }
+}
 
 /* eslint-disable no-new */
 new Vue({

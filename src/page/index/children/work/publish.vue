@@ -16,26 +16,28 @@
             <!-- content -->
             <div class="body">
                 <quill-editor v-model.trim="content" ref="myQuillEditor" :options="editorOption">
-                    <div id="toolbar" slot="toolbar">
-                        <div class="ql-formats">
-                            <button class="ql-header" value="1" title="H1标题"></button>
-                            <button class="ql-bold" title="加粗"></button>
-                            <button class="ql-blockquote" title="引用"></button>
-                            <button class="ql-list" value='ordered' title="有序列表"></button>
-                            <button class="ql-list" value="bullet" title="无序列表"></button>
+                    <my-sticky slot="toolbar">
+                        <div id="toolbar">
+                            <div class="ql-formats">
+                                <button class="ql-header" value="1" title="H1标题"></button>
+                                <button class="ql-bold" title="加粗"></button>
+                                <button class="ql-blockquote" title="引用"></button>
+                                <button class="ql-list" value='ordered' title="有序列表"></button>
+                                <button class="ql-list" value="bullet" title="无序列表"></button>
+                            </div>
+                            <div class='ql-formats'>
+                                <el-button icon="el-icon-picture" title="插入图片" style="font-size: 16px;" @click.stop="uploadPictureVisible = true"></el-button>
+                                <button class="ql-link" title="文章链接"></button>
+                                <button class="ql-video" title="插入视频"></button>
+                            </div>
+                            <div class="ql-formats">
+                                <button class="ql-clean" title="清除格式"></button>
+                                <button class="undo" title="撤销" @click.stop="editor.history.undo()"></button>
+                                <button class="redo" title="重做" @click.stop="editor.history.redo()"></button>
+                            </div>
+                            <div class="draftSave" :class="{on : isSave}"></div>
                         </div>
-                        <div class='ql-formats'>
-                            <el-button icon="el-icon-picture" title="插入图片" style="font-size: 16px;" @click.stop="uploadPictureVisible = true"></el-button>
-                            <button class="ql-link" title="文章链接"></button>
-                            <button class="ql-video" title="插入视频"></button>
-                        </div>
-                        <div class="ql-formats">
-                            <button class="ql-clean" title="清除格式"></button>
-                            <button class="undo" title="撤销" @click.stop="editor.history.undo()"></button>
-                            <button class="redo" title="重做" @click.stop="editor.history.redo()"></button>
-                        </div>
-                        <div class="draftSave" :class="{on : isSave}"></div>
-                    </div>
+                    </my-sticky>
                 </quill-editor>
             </div>
         </div>
@@ -107,11 +109,14 @@
     </div>
 </template>
 <script>
+import Vue from 'vue'
+import VueQuillEditor from 'vue-quill-editor'
 import uploadPicture from '@/components/uploadPicture'
 import selectPicture from '@/components/selectPicture'
 import { mapState, mapMutations } from 'vuex'
 import { getArticle, postArticle } from '@/api'
 import cache from '@/utils/cache'
+Vue.use(VueQuillEditor)
 export default {
     name: 'publish',
     components: { uploadPicture, selectPicture },
@@ -484,9 +489,10 @@ export default {
                     background: #eee;
                 }
                 .ql-toolbar {
-                    position: sticky;
-                    top: 0;
-                    z-index: 999;
+                    /*css实现图钉功能，考虑兼容问题*/
+                    /*position: sticky;*/
+                    /*top: 0;*/
+                    /*z-index: 999;*/
                     border-bottom: 1px solid #e9e9e9 !important;
                 }
                 .ql-container {

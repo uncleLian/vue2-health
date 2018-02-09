@@ -302,7 +302,7 @@ export default {
     .container{
         padding: 20px 20px 10px 5px;
         margin-top: 28px;
-        max-height: 600px;
+        max-height: 500px;
         background: #fff;
         border: 1px solid #e8e8e8;
         overflow: auto;

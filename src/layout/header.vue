@@ -3,7 +3,7 @@
         <div class="header_wrap">
             <router-link class="logo" to="/">头条号</router-link>
             <div class="right">
-                <router-link to="/index/publish">
+                <router-link :to="{name: 'publish'}">
                     <el-button type="primary" class="publish_btn">发表</el-button>
                 </router-link>
                 <el-dropdown class="user" @command="handleCommand" placement='bottom'>
