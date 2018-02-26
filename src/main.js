@@ -28,7 +28,6 @@ import footer from '@/layout/footer'
 import menu from '@/layout/menu'
 import menuItem from '@/layout/menuItem'
 import page from '@/layout/page'
-import sidebar from '@/layout/sidebar'
 import view from '@/layout/view'
 import loading from '@/components/loading'
 import articleList from '@/components/articleList'
@@ -52,7 +51,6 @@ Vue.component('my-footer', footer)
 Vue.component('my-menu', menu)
 Vue.component('my-menu-item', menuItem)
 Vue.component('my-page', page)
-Vue.component('my-sidebar', sidebar)
 Vue.component('my-view', view)
 Vue.component('my-loading', loading)
 Vue.component('article-list', articleList)

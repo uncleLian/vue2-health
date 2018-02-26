@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="label edit-cell">
-                <div class="edit-label">标签</div>
+                <div class="edit-label">类型</div>
                 <div class="edit-input">
                     <el-radio-group v-model="classid">
                         <el-radio-button label="2">女性</el-radio-button>
@@ -113,7 +113,6 @@ import Vue from 'vue'
 import VueQuillEditor from 'vue-quill-editor'
 import uploadPicture from '@/components/uploadPicture'
 import selectPicture from '@/components/selectPicture'
-import { mapState, mapMutations } from 'vuex'
 import { getArticle, postArticle } from '@/api'
 import cache from '@/utils/cache'
 Vue.use(VueQuillEditor)
@@ -152,9 +151,6 @@ export default {
         }
     },
     computed: {
-        ...mapState({
-            selected: state => state.task.selected
-        }),
         editor() {
             return this.$refs.myQuillEditor.quill
         },
@@ -172,19 +168,9 @@ export default {
             if (this.isChange) {
                 this.saveDraft()
             }
-        },
-        selected(val) {
-            if (val) {
-                this.editor.focus()
-                this.editor.insertText(this.editor.getSelection().index, val, true)
-                this.set_selected('')
-            }
         }
     },
     methods: {
-        ...mapMutations([
-            'set_selected'
-        ]),
         // 初始化
         async init() {
             let id = this.$route.query.id
@@ -735,7 +721,6 @@ export default {
                     height: 100%;
                     z-index: 1;
                     background-color: rgba(0,0,0,.5);
-                    background-image: url(../../../../assets/img/checked.png);
                     background-position: 100% 0;
                     background-repeat: no-repeat;
                     text-align: center;
@@ -819,16 +804,19 @@ export default {
 #publish .undo {
     background: url(~@/assets/icon/laststep.png)no-repeat center center;
 }
-
 #publish .undo.nothing {
     opacity: 0.3;
 }
-
 #publish .redo {
     background: url(~@/assets/icon/nextstep.png)no-repeat center center;
 }
-
 #publish .redo.nothing {
     opacity: 0.3;
+}
+#publish .img-list .img-item label.is-active:before{
+    background-image: url(~@/assets/img/checked.png);
+}
+#publish .img-list .img-item label.is-checked:before{
+    background-image: url(~@/assets/img/checked.png);
 }
 </style>

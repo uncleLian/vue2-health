@@ -7,7 +7,6 @@
                 <my-page></my-page>
             </el-container>
             <my-footer></my-footer>
-            <my-sidebar></my-sidebar>
         </el-container>
     </div>
 </template>

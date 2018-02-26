@@ -37,18 +37,6 @@ export async function postArticle(params) {
     return res
 }
 
-// 获取任务
-export async function getTask() {
-    let res = await request('/kwdata.php', 'POST', { type: 'list' })
-    return res
-}
-
-// 提交任务
-export async function postTask({ type, title, describe, kword, gzword, ctword, id }) {
-    let res = await request('/kwdata.php', 'POST', { type, title, describe, kword, gzword, ctword, id })
-    return res
-}
-
 // 获取图片
 export async function getPicture({ key, page }) {
     let res = await request('/picsearch', 'GET', { key, page })

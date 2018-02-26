@@ -64,7 +64,18 @@ menuWidth = 180px
     .el-submenu .el-menu-item{
         min-width: menuWidth;
     }
-    .el-menu-item.is-active{
+    .el-menu-item{
+        &.is-active{
+            color: #303133;
+        }
+        &:focus{
+            background: #fff;
+        }
+        i{
+            color: #909399;
+        }
+    }
+    .router-link-active > .el-menu-item {
         background: appColor;
         color: #fff;
         i{

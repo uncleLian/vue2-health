@@ -8,12 +8,11 @@ const preview = () => import('@/page/preview/preview')                          
 const index = () => import('@/page/index/index')                                    // 首页
 // 二级页面
 const home = () => import('@/page/index/children/home/home')                        // 主页
-// work
-const search = () => import('@/page/index/children/work/search')                    // 素材搜索
-const publish = () => import('@/page/index/children/work/publish')                  // 作品编辑
-const articles = () => import('@/page/index/children/work/articles/articles')       // 我的作品
-const own = () => import('@/page/index/children/work/articles/children/own')
+// edit
+const publish = () => import('@/page/index/children/publish/publish')               // 编辑页
 // manage
+const articles = () => import('@/page/index/children/manage/articles/articles')     // 我的作品
+const own = () => import('@/page/index/children/manage/articles/children/own')
 const comment = () => import('@/page/index/children/manage/comment/comment')        // 评论管理
 const newest = () => import('@/page/index/children/manage/comment/children/newest')
 const all = () => import('@/page/index/children/manage/comment/children/all')
@@ -57,30 +56,25 @@ export const routes = [
                 component: home
             },
             {
-                name: 'work',
-                path: 'work',
-                title: '写作',
+                name: 'publish',
+                path: 'publish',
+                title: '发表',
                 icon: 'el-icon-fa-pencil',
+                component: publish
+            },
+            {
+                name: 'manage',
+                path: 'manage',
+                title: '管理',
+                icon: 'el-icon-fa-cube',
                 component: view,
                 children: [
                     {
-                        name: 'search',
-                        path: 'search',
-                        title: '素材搜索',
-                        component: search
-                    },
-                    {
-                        name: 'publish',
-                        path: 'publish',
-                        title: '发表作品',
-                        component: publish
-                    },
-                    {
                         name: 'articles',
                         path: 'articles',
-                        title: '我的作品',
+                        title: '内容管理',
                         component: articles,
-                        redirect: '/index/work/articles/own',
+                        redirect: '/index/manage/articles/own',
                         children: [
                             {
                                 name: 'own',
@@ -90,16 +84,7 @@ export const routes = [
                                 component: own
                             }
                         ]
-                    }
-                ]
-            },
-            {
-                name: 'manage',
-                path: 'manage',
-                title: '管理',
-                icon: 'el-icon-fa-cube',
-                component: view,
-                children: [
+                    },
                     {
                         name: 'comment',
                         path: 'comment',
@@ -128,7 +113,7 @@ export const routes = [
                         path: 'material',
                         title: '素材管理',
                         component: material,
-                        redirect: 'material/pic',
+                        redirect: '/index/manage/material/pic',
                         children: [
                             {
                                 name: 'pic',

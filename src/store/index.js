@@ -6,13 +6,7 @@ import cache from '@/utils/cache'
 Vue.use(Vuex)
 
 const state = {
-    user: '',
-    task: {
-        tags: [],
-        sentences: [],
-        articles: [],
-        selected: ''
-    }
+    user: ''
 }
 
 const getters = {
@@ -21,12 +15,6 @@ const getters = {
 const mutations = {
     set_user(state, val) {
         state.user = val
-    },
-    set_task(state, val) {
-        state.task = val
-    },
-    set_selected(state, val) {
-        state.task.selected = val
     },
     remove_token(state) {
         state.user = ''
