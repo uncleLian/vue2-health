@@ -47,19 +47,6 @@ vue2-health 是一个仿头条号的后台项目，它基于 [vue.js](https://gi
 ## 部分截图
 <img src="https://github.com/uncleLian/vue2-health/raw/master/screenshots/vue2-health.png" width="900px" style="max-width: 100%;"/>
 
-## 安装运行
-
-```
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8010
-npm run dev
-
-# build for production with minification
-npm run build（File in the docs folder）
-```
-
 ## 目录结构
 
 ```
@@ -75,21 +62,34 @@ npm run build（File in the docs folder）
 │   ├── page
 │   │   ├── index                                 	// 首页
 │   │   │   └── children
-│   │   │       ├── count                       	    // 统计
-│   │   │       ├── home                        	    // 主页
-│   │   │       ├── manage                      	    // 管理
+│   │   │       ├── count                       	// 统计
+│   │   │       ├── home                        	// 主页
+│   │   │       ├── manage                      	// 管理
 │   │   │       │   ├── articles
 │   │   │       │   ├── comment
 │   │   │       │   └── material
-│   │   │       ├── publish                     	    // 发表
-│   │   │       └── setting                     	    // 设置
+│   │   │       ├── publish                     	// 发表
+│   │   │       └── setting                     	// 设置
 │   │   ├── login                              		// 登录页
-│   │   └── preview                             	    // 预览页
+│   │   └── preview                             	// 预览页
 │   ├── router                                  	// 路由
 │   ├── store                                   	// 全局状态
 │   └── utils                                  	    // 工具
 ├── static
 └── theme-chalk                         			// 自定义颜色主题
+```
+
+## 安装运行
+
+```
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8010
+npm run dev
+
+# build for production with minification
+npm run build（File in the docs folder）
 ```
 
 ## 捐赠
