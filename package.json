@@ -16,7 +16,7 @@
     "echarts": "^3.8.5",
     "element-ui": "^2.2.0",
     "font-awesome": "^4.7.0",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "js-cookie": "^2.2.0",
     "vue": "^2.5.13",
     "vue-awesome-swiper": "^3.1.2",
